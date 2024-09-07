@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://d8b7embf58bq"]
+[gd_scene load_steps=9 format=3 uid="uid://d8b7embf58bq"]
 
 [ext_resource type="PackedScene" uid="uid://bhx4m8pf8weav" path="res://character.tscn" id="1_05gol"]
+[ext_resource type="Script" path="res://main.gd" id="1_obr5r"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_y66cc"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -26,6 +27,7 @@ size = Vector2(63.06, 47.665)
 size = Vector3(63.34, 1, 48.305)
 
 [node name="Main" type="Node3D"]
+script = ExtResource("1_obr5r")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_ul725")
@@ -48,5 +50,15 @@ shape = SubResource("BoxShape3D_wf5ho")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01099, 0)
 axis_lock_linear_y = true
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.858772, 0.512358, 0, -0.512358, 0.858772, 0, 9.13539, 15.36)
+[node name="CameraGymball" type="Node3D" parent="Character"]
+
+[node name="CameraInnerGymball" type="Node3D" parent="Character/CameraGymball"]
+
+[node name="Camera3D" type="Camera3D" parent="Character/CameraGymball/CameraInnerGymball"]
+transform = Transform3D(1, 0, 0, 0, 0.940638, 0.339412, 0, -0.339411, 0.940638, 0, 1.832, 3.154)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(3.1218, 0, 0, 0, 3.13522, 0, 0, 0, 2.72701, -5.57383, 1.53028, -7.18301)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.13833, 0.487579, -6.93707)
