@@ -1,0 +1,97 @@
+[gd_scene load_steps=5 format=3 uid="uid://d3nhi2w5tqpck"]
+
+[ext_resource type="Script" path="res://Multiplayer/drawing_canvas.gd" id="1_pmybg"]
+[ext_resource type="Script" path="res://Multiplayer/color_picker.gd" id="2_paml3"]
+[ext_resource type="Script" path="res://Multiplayer/thickness.gd" id="3_tnwn4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_53xxe"]
+bg_color = Color(1, 1, 1, 1)
+
+[node name="Drawing" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="."]
+layout_mode = 0
+offset_right = 789.0
+offset_bottom = 647.0
+ratio = 1.4166
+
+[node name="MarginContainer" type="MarginContainer" parent="AspectRatioContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+
+[node name="DrawingCanvas" type="Control" parent="AspectRatioContainer/MarginContainer" node_paths=PackedStringArray("drawing_line", "paint_viewport", "painted_image")]
+layout_mode = 2
+script = ExtResource("1_pmybg")
+drawing_line = NodePath("SubViewportContainer/PaintViewport/DrawingLine")
+paint_viewport = NodePath("SubViewportContainer/PaintViewport")
+painted_image = NodePath("SubViewportContainer/PaintViewport/PaintedImage")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="AspectRatioContainer/MarginContainer/DrawingCanvas"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="PaintViewport" type="SubViewport" parent="AspectRatioContainer/MarginContainer/DrawingCanvas/SubViewportContainer"]
+handle_input_locally = false
+size = Vector2i(773, 556)
+render_target_update_mode = 4
+
+[node name="Background" type="Panel" parent="AspectRatioContainer/MarginContainer/DrawingCanvas/SubViewportContainer/PaintViewport"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_53xxe")
+
+[node name="PaintedImage" type="TextureRect" parent="AspectRatioContainer/MarginContainer/DrawingCanvas/SubViewportContainer/PaintViewport"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="DrawingLine" type="Line2D" parent="AspectRatioContainer/MarginContainer/DrawingCanvas/SubViewportContainer/PaintViewport"]
+unique_name_in_owner = true
+width = 20.0
+default_color = Color(0.171, 0.5301, 0.57, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="ColorPicker" type="ColorPicker" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 854.0
+offset_top = 3.0
+offset_right = 1152.0
+offset_bottom = 583.0
+edit_alpha = false
+sampler_visible = false
+color_modes_visible = false
+sliders_visible = false
+hex_visible = false
+presets_visible = false
+script = ExtResource("2_paml3")
+
+[node name="Thickness" type="HSlider" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 858.0
+offset_top = 312.0
+offset_right = 1147.0
+offset_bottom = 354.0
+min_value = 1.0
+value = 1.0
+script = ExtResource("3_tnwn4")
+
+[connection signal="color_changed" from="ColorPicker" to="AspectRatioContainer/MarginContainer/DrawingCanvas" method="_on_color_picker_color_changed"]
+[connection signal="value_changed" from="Thickness" to="AspectRatioContainer/MarginContainer/DrawingCanvas" method="_on_h_slider_value_changed"]
