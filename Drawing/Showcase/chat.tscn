@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://dc1wbbxc3cttl"]
 
-[ext_resource type="Script" path="res://Multiplayer/Showcase/chat.gd" id="1_nxy0b"]
-[ext_resource type="Script" path="res://Multiplayer/Showcase/chat_ui.gd" id="2_xa05c"]
+[ext_resource type="Script" path="res://Drawing/Showcase/chat.gd" id="1_nxy0b"]
+[ext_resource type="Script" path="res://Drawing/Showcase/chat_ui.gd" id="2_xa05c"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_55jkx"]
 bg_color = Color(0.385, 0.385, 0.5, 1)

@@ -11,13 +11,9 @@ config_version=5
 [application]
 
 config/name="Project Neva"
-run/main_scene="res://main.tscn"
+run/main_scene="res://Drawing/drawing.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://Config/icon.svg"
-
-[autoload]
-
-GameManager="*res://Globals/game_manager.gd"
 
 [input]
 

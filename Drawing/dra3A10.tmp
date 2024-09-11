@@ -1,0 +1,221 @@
+[gd_scene load_steps=6 format=3 uid="uid://d3nhi2w5tqpck"]
+
+[ext_resource type="Script" path="res://Drawing/drawing_canvas.gd" id="1_pmybg"]
+[ext_resource type="Script" path="res://Drawing/color_picker.gd" id="2_paml3"]
+[ext_resource type="Script" path="res://Drawing/thickness.gd" id="3_tnwn4"]
+[ext_resource type="ButtonGroup" uid="uid://c5loj0s0h4wiw" path="res://Assets/instrument_button_group.tres" id="4_siabh"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_53xxe"]
+bg_color = Color(1, 1, 1, 1)
+
+[node name="Drawing" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+collapsed = true
+dragger_visibility = 1
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+ratio = 1.4166
+
+[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer/AspectRatioContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+
+[node name="DrawingCanvas" type="Control" parent="HSplitContainer/AspectRatioContainer/MarginContainer" node_paths=PackedStringArray("drawing_line", "paint_viewport", "painted_image", "background", "erase_mask_line", "erase_mask_viewport")]
+layout_mode = 2
+script = ExtResource("1_pmybg")
+drawing_line = NodePath("PaintViewportContainer/PaintViewport/DrawingLine")
+paint_viewport = NodePath("PaintViewportContainer/PaintViewport")
+painted_image = NodePath("PaintViewportContainer/PaintViewport/PaintedImage")
+background = NodePath("Background")
+erase_mask_line = NodePath("EraseMaskViewportContainer/EraseMaskViewport/EraseMaskLine")
+erase_mask_viewport = NodePath("EraseMaskViewportContainer/EraseMaskViewport")
+
+[node name="EraseMaskViewportContainer" type="SubViewportContainer" parent="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="EraseMaskViewport" type="SubViewport" parent="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas/EraseMaskViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+msaa_2d = 3
+size = Vector2i(826, 594)
+render_target_update_mode = 4
+
+[node name="EraseMaskLine" type="Line2D" parent="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas/EraseMaskViewportContainer/EraseMaskViewport"]
+width = 20.0
+default_color = Color(0, 0, 0, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="Background" type="Panel" parent="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_53xxe")
+
+[node name="PaintViewportContainer" type="SubViewportContainer" parent="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="PaintViewport" type="SubViewport" parent="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas/PaintViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+msaa_2d = 3
+size = Vector2i(826, 594)
+render_target_update_mode = 4
+
+[node name="PaintedImage" type="TextureRect" parent="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas/PaintViewportContainer/PaintViewport"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="DrawingLine" type="Line2D" parent="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas/PaintViewportContainer/PaintViewport"]
+unique_name_in_owner = true
+width = 20.0
+default_color = Color(0.171, 0.5301, 0.57, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="VSplitContainer" type="VSplitContainer" parent="HSplitContainer"]
+layout_mode = 2
+collapsed = true
+dragger_visibility = 2
+
+[node name="AspectRatioContainer2" type="AspectRatioContainer" parent="HSplitContainer/VSplitContainer"]
+layout_mode = 2
+alignment_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/VSplitContainer/AspectRatioContainer2"]
+layout_mode = 2
+alignment = 1
+
+[node name="ColorPicker" type="ColorPicker" parent="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+edit_alpha = false
+sampler_visible = false
+color_modes_visible = false
+sliders_visible = false
+hex_visible = false
+presets_visible = false
+script = ExtResource("2_paml3")
+
+[node name="Thickness" type="HSlider" parent="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 1.0
+value = 1.0
+script = ExtResource("3_tnwn4")
+
+[node name="HFlowContainer" type="HFlowContainer" parent="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer"]
+layout_mode = 2
+
+[node name="BrushButtton" type="Button" parent="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+toggle_mode = true
+button_pressed = true
+button_group = ExtResource("4_siabh")
+text = "Brush"
+
+[node name="EraserButton" type="Button" parent="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("4_siabh")
+text = "Eraser"
+
+[node name="BucketButton" type="Button" parent="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("4_siabh")
+text = "Bucket
+"
+
+[node name="LineButton" type="Button" parent="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("4_siabh")
+text = "Line
+"
+
+[node name="EmptyRectangleButton" type="Button" parent="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("4_siabh")
+text = "Empty Rectangle"
+
+[node name="FullRectangleButton" type="Button" parent="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("4_siabh")
+text = "Full Rectangle"
+
+[node name="EmptyCircleButton" type="Button" parent="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("4_siabh")
+text = "Empty Circle"
+
+[node name="FullCircleButton" type="Button" parent="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("4_siabh")
+text = "Full Circle
+"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/VSplitContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+alignment = 2
+
+[node name="ActionBackButton" type="Button" parent="HSplitContainer/VSplitContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "⬅"
+
+[node name="ActionForwordButton" type="Button" parent="HSplitContainer/VSplitContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "⮕"
+
+[connection signal="color_changed" from="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/ColorPicker" to="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas" method="_on_color_picker_color_changed"]
+[connection signal="mouse_exited" from="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/ColorPicker" to="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/ColorPicker" method="_on_mouse_exited"]
+[connection signal="value_changed" from="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/Thickness" to="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas" method="_on_h_slider_value_changed"]
+[connection signal="toggled" from="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer/BrushButtton" to="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas" method="_on_brush_buttton_toggled"]
+[connection signal="toggled" from="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer/EraserButton" to="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas" method="_on_eraser_button_toggled"]
+[connection signal="toggled" from="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer/BucketButton" to="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas" method="_on_bucket_button_toggled"]
+[connection signal="toggled" from="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer/LineButton" to="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas" method="_on_line_button_toggled"]
+[connection signal="toggled" from="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer/EmptyRectangleButton" to="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas" method="_on_empty_rectangle_button_toggled"]
+[connection signal="toggled" from="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer/FullRectangleButton" to="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas" method="_on_full_rectangle_button_toggled"]
+[connection signal="toggled" from="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer/EmptyCircleButton" to="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas" method="_on_empty_circle_button_toggled"]
+[connection signal="toggled" from="HSplitContainer/VSplitContainer/AspectRatioContainer2/VBoxContainer/HFlowContainer/FullCircleButton" to="HSplitContainer/AspectRatioContainer/MarginContainer/DrawingCanvas" method="_on_full_circle_button_toggled"]
