@@ -22,6 +22,17 @@ enum PaintingMode {
 var e: float = 1
 var mouse_pos: Vector2
 var mode: PaintingMode = PaintingMode.BRUSH 
+var drawing_canvas_size: Vector2i
+var fill_replace_color: Color
+
+@onready var draw_color: Color = drawing_line.default_color
+
+func allign_canvas() -> void:
+	for child in get_children():
+		child.size = drawing_canvas_size
+		if child is SubViewportContainer:
+			child.get_child(0).size = drawing_canvas_size
+	background.pivot_offset = drawing_canvas_size / 2
 
 func _process(_delta: float) -> void:
 	match mode:
@@ -46,6 +57,13 @@ func _input(event: InputEvent) -> void:
 				if event.button_index == MOUSE_BUTTON_LEFT:
 					if drawing_line.points.size() > 0:
 						bake_drawing()
+		PaintingMode.BUCKET:
+			if event is InputEventMouseButton and event.is_released():
+				if event.button_index == MOUSE_BUTTON_LEFT:
+					mouse_pos = paint_viewport.get_mouse_position()
+					if mouse_pos.x < paint_viewport.size.x and mouse_pos.y < paint_viewport.size.y \
+					and mouse_pos.x >= 0 and mouse_pos.y >= 0:
+						bake_drawing()
 
 func handle_brush_drawing() -> void:
 	if drawing_line.points.size() == 0:
@@ -67,23 +85,48 @@ func handle_erase() -> void:
 #So we should convert to image and back to texture
 #Doesn't even work with 'call_deferred()' method
 func bake_drawing() -> void:
-	await RenderingServer.frame_post_draw
 	match mode:
-		PaintingMode.BRUSH:
-			painted_image.texture = ImageTexture.create_from_image(paint_viewport.get_texture().get_image())
-			drawing_line.clear_points()
 		PaintingMode.ERASER:
-			#erase_mask_viewport.get_texture().get_image().save_png("user://popa.png")
+			await RenderingServer.frame_post_draw
 			var erase_mask: Image = erase_mask_viewport.get_texture().get_image()
 			var picture: Image = painted_image.texture.get_image()
-			for row in size.y:
-				for column in size.x:
+			for row in drawing_canvas_size.y:
+				for column in drawing_canvas_size.x:
 					if erase_mask.get_pixel(column, row) == Color.BLACK:
 						picture.set_pixel(column, row, Color(0, 0, 0, 0))
 			painted_image.texture = ImageTexture.create_from_image(picture)
 			drawing_line.clear_points()
+		PaintingMode.BUCKET:
+			var picture: Image
+			if painted_image.texture == null:
+				picture = paint_viewport.get_texture().get_image()
+			else:
+				picture = painted_image.texture.get_image()
+			fill_replace_color = picture.get_pixelv(mouse_pos)
+			picture = fill_scan(picture, mouse_pos)
+			painted_image.texture = ImageTexture.create_from_image(picture)
+		_:
+			painted_image.texture = ImageTexture.create_from_image(paint_viewport.get_texture().get_image())
+			drawing_line.clear_points()
+
+func fill_scan(image: Image, pos: Vector2i) -> Image:
+	image.set_pixelv(pos, draw_color)
+	var right_scan: Vector2i = pos + Vector2i.RIGHT
+	var down_scan: Vector2i = pos + Vector2i.DOWN
+	var left_scan: Vector2i = pos + Vector2i.LEFT
+	var up_scan: Vector2i = pos + Vector2i.UP
+	if right_scan.x < drawing_canvas_size.x - 1 and image.get_pixelv(right_scan) == fill_replace_color:
+		fill_scan(image, right_scan)
+	if down_scan.y < drawing_canvas_size.y - 1 and image.get_pixelv(down_scan) == fill_replace_color:
+		fill_scan(image, down_scan)
+	if left_scan.x >= 0 and image.get_pixelv(left_scan) == fill_replace_color:
+		fill_scan(image, left_scan)
+	if up_scan.y >= 0 and image.get_pixelv(up_scan) == fill_replace_color:
+		fill_scan(image, up_scan)
+	return image
 
 func _on_color_picker_color_changed(color: Color) -> void:
+	draw_color = color
 	if drawing_line.points.is_empty() and mode != PaintingMode.ERASER:
 		drawing_line.default_color = %ColorPicker.color
 
