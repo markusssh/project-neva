@@ -22,17 +22,16 @@ enum PaintingMode {
 var e: float = 1
 var mouse_pos: Vector2
 var mode: PaintingMode = PaintingMode.BRUSH 
-var drawing_canvas_size: Vector2i
-var fill_replace_color: Color
+var canv_size: Vector2i
 
 @onready var draw_color: Color = drawing_line.default_color
 
 func allign_canvas() -> void:
 	for child in get_children():
-		child.size = drawing_canvas_size
+		child.size = canv_size
 		if child is SubViewportContainer:
-			child.get_child(0).size = drawing_canvas_size
-	background.pivot_offset = drawing_canvas_size / 2
+			child.get_child(0).size = canv_size
+	background.pivot_offset = canv_size / 2
 
 func _process(_delta: float) -> void:
 	match mode:
@@ -90,8 +89,8 @@ func bake_drawing() -> void:
 			await RenderingServer.frame_post_draw
 			var erase_mask: Image = erase_mask_viewport.get_texture().get_image()
 			var picture: Image = painted_image.texture.get_image()
-			for row in drawing_canvas_size.y:
-				for column in drawing_canvas_size.x:
+			for row in canv_size.y:
+				for column in canv_size.x:
 					if erase_mask.get_pixel(column, row) == Color.BLACK:
 						picture.set_pixel(column, row, Color(0, 0, 0, 0))
 			painted_image.texture = ImageTexture.create_from_image(picture)
@@ -102,28 +101,12 @@ func bake_drawing() -> void:
 				picture = paint_viewport.get_texture().get_image()
 			else:
 				picture = painted_image.texture.get_image()
-			fill_replace_color = picture.get_pixelv(mouse_pos)
-			picture = fill_scan(picture, mouse_pos)
-			painted_image.texture = ImageTexture.create_from_image(picture)
+			var replace_color = picture.get_pixelv(mouse_pos)
+			painted_image.texture = ImageTexture.create_from_image(
+				AlgoUtil.FloodFill(picture, mouse_pos, replace_color, draw_color))
 		_:
 			painted_image.texture = ImageTexture.create_from_image(paint_viewport.get_texture().get_image())
 			drawing_line.clear_points()
-
-func fill_scan(image: Image, pos: Vector2i) -> Image:
-	image.set_pixelv(pos, draw_color)
-	var right_scan: Vector2i = pos + Vector2i.RIGHT
-	var down_scan: Vector2i = pos + Vector2i.DOWN
-	var left_scan: Vector2i = pos + Vector2i.LEFT
-	var up_scan: Vector2i = pos + Vector2i.UP
-	if right_scan.x < drawing_canvas_size.x - 1 and image.get_pixelv(right_scan) == fill_replace_color:
-		fill_scan(image, right_scan)
-	if down_scan.y < drawing_canvas_size.y - 1 and image.get_pixelv(down_scan) == fill_replace_color:
-		fill_scan(image, down_scan)
-	if left_scan.x >= 0 and image.get_pixelv(left_scan) == fill_replace_color:
-		fill_scan(image, left_scan)
-	if up_scan.y >= 0 and image.get_pixelv(up_scan) == fill_replace_color:
-		fill_scan(image, up_scan)
-	return image
 
 func _on_color_picker_color_changed(color: Color) -> void:
 	draw_color = color
