@@ -1,13 +1,17 @@
-[gd_scene load_steps=9 format=3 uid="uid://d3nhi2w5tqpck"]
+[gd_scene load_steps=12 format=3 uid="uid://d3nhi2w5tqpck"]
 
 [ext_resource type="Script" path="res://Drawing/drawing.gd" id="1_f2ae3"]
 [ext_resource type="Script" path="res://Drawing/drawing_canvas.gd" id="1_pmybg"]
 [ext_resource type="Texture2D" uid="uid://4b1oe0iahn2t" path="res://Assets/WoodenTexture.jpg" id="2_3he2v"]
 [ext_resource type="StyleBox" uid="uid://bc7sh0sppl50f" path="res://Assets/right_panel_background_style.tres" id="2_6vhy7"]
 [ext_resource type="ButtonGroup" uid="uid://c5loj0s0h4wiw" path="res://Assets/instrument_button_group.tres" id="4_siabh"]
+[ext_resource type="ButtonGroup" uid="uid://c65o3aj1a6ld4" path="res://Assets/pallete_button_group.tres" id="5_2ryiv"]
+[ext_resource type="Script" path="res://Drawing/color_button.gd" id="6_0exyb"]
 [ext_resource type="StyleBox" uid="uid://busm6ftr5rwv1" path="res://Assets/lower_panel_background_style.tres" id="7_y3333"]
 [ext_resource type="LabelSettings" uid="uid://bv26f3wi54brd" path="res://Assets/label_settings.tres" id="8_7uawu"]
 [ext_resource type="ButtonGroup" uid="uid://d4i1tamup7b5u" path="res://Assets/brush_size_button_group.tres" id="8_y6wok"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_xwnce"]
 
 [node name="Drawing" type="Control"]
 layout_mode = 3
@@ -28,7 +32,7 @@ grow_vertical = 2
 collapsed = true
 dragger_visibility = 2
 
-[node name="DrawingCanvas" type="Control" parent="CanvasAndInstrumentsHSplitContainer" node_paths=PackedStringArray("drawing_line", "paint_viewport", "painted_image", "background", "erase_mask_line", "erase_mask_viewport", "color_picker")]
+[node name="DrawingCanvas" type="Control" parent="CanvasAndInstrumentsHSplitContainer" node_paths=PackedStringArray("drawing_line", "paint_viewport", "painted_image", "background", "erase_mask_line", "erase_mask_viewport", "color_picker", "color_button")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -40,6 +44,7 @@ background = NodePath("Background")
 erase_mask_line = NodePath("EraseMaskViewportContainer/EraseMaskViewport/EraseMaskLine")
 erase_mask_viewport = NodePath("EraseMaskViewportContainer/EraseMaskViewport")
 color_picker = NodePath("../PanelContainer/VBoxContainer/ColorPicker")
+color_button = NodePath("../PanelContainer/VBoxContainer/PalleteHFlowContainer/ColorButton")
 
 [node name="TextureRect" type="TextureRect" parent="CanvasAndInstrumentsHSplitContainer/DrawingCanvas"]
 layout_mode = 1
@@ -118,6 +123,7 @@ render_target_update_mode = 4
 [node name="PaintedImage" type="TextureRect" parent="CanvasAndInstrumentsHSplitContainer/DrawingCanvas/PaintViewportContainer/PaintViewport"]
 offset_right = 40.0
 offset_bottom = 40.0
+texture = SubResource("ImageTexture_xwnce")
 
 [node name="DrawingLine" type="Line2D" parent="CanvasAndInstrumentsHSplitContainer/DrawingCanvas/PaintViewportContainer/PaintViewport"]
 unique_name_in_owner = true
@@ -136,6 +142,21 @@ theme_override_styles/panel = ExtResource("2_6vhy7")
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasAndInstrumentsHSplitContainer/PanelContainer"]
 layout_mode = 2
 alignment = 1
+
+[node name="PalleteHFlowContainer" type="HFlowContainer" parent="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+alignment = 1
+
+[node name="ColorButton" type="Button" parent="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/PalleteHFlowContainer"]
+visible = false
+custom_minimum_size = Vector2(125, 50)
+layout_mode = 2
+toggle_mode = true
+button_pressed = true
+button_group = ExtResource("5_2ryiv")
+script = ExtResource("6_0exyb")
 
 [node name="ColorPicker" type="ColorPicker" parent="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer"]
 unique_name_in_owner = true
@@ -253,9 +274,9 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -645.5
+offset_left = -226.0
 offset_top = -60.0
-offset_right = 335.5
+offset_right = 226.0
 grow_horizontal = 2
 grow_vertical = 0
 size_flags_horizontal = 4
@@ -310,18 +331,7 @@ toggle_mode = true
 button_group = ExtResource("8_y6wok")
 text = "XL"
 
-[node name="Label2" type="Label" parent="PanelContainer/ExtraDrawingSettingsHBoxContainer"]
-layout_mode = 2
-text = " Transparency:"
-label_settings = ExtResource("8_7uawu")
-
-[node name="Alpha" type="HSlider" parent="PanelContainer/ExtraDrawingSettingsHBoxContainer"]
-custom_minimum_size = Vector2(300, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-value = 100.0
-
+[connection signal="toggled" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/PalleteHFlowContainer/ColorButton" to="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/PalleteHFlowContainer/ColorButton" method="_on_toggled"]
 [connection signal="color_changed" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/ColorPicker" to="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" method="_on_color_picker_color_changed"]
 [connection signal="mouse_exited" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/ColorPicker" to="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/ColorPicker" method="_on_mouse_exited"]
 [connection signal="toggled" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/HFlowContainer/PipetteButtton" to="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" method="_on_pipette_buttton_toggled"]

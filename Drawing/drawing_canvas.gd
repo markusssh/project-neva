@@ -1,5 +1,7 @@
 extends Control
 
+signal drawing_baked(i: Image)
+
 enum PaintingMode {
 	PIPETTE,
 	BRUSH,
@@ -21,8 +23,14 @@ enum BrushSize {
 }
 
 const DEFAULT_SIZE: BrushSize = BrushSize.M
-const DEFAULT_COLOR: Color = Color.DARK_MAGENTA
 const HISTORY_MAX_SIZE: int = 40
+const BRUSH_SIZE_DICT := {
+	BrushSize.XS: 15,
+	BrushSize.S: 30,
+	BrushSize.M: 40,
+	BrushSize.L: 80,
+	BrushSize.XL: 120
+}
 
 @export var drawing_line: Line2D
 @export var paint_viewport: SubViewport
@@ -31,6 +39,7 @@ const HISTORY_MAX_SIZE: int = 40
 @export var erase_mask_line: Line2D
 @export var erase_mask_viewport: SubViewport
 @export var color_picker: ColorPicker
+@export var color_button: ColorButton
 
 var e: float = 1
 var mouse_pos: Vector2
@@ -38,28 +47,35 @@ var mode: PaintingMode = PaintingMode.BRUSH
 var canv_size: Vector2i
 var history_scroll_idx: int = 1
 var drawing_history: Array[ImageTexture] = [ImageTexture.new()]
-var brush_size_dict := {
-	BrushSize.XS: 20,
-	BrushSize.S: 40,
-	BrushSize.M: 70,
-	BrushSize.L: 110,
-	BrushSize.XL: 160
-}
+#TODO: can be loaded from
+#1. presets
+#2. most common color from chosen art
+var pallete: Array[Color] = [
+	Color.DARK_SLATE_GRAY,
+	Color.BROWN,
+	Color.SEA_GREEN,
+	Color.CADET_BLUE,
+	Color.INDIAN_RED,
+	Color.YELLOW_GREEN,
+	Color.PLUM,
+	Color.NAVY_BLUE
+]
 
 var brush_size: BrushSize = DEFAULT_SIZE:
 	set(value):
 		brush_size = value
-		drawing_line.width = brush_size_dict[value]
-		erase_mask_line.width =  brush_size_dict[value]
-var drawing_color: Color = DEFAULT_COLOR: 
+		drawing_line.width = BRUSH_SIZE_DICT[value]
+		erase_mask_line.width =  BRUSH_SIZE_DICT[value]
+var drawing_color: Color = pallete[0]: 
 	set(value):
 		drawing_color = value
 		color_picker.color = value
 
 func _ready() -> void:
 	color_picker.color = drawing_color
-	drawing_line.width = brush_size_dict[brush_size]
-	drawing_line.width = brush_size_dict[brush_size]
+	drawing_line.width = BRUSH_SIZE_DICT[brush_size]
+	drawing_line.width = BRUSH_SIZE_DICT[brush_size]
+	_set_palette_buttons()
 
 func allign_canvas() -> void:
 	for child in get_children():
@@ -144,31 +160,35 @@ func handle_erase() -> void:
 #So we should convert to image and back to texture
 #Doesn't even work with 'call_deferred()' method
 func bake_drawing() -> void:
+	var image: Image = _get_baked_image()
+	var viewport_image: Image = _get_viewport_image()
+	if image == null:
+				image = viewport_image
 	match mode:
 		PaintingMode.ERASER:
-			if painted_image.texture != null:
-				await RenderingServer.frame_post_draw
-				var erase_mask: Image = erase_mask_viewport.get_texture().get_image()
-				var picture: Image = painted_image.texture.get_image()
-				for row in canv_size.y:
-					for column in canv_size.x:
-						if erase_mask.get_pixel(column, row) == Color.BLACK:
-							picture.set_pixel(column, row, Color(0, 0, 0, 0))
-				painted_image.texture = ImageTexture.create_from_image(picture)
+			await RenderingServer.frame_post_draw
+			var erase_mask: Image = erase_mask_viewport.get_texture().get_image()
+			for row in canv_size.y:
+				for column in canv_size.x:
+					if erase_mask.get_pixel(column, row) == Color.BLACK:
+						image.set_pixel(column, row, Color(0, 0, 0, 0))
+			painted_image.texture = ImageTexture.create_from_image(image)
 			drawing_line.clear_points()
 		PaintingMode.BUCKET:
-			var picture: Image
-			if painted_image.texture == null:
-				picture = paint_viewport.get_texture().get_image()
-			else:
-				picture = painted_image.texture.get_image()
-			var replace_color = picture.get_pixelv(mouse_pos)
+			var replace_color = image.get_pixelv(mouse_pos)
 			painted_image.texture = ImageTexture.create_from_image(
-				AlgoUtil.FloodFill(picture, mouse_pos, replace_color, drawing_color))
+				AlgoUtil.FloodFill(image, mouse_pos, replace_color, drawing_color))
 		_:
-			painted_image.texture = ImageTexture.create_from_image(paint_viewport.get_texture().get_image())
+			painted_image.texture = ImageTexture.create_from_image(viewport_image)
 			drawing_line.clear_points()
 	_update_history()
+	drawing_baked.emit(_get_baked_image())
+
+func _get_baked_image() -> Image:
+	return painted_image.texture.get_image()
+
+func _get_viewport_image() -> Image:
+	return paint_viewport.get_texture().get_image()
 
 func _update_history() -> void:
 	if history_scroll_idx > 1:
@@ -195,6 +215,7 @@ func _on_color_picker_color_changed(color: Color) -> void:
 #endregion
 
 #region INSTRUMENT BUTTON GROUP
+#ALERT: rework procedural gen
 func _on_pipette_buttton_toggled(toggled_on: bool) -> void:
 	if toggled_on:
 		mode = PaintingMode.PIPETTE
@@ -241,6 +262,7 @@ func _on_action_forward_button_pressed() -> void:
 #endregion
 
 #region BRUSH SIZE BUTTONS
+#ALERT: rework procedural gen
 func _on_xs_button_pressed() -> void:
 	brush_size = BrushSize.XS
 
@@ -256,3 +278,14 @@ func _on_l_button_pressed() -> void:
 func _on_xl_button_pressed() -> void:
 	brush_size = BrushSize.XL
 #endregion
+
+func _set_palette_buttons() -> void:
+	for color in pallete:
+		var n: ColorButton = color_button.duplicate()
+		%PalleteHFlowContainer.add_child(n)
+		n.show()
+		n.set_color(color)
+		n.connect("color_picked", _on_color_picked)
+
+func _on_color_picked(c: Color) -> void:
+	drawing_color = c
