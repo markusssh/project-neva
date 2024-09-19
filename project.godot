@@ -18,6 +18,7 @@ config/icon="res://Config/icon.svg"
 [autoload]
 
 AlgoUtil="*res://Globals/AlgoUtil.cs"
+WebHandler="*res://Globals/web_handler.gd"
 
 [display]
 
