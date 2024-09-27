@@ -1,9 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://bx4idayxu2svr"]
+[gd_scene load_steps=4 format=3 uid="uid://bx4idayxu2svr"]
 
 [ext_resource type="Script" path="res://Connection/connection.gd" id="1_0b6yw"]
 [ext_resource type="LabelSettings" uid="uid://bv26f3wi54brd" path="res://Assets/label_settings.tres" id="1_djfus"]
+[ext_resource type="Script" path="res://Connection/room_code.gd" id="3_cmnga"]
 
-[node name="Connection" type="Control"]
+[node name="Connection" type="Control" node_paths=PackedStringArray("room_code_line")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,6 +12,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_0b6yw")
+room_code_line = NodePath("MarginContainer/VBoxContainer/RoomCode")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1
@@ -56,4 +58,16 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Join Room"
 
+[node name="RoomCode" type="LineEdit" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+placeholder_text = "Enter Code"
+alignment = 1
+max_length = 6
+context_menu_enabled = false
+clear_button_enabled = true
+script = ExtResource("3_cmnga")
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/CreateRoomButton" to="." method="_on_create_room_button_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/JoinRoomButton" to="." method="_on_join_room_button_pressed"]
+[connection signal="text_changed" from="MarginContainer/VBoxContainer/RoomCode" to="MarginContainer/VBoxContainer/RoomCode" method="_on_text_changed"]

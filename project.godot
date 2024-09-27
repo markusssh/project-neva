@@ -11,14 +11,14 @@ config_version=5
 [application]
 
 config/name="Project Neva"
-run/main_scene="res://Drawing/drawing.tscn"
+run/main_scene="res://Connection/connection.tscn"
 config/features=PackedStringArray("4.3", "C#", "Forward Plus")
 config/icon="res://Config/icon.svg"
 
 [autoload]
 
 AlgoUtil="*res://Globals/AlgoUtil.cs"
-WebHandler="*res://Globals/web_handler.gd"
+WebClient="*res://Globals/web_client.gd"
 
 [display]
 
