@@ -1,6 +1,5 @@
 class_name Room extends Resource
 
 var id: String = ""
-
-func _init(id: String) -> void:
-	self.id = id
+var my_name: String = "Player"
+var players: Array[String] = []
