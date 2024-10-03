@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://Connection/room_code.gd" id="3_cmnga"]
 [ext_resource type="Script" path="res://Connection/player_name.gd" id="3_jjb2y"]
 
-[node name="Connection" type="Control"]
+[node name="Connection" type="Control" node_paths=PackedStringArray("player_name_label_template")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,6 +13,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_0b6yw")
+player_name_label_template = NodePath("MarginContainer/HBoxContainer/PlayersVBoxContainer/PlayerNameLabelTemplate")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1
@@ -42,14 +43,37 @@ size_flags_vertical = 0
 text = "Connect to game"
 label_settings = ExtResource("1_djfus")
 
-[node name="RoomVBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="PlayersVBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/PlayersVBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 150
+
+[node name="TitleLable" type="Label" parent="MarginContainer/HBoxContainer/PlayersVBoxContainer/MarginContainer"]
+layout_mode = 2
+text = "Players:"
+label_settings = ExtResource("1_djfus")
+
+[node name="PlayerNameLabelTemplate" type="Label" parent="MarginContainer/HBoxContainer/PlayersVBoxContainer"]
+visible = false
+layout_mode = 2
+label_settings = ExtResource("1_djfus")
+
+[node name="RoomVBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="PlayerName" type="LineEdit" parent="MarginContainer/RoomVBoxContainer"]
+[node name="PlayerName" type="LineEdit" parent="MarginContainer/HBoxContainer/RoomVBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
@@ -57,17 +81,17 @@ placeholder_text = "Enter Name"
 alignment = 1
 script = ExtResource("3_jjb2y")
 
-[node name="CreateRoomButton" type="Button" parent="MarginContainer/RoomVBoxContainer"]
+[node name="CreateRoomButton" type="Button" parent="MarginContainer/HBoxContainer/RoomVBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Create Room"
 
-[node name="JoinRoomButton" type="Button" parent="MarginContainer/RoomVBoxContainer"]
+[node name="JoinRoomButton" type="Button" parent="MarginContainer/HBoxContainer/RoomVBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Join Room"
 
-[node name="RoomCode" type="LineEdit" parent="MarginContainer/RoomVBoxContainer"]
+[node name="RoomCode" type="LineEdit" parent="MarginContainer/HBoxContainer/RoomVBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
@@ -78,6 +102,6 @@ context_menu_enabled = false
 clear_button_enabled = true
 script = ExtResource("3_cmnga")
 
-[connection signal="pressed" from="MarginContainer/RoomVBoxContainer/CreateRoomButton" to="." method="_on_create_room_button_pressed"]
-[connection signal="pressed" from="MarginContainer/RoomVBoxContainer/JoinRoomButton" to="." method="_on_join_room_button_pressed"]
-[connection signal="text_changed" from="MarginContainer/RoomVBoxContainer/RoomCode" to="MarginContainer/RoomVBoxContainer/RoomCode" method="_on_text_changed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/RoomVBoxContainer/CreateRoomButton" to="." method="_on_create_room_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/RoomVBoxContainer/JoinRoomButton" to="." method="_on_join_room_button_pressed"]
+[connection signal="text_changed" from="MarginContainer/HBoxContainer/RoomVBoxContainer/RoomCode" to="MarginContainer/HBoxContainer/RoomVBoxContainer/RoomCode" method="_on_text_changed"]

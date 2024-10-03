@@ -10,6 +10,7 @@ var last_state := WebSocketPeer.STATE_CLOSED
 signal connected_to_server()
 signal connection_closed()
 signal message_received(message: Variant)
+signal action_recieved(action: GameAction)
 
 func connect_to_url(url: String) -> int:
 	handshake_headers.append("roomId: " + WebManager.room.id)
@@ -67,8 +68,20 @@ func poll() -> void:
 		elif state == socket.STATE_CLOSED:
 			connection_closed.emit()
 	while socket.get_ready_state() == socket.STATE_OPEN and socket.get_available_packet_count():
-		message_received.emit(get_message())
-
+		var message = get_message()
+		message_received.emit(message)
+		
+		#ALERT: NOT SAFE
+		#ALERT: FIX LOGIC AS NEW CLASS
+		var json := JSON.new()
+		json.parse_string(str(message))
+		action_recieved.emit(
+			GameAction.new(
+				json.get_data().get("from"),
+				GameAction.parse_type_enum(json.get_data().get("action").get("type")),
+				json.get_data().get("action").get("content")
+			)
+		)
 
 func _process(_delta: float) -> void:
 	poll()

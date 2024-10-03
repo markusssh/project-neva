@@ -1,11 +1,18 @@
 extends Node
 
-@export var HTTP_URL = "http://localhost:8080/room"
+@export var HTTP_URL = "http://localhost:8080/"
 @export var WS_URL = "ws://localhost:8080/ws"
 
 var room: Room
 var hosting: bool = false
-var web_action_bus: WebActionBus = WebActionBus.new()
+var last_tick: int
+
+var action_bus: GameActionWebBus = GameActionWebBus.new()
+var action_handler: GameActionHandler = GameActionHandler.new()
+
+func _ready() -> void:
+	end_ticks()
+	MyWebSocketClient.action_recieved.connect(action_handler.handle)
 
 func throw_web_alert() -> void:
 	OS.alert("Web err!")
@@ -41,7 +48,28 @@ func web_connect() -> void:
 	assert(room.id != "" and room.my_name != "")
 	MyWebSocketClient.connect_to_url(WS_URL)
 	await MyWebSocketClient.connected_to_server
-	web_action_bus.connected = true
-	MyHTTPClient.send_user_connected(JSONActionWrapper.wrap_actions(
-		[{"type": "connected", "content": ""}]))
-	#while message != game started
+	MyHTTPClient.send_user_connected(
+		JSONRequestWrapper.wrap_actions([
+			GameAction.new(
+				room.my_name,
+				GameAction.ActionType.CONNECT,
+				[]
+			)
+		])
+	)
+
+func start_ticks() -> void:
+	last_tick = Time.get_ticks_msec()
+	set_process(true)
+
+func end_ticks() -> void:
+	set_process(false)
+
+func _process(_delta: float) -> void:
+	if Time.get_ticks_msec() - last_tick >= 5:
+		last_tick = Time.get_ticks_msec()
+		send_action_bus()
+
+func send_action_bus() -> void:
+	if action_bus.action_array != []:
+		MyWebSocketClient.send(JSONRequestWrapper.wrap_actions(action_bus.actions))
