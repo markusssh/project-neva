@@ -2,7 +2,7 @@ class_name GameAction extends Resource
 
 enum ActionType {
 	SYNC_PLAYER_LIST,
-	CONNECT,
+	CONNECTED,
 	MESSAGE,
 	IMAGE
 }
@@ -10,8 +10,8 @@ enum ActionType {
 const ACTION_MAP = {
 	"sync_player_list": ActionType.SYNC_PLAYER_LIST,
 	ActionType.SYNC_PLAYER_LIST: "sync_player_list",
-	"connect": ActionType.CONNECT,
-	ActionType.CONNECT: "connect",
+	"connected": ActionType.CONNECTED,
+	ActionType.CONNECTED: "connected",
 	"message": ActionType.MESSAGE,
 	ActionType.MESSAGE: "message",
 	"image": ActionType.IMAGE,

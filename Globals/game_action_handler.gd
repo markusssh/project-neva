@@ -8,8 +8,8 @@ func handle(action: GameAction) -> void:
 			sync_player_list(action.content)
 
 func sync_player_list(content: Array) -> void:
+	#TODO: FIX LOGIC? TRY ADDING MISSING PLAYERS
+	WebManager.room.players = []
 	for player_data in content:
-		if player_data is not String:
-			printerr("Wrong player data!")
-		WebManager.room.players.append(player_data)
-	sync_player_list_complete.emit
+		WebManager.room.players.append(player_data.get("name"))
+	sync_player_list_complete.emit()

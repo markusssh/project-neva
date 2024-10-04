@@ -73,13 +73,12 @@ func poll() -> void:
 		
 		#ALERT: NOT SAFE
 		#ALERT: FIX LOGIC AS NEW CLASS
-		var json := JSON.new()
-		json.parse_string(str(message))
+		var data = JSON.parse_string(str(message))
 		action_recieved.emit(
 			GameAction.new(
-				json.get_data().get("from"),
-				GameAction.parse_type_enum(json.get_data().get("action").get("type")),
-				json.get_data().get("action").get("content")
+				data.get("from"),
+				GameAction.parse_type_enum(data.get("type")),
+				data.get("content")
 			)
 		)
 

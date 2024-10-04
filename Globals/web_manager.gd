@@ -52,8 +52,8 @@ func web_connect() -> void:
 		JSONRequestWrapper.wrap_actions([
 			GameAction.new(
 				room.my_name,
-				GameAction.ActionType.CONNECT,
-				[]
+				GameAction.ActionType.CONNECTED,
+				[room.id]
 			)
 		])
 	)

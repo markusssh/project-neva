@@ -24,5 +24,10 @@ func _create_room_completed(result, response_code, headers, body):
 func send_user_connected(j: String) -> int:
 	var http_request := HTTPRequest.new()
 	add_child(http_request)
-	return http_request.request(WebManager.HTTP_URL + "player", [j], HTTPClient.METHOD_POST)
+	http_request.request_completed.connect(self.t)
+	var headers = ["Content-Type: application/json"]
+	return http_request.request(WebManager.HTTP_URL + "player", headers, HTTPClient.METHOD_POST, j)
+
+func t(result, response_code, headers, body):
+	print(response_code, body.get_string_from_utf8())
 #endregion
