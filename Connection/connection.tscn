@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://Connection/room_code.gd" id="3_cmnga"]
 [ext_resource type="Script" path="res://Connection/player_name.gd" id="3_jjb2y"]
 
-[node name="Connection" type="Control" node_paths=PackedStringArray("player_name_label_template")]
+[node name="Connection" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,7 +13,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_0b6yw")
-player_name_label_template = NodePath("")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1
@@ -47,22 +46,33 @@ label_settings = ExtResource("1_djfus")
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+[node name="StartGameContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
 alignment = 1
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_right = 150
-
-[node name="TitleLable" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer/MarginContainer"]
+[node name="TitleLable" type="Label" parent="MarginContainer/HBoxContainer/StartGameContainer"]
 layout_mode = 2
 text = "Players:"
 label_settings = ExtResource("1_djfus")
+horizontal_alignment = 1
 
-[node name="PlayersVBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/HBoxContainer/StartGameContainer"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="PlayersVBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/StartGameContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="StartGameButton" type="Button" parent="MarginContainer/HBoxContainer/StartGameContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 32
+text = "Start Game"
 
 [node name="RoomVBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
@@ -101,6 +111,7 @@ context_menu_enabled = false
 clear_button_enabled = true
 script = ExtResource("3_cmnga")
 
+[connection signal="pressed" from="MarginContainer/HBoxContainer/StartGameContainer/StartGameButton" to="." method="_on_start_game_button_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/RoomVBoxContainer/CreateRoomButton" to="." method="_on_create_room_button_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/RoomVBoxContainer/JoinRoomButton" to="." method="_on_join_room_button_pressed"]
 [connection signal="text_changed" from="MarginContainer/HBoxContainer/RoomVBoxContainer/RoomCode" to="MarginContainer/HBoxContainer/RoomVBoxContainer/RoomCode" method="_on_text_changed"]

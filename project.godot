@@ -18,9 +18,11 @@ config/icon="res://Config/icon.svg"
 [autoload]
 
 AlgoUtil="*res://Globals/AlgoUtil.cs"
-MyHTTPClient="*res://Globals/my_http_client.gd"
-MyWebSocketClient="*res://Globals/my_websocket_client.gd"
-WebManager="*res://Globals/web_manager.gd"
+MyHTTPClient="*res://WebClasses/MyHTTPClient.gd"
+MyWebSocketClient="*res://WebClasses/MyWebSocketClient.gd"
+WebClient="*res://WebClasses/WebClient.gd"
+Params="*res://Globals/params.gd"
+Signal_Debugger="*res://addons/SignalVisualizer/Debugger/SignalDebugger.gd"
 
 [display]
 
@@ -30,6 +32,10 @@ window/size/viewport_height=972
 [dotnet]
 
 project/assembly_name="Project Neva"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/SignalVisualizer/plugin.cfg")
 
 [input]
 
