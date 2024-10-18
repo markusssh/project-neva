@@ -22,7 +22,7 @@ MyHTTPClient="*res://WebClasses/MyHTTPClient.gd"
 MyWebSocketClient="*res://WebClasses/MyWebSocketClient.gd"
 WebClient="*res://WebClasses/WebClient.gd"
 Params="*res://Globals/params.gd"
-Signal_Debugger="*res://addons/SignalVisualizer/Debugger/SignalDebugger.gd"
+WebRequestSerializer="*res://WebClasses/Serializer/WebRequestSerializer.gd"
 
 [display]
 

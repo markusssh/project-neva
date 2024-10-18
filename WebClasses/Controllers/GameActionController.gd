@@ -13,9 +13,8 @@ func handle(action: GameAction) -> void:
 		GameAction.ActionType.START_GAME:
 			game_started.emit()
 
-func sync_player_list(content: Array) -> void:
-	#TODO: FIX LOGIC? TRY ADDING MISSING PLAYERS
-	WebClient.room.players = []
-	for player_data in content:
-		WebClient.room.players.append(player_data.get("name"))
+func sync_player_list(players: Array[Player]) -> void:
+	WebClient.room.players.clear()
+	for player in players:
+		WebClient.room.players.append(player)
 	sync_player_list_complete.emit()

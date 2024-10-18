@@ -8,15 +8,11 @@ func add_message_action(message: String) -> void:
 func add_game_start_action() -> void:
 	actions.append(GameAction.new(WebClient.room.my_name, GameAction.ActionType.START_GAME, []))
 
+func add_sync_player_list_action(players: Array[Player]) -> void:
+	actions.append(GameAction.new(WebClient.room.my_name, GameAction.ActionType.SYNC_PLAYER_LIST, players))
+
 func empty() -> bool:
-	return actions == []
+	return actions.is_empty()
 
 func clear() -> void:
 	actions.clear()
-
-func _to_string() -> String:
-	var res = "{\"actions\":["
-	for action in actions:
-		res += action.to_string() + ","
-	res = res.left(-1) + "]}"
-	return res

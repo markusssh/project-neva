@@ -2,17 +2,20 @@ extends Node
 
 signal connected
 
-@export var HTTP_URL = "http://localhost:8080/"
-@export var WS_URL = "ws://localhost:8080/ws"
+@export var HTTP_URL = "http://localhost:8080/" #в конфиг
+@export var WS_URL = "ws://localhost:8080/ws" #в конфиг
 
+#TODO: to singleton
 var room: Room
 var hosting: bool = false
 var last_tick: int
 
+#TODO: to singleton
 var action_bus: GameActionWebBus = GameActionWebBus.new()
+#TODO: to singleton
 var image_bus: ImageWebBus = ImageWebBus.new()
+#TODO: to singleton
 var action_controller: GameActionController = GameActionController.new()
-var latest_image: Image
 
 func _ready() -> void:
 	end_ticks()
@@ -57,7 +60,7 @@ func web_connect() -> void:
 		GameAction.ActionType.CONNECTED,
 		[room.id]
 	)
-	MyHTTPClient.send_user_connected(connected_action.to_string())
+	MyHTTPClient.send_user_connected(str(WebRequestSerializer.to_dict(connected_action)))
 	connected.emit()
 	start_ticks()
 
@@ -72,15 +75,8 @@ func _process(_delta: float) -> void:
 	if Time.get_ticks_msec() - last_tick >= 5:
 		last_tick = Time.get_ticks_msec()
 		if not action_bus.empty():
-			send_action_bus()
+			MyWebSocketClient.send_action_bus(action_bus)
+			action_bus.clear()
 		if hosting and not image_bus.empty():
-			send_image_bus()
-
-func send_action_bus() -> void:
-	MyWebSocketClient.send(action_bus.to_string())
-	action_bus.clear()
-
-func send_image_bus() -> void:
-	for packet in image_bus.packetize_image():
-		MyWebSocketClient.send(packet.to_string())
-	image_bus.clear()
+			MyWebSocketClient.send_image_bus(image_bus)
+			image_bus.clear()

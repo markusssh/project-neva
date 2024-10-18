@@ -28,7 +28,7 @@ func update_player_list():
 		child.queue_free()
 	for player in WebClient.room.players:
 		var l := Label.new()
-		l.text = player
+		l.text = player.name
 		l.label_settings = ls
 		%PlayersVBoxContainer.add_child(l)
 

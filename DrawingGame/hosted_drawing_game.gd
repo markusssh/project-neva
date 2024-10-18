@@ -7,4 +7,4 @@ func _ready() -> void:
 	%DrawingCanvas.allign_canvas()
 
 func _on_drawing_canvas_image_changed(i: PackedByteArray) -> void:
-	pass # Replace with function body.
+	WebClient.image_bus.add_image_data(i)
