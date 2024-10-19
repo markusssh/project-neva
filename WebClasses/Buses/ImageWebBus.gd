@@ -1,6 +1,6 @@
 class_name ImageWebBus extends Resource
 
-const PACKET_SIZE = 5000
+const PACKET_SIZE = 15000
 
 var image_data: PackedByteArray = []
 

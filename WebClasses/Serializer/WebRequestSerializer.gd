@@ -23,12 +23,12 @@ func to_dict(req: WebSocketRequest) -> Dictionary:
 
 func to_bytes(req: WebSocketRequest) -> PackedByteArray:
 	var data = to_dict(req)
-	if data == {}:
+	if data != {}:
+		return var_to_bytes(data)
+	else:
 		#TODO: LOG
 		printerr("Cannot convert util class WebSocketRequest to bytes")
 		return []
-	else:
-		return var_to_bytes(data)
 
 func from_bytes(bytes: PackedByteArray) -> WebSocketRequest:
 	var data = bytes_to_var(bytes)

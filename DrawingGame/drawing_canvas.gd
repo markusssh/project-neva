@@ -182,7 +182,7 @@ func bake_drawing() -> void:
 			painted_image.texture = ImageTexture.create_from_image(viewport_image)
 			drawing_line.clear_points()
 	update_history()
-	emit_signal("image_changed", get_viewport_image().get_data())
+	emit_signal("image_changed", get_baked_image().get_data())
 
 func get_baked_image() -> Image:
 	return painted_image.texture.get_image()

@@ -34,10 +34,10 @@ func send_user_connected(req: String) -> int:
 func _user_connection_completed(result, response_code, headers, body):
 	var players_dict_arr = str_to_var(body.get_string_from_utf8())
 	var arr_size = players_dict_arr.size()
-	var players : Array[Player]
+	var players : Array[String]
 	players.resize(arr_size)
 	for i in range(arr_size):
-		players[i] = Player.new(players_dict_arr[i].get("name"))
+		players[i] = players_dict_arr[i].get("name")
 	WebClient.action_controller.sync_player_list(players)
 	WebClient.action_bus.add_sync_player_list_action(players)
 #endregion
