@@ -4,8 +4,8 @@ const PACKET_SIZE = 15000
 
 var image_data: PackedByteArray = []
 
-func add_image_data(image_data: PackedByteArray) -> void:
-	self.image_data = image_data
+func add_image_data(p_image_data: PackedByteArray) -> void:
+	image_data = p_image_data
 
 func packetize_image() -> Array[ImagePacket]:
 	var res: Array[ImagePacket] = []

@@ -46,7 +46,7 @@ var mouse_pos: Vector2
 var mode: PaintingMode = PaintingMode.BRUSH 
 var canv_size: Vector2i
 var history_scroll_idx: int = 1
-var drawing_history: Array[ImageTexture] = [ImageTexture.new()]
+var drawing_history: Array[ImageTexture]
 #TODO: can be loaded from
 #1. presets
 #2. most common color from chosen art
@@ -75,6 +75,13 @@ func _ready() -> void:
 	color_picker.color = drawing_color
 	drawing_line.width = BRUSH_SIZE_DICT[brush_size]
 	drawing_line.width = BRUSH_SIZE_DICT[brush_size]
+	painted_image.texture = ImageTexture.create_from_image(Image.create_empty(
+		Params.CANV_W,
+		Params.CANV_H,
+		false,
+		Image.FORMAT_RGBA8
+	))
+	drawing_history.append(painted_image.texture)
 	_set_palette_buttons()
 
 func allign_canvas() -> void:
@@ -202,13 +209,13 @@ func history_step_back() -> void:
 	if history_scroll_idx + 1 <= drawing_history.size():
 		history_scroll_idx += 1
 		painted_image.texture = drawing_history[-history_scroll_idx]
-		emit_signal("image_changed", get_viewport_image().get_data())
+		emit_signal("image_changed", get_baked_image().get_data())
 
 func history_step_forward() -> void:
 	if history_scroll_idx >= 2:
 		history_scroll_idx -= 1
 		painted_image.texture = drawing_history[-history_scroll_idx]
-		emit_signal("image_changed", get_viewport_image().get_data())
+		emit_signal("image_changed", get_baked_image().get_data())
 
 #region COLOR PICKER UI
 func _on_color_picker_color_changed(color: Color) -> void:

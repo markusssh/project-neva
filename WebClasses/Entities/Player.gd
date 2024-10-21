@@ -2,5 +2,5 @@ class_name Player extends Object
 
 var name: String = "Player"
 
-func _init(name: String) -> void:
-	self.name = name
+func _init(p_name: String) -> void:
+	name = p_name

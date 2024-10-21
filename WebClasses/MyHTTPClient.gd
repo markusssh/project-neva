@@ -12,7 +12,7 @@ func create_room() -> int:
 	WebClient.hosting = true
 	return http_request.request(WebClient.HTTP_URL + "room", [], HTTPClient.METHOD_POST)
 
-func _create_room_completed(result, response_code, headers, body):
+func _create_room_completed(_result, _response_code, _headers, body):
 	var json = JSON.new()
 	json.parse(body.get_string_from_utf8())
 	var id = json.get_data().get("id")
@@ -31,7 +31,7 @@ func send_user_connected(req: String) -> int:
 	var headers = ["Content-Type: application/json"]
 	return http_request.request(WebClient.HTTP_URL + "player", headers, HTTPClient.METHOD_POST, req)
 
-func _user_connection_completed(result, response_code, headers, body):
+func _user_connection_completed(_result, _response_code, _headers, body):
 	var players_dict_arr = str_to_var(body.get_string_from_utf8())
 	var arr_size = players_dict_arr.size()
 	var players : Array[String]

@@ -1,7 +1,6 @@
 extends Node
 
 func to_dict(req: WebSocketRequest) -> Dictionary:
-	var a = req.get_property_list()
 	var data: Dictionary
 	if req is GameAction:
 		data = {

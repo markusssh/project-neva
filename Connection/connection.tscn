@@ -1,9 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://bx4idayxu2svr"]
+[gd_scene load_steps=4 format=3 uid="uid://bx4idayxu2svr"]
 
 [ext_resource type="Script" path="res://Connection/connection.gd" id="1_0b6yw"]
 [ext_resource type="LabelSettings" uid="uid://bv26f3wi54brd" path="res://Assets/label_settings.tres" id="1_djfus"]
 [ext_resource type="Script" path="res://Connection/room_code.gd" id="3_cmnga"]
-[ext_resource type="Script" path="res://Connection/player_name.gd" id="3_jjb2y"]
 
 [node name="Connection" type="Control"]
 layout_mode = 3
@@ -88,7 +87,6 @@ theme_override_font_sizes/font_size = 32
 text = "Player"
 placeholder_text = "Enter Name"
 alignment = 1
-script = ExtResource("3_jjb2y")
 
 [node name="CreateRoomButton" type="Button" parent="MarginContainer/HBoxContainer/RoomVBoxContainer"]
 layout_mode = 2

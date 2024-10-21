@@ -13,8 +13,8 @@ var from: String
 var action_type: ActionType
 var content: Array
 
-func _init(from: String = "", action_type: ActionType = ActionType.NONE, content: Array = []) -> void:
+func _init(p_from: String = "", p_action_type: ActionType = ActionType.NONE, p_content: Array = []) -> void:
 	type = WebSocketRequest.RequestType.GAME_ACTION
-	self.from = from
-	self.action_type = action_type
-	self.content = content
+	from = p_from
+	action_type = p_action_type
+	content = p_content

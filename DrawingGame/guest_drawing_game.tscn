@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://h5xlijcfafmi"]
+[gd_scene load_steps=5 format=3 uid="uid://h5xlijcfafmi"]
 
 [ext_resource type="Script" path="res://DrawingGame/guest_drawing_game.gd" id="1_agvsw"]
+[ext_resource type="Texture2D" uid="uid://4b1oe0iahn2t" path="res://Assets/WoodenTexture.jpg" id="2_1tx4e"]
+[ext_resource type="PackedScene" uid="uid://8ieargn5wxga" path="res://ChatBox/chat_box.tscn" id="3_vsl1l"]
 
 [sub_resource type="ImageTexture" id="ImageTexture_pwfb4"]
 
@@ -13,11 +15,28 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_agvsw")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="BackgorundTextureRect" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_1tx4e")
+expand_mode = 2
+
+[node name="BackgroundColorRect" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -36,3 +55,15 @@ offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = SubResource("ImageTexture_pwfb4")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+grow_horizontal = 0
+theme_override_constants/margin_top = 175
+theme_override_constants/margin_right = 225
+
+[node name="ChatBox" parent="MarginContainer" instance=ExtResource("3_vsl1l")]
+layout_mode = 2

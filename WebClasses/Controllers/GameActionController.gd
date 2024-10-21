@@ -2,6 +2,7 @@ class_name GameActionController extends Resource
 
 signal sync_player_list_complete
 signal image_recieved(i: Image)
+signal message_recieved(f: String, m: String)
 signal game_started
 
 func handle(action: GameAction) -> void:
@@ -13,6 +14,8 @@ func handle(action: GameAction) -> void:
 			image_recieved.emit(action.content[0])
 		GameAction.ActionType.START_GAME:
 			game_started.emit()
+		GameAction.ActionType.MESSAGE:
+			recieve_message(action.from, action.content[0])
 
 func sync_player_list(content) -> void:
 	WebClient.room.players.clear()
@@ -27,6 +30,13 @@ func sync_player_list(content) -> void:
 func recieve_image(content) -> void:
 	if content is Image:
 		image_recieved.emit(content)
+	else:
+		#TODO: LOG
+		printerr("GameActionController error: Not An Image")
+
+func recieve_message(from, content) -> void:
+	if content is String and from is String:
+		message_recieved.emit(from, content)
 	else:
 		#TODO: LOG
 		printerr("GameActionController error: Not An Image")

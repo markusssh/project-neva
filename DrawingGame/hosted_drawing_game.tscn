@@ -10,8 +10,7 @@
 [ext_resource type="ButtonGroup" uid="uid://c5loj0s0h4wiw" path="res://Assets/instrument_button_group.tres" id="8_ts6ga"]
 [ext_resource type="StyleBox" uid="uid://busm6ftr5rwv1" path="res://Assets/lower_panel_background_style.tres" id="9_0q4tm"]
 [ext_resource type="ButtonGroup" uid="uid://d4i1tamup7b5u" path="res://Assets/brush_size_button_group.tres" id="10_mkdh1"]
-
-[sub_resource type="ImageTexture" id="ImageTexture_xwnce"]
+[ext_resource type="PackedScene" uid="uid://8ieargn5wxga" path="res://ChatBox/chat_box.tscn" id="11_mjdcr"]
 
 [node name="HostedDrawingGame" type="Control"]
 layout_mode = 3
@@ -123,7 +122,6 @@ render_target_update_mode = 4
 [node name="PaintedImage" type="TextureRect" parent="CanvasAndInstrumentsHSplitContainer/DrawingCanvas/PaintViewportContainer/PaintViewport"]
 offset_right = 40.0
 offset_bottom = 40.0
-texture = SubResource("ImageTexture_xwnce")
 
 [node name="DrawingLine" type="Line2D" parent="CanvasAndInstrumentsHSplitContainer/DrawingCanvas/PaintViewportContainer/PaintViewport"]
 unique_name_in_owner = true
@@ -330,6 +328,21 @@ theme_override_font_sizes/font_size = 32
 toggle_mode = true
 button_group = ExtResource("10_mkdh1")
 text = "XL"
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_right = 190.0
+offset_bottom = 110.0
+grow_horizontal = 2
+theme_override_constants/margin_top = 140
+theme_override_constants/margin_bottom = 110
+
+[node name="ChatBox" parent="MarginContainer" instance=ExtResource("11_mjdcr")]
+layout_mode = 2
 
 [connection signal="image_changed" from="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" to="." method="_on_drawing_canvas_image_changed"]
 [connection signal="toggled" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/PalleteHFlowContainer/ColorButton" to="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/PalleteHFlowContainer/ColorButton" method="_on_toggled"]
