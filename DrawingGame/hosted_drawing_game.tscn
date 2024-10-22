@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://d3nhi2w5tqpck"]
+[gd_scene load_steps=14 format=3 uid="uid://d3nhi2w5tqpck"]
 
 [ext_resource type="Script" path="res://DrawingGame/hosted_drawing_game.gd" id="1_rita0"]
 [ext_resource type="Script" path="res://DrawingGame/drawing_canvas.gd" id="2_rjlek"]
@@ -11,6 +11,15 @@
 [ext_resource type="StyleBox" uid="uid://busm6ftr5rwv1" path="res://Assets/lower_panel_background_style.tres" id="9_0q4tm"]
 [ext_resource type="ButtonGroup" uid="uid://d4i1tamup7b5u" path="res://Assets/brush_size_button_group.tres" id="10_mkdh1"]
 [ext_resource type="PackedScene" uid="uid://8ieargn5wxga" path="res://ChatBox/chat_box.tscn" id="11_mjdcr"]
+[ext_resource type="Script" path="res://DrawingGame/theme_intro.gd" id="12_c4l04"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_m7pxf"]
+font_size = 166
+font_color = Color(0, 0, 0, 1)
+outline_size = 15
+outline_color = Color(1, 0.45, 0.45, 1)
+shadow_size = 41
+shadow_color = Color(0, 0, 0, 0.164706)
 
 [node name="HostedDrawingGame" type="Control"]
 layout_mode = 3
@@ -175,6 +184,7 @@ label_settings = ExtResource("7_jwq06")
 layout_mode = 2
 
 [node name="PipetteButtton" type="Button" parent="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/HFlowContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 toggle_mode = true
@@ -182,6 +192,7 @@ button_group = ExtResource("8_ts6ga")
 text = "Pipette"
 
 [node name="BrushButtton" type="Button" parent="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/HFlowContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 toggle_mode = true
@@ -190,6 +201,7 @@ button_group = ExtResource("8_ts6ga")
 text = "Brush"
 
 [node name="EraserButton" type="Button" parent="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/HFlowContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 toggle_mode = true
@@ -197,6 +209,7 @@ button_group = ExtResource("8_ts6ga")
 text = "Eraser"
 
 [node name="BucketButton" type="Button" parent="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/HFlowContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 toggle_mode = true
@@ -343,6 +356,47 @@ theme_override_constants/margin_bottom = 110
 
 [node name="ChatBox" parent="MarginContainer" instance=ExtResource("11_mjdcr")]
 layout_mode = 2
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+unique_name_in_owner = true
+
+[node name="ThemeIntro" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("12_c4l04")
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/ThemeIntro"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/ThemeIntro"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -515.0
+offset_top = -179.5
+offset_right = 515.0
+offset_bottom = 179.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ThemeName" type="Label" parent="CanvasLayer/ThemeIntro/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "ThemeName"
+label_settings = SubResource("LabelSettings_m7pxf")
 
 [connection signal="image_changed" from="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" to="." method="_on_drawing_canvas_image_changed"]
 [connection signal="toggled" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/PalleteHFlowContainer/ColorButton" to="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/PalleteHFlowContainer/ColorButton" method="_on_toggled"]

@@ -58,8 +58,12 @@ var pallete: Array[Color] = [
 	Color.INDIAN_RED,
 	Color.YELLOW_GREEN,
 	Color.PLUM,
-	Color.NAVY_BLUE
+	Color.NAVY_BLUE,
+	Color.BLACK,
+	Color.SNOW
 ]
+var pallete_button_group: ButtonGroup = preload("res://Assets/pallete_button_group.tres")
+var brush_size_button_group: ButtonGroup = preload("res://Assets/brush_size_button_group.tres")
 
 var brush_size: BrushSize = DEFAULT_SIZE:
 	set(value):
@@ -82,7 +86,9 @@ func _ready() -> void:
 		Image.FORMAT_RGBA8
 	))
 	drawing_history.append(painted_image.texture)
+	brush_size_change(2)
 	_set_palette_buttons()
+	palette_color_change(0)
 
 func allign_canvas() -> void:
 	for child in get_children():
@@ -96,6 +102,44 @@ func _process(_delta: float) -> void:
 		history_step_forward()
 	elif Input.is_action_just_released("step_back"):
 		history_step_back()
+	elif Input.is_action_just_released("set_pipette_instr"):
+		%PipetteButtton.button_pressed = true
+	elif Input.is_action_just_released("set_brush_instr"):
+		%BrushButtton.button_pressed = true
+	elif Input.is_action_just_released("set_eraser_instr"):
+		%EraserButton.button_pressed = true
+	elif Input.is_action_just_released("set_bucket_instr"):
+		%BucketButton.button_pressed = true
+	elif Input.is_action_just_released("pallete_color_1"):
+		palette_color_change(1)
+	elif Input.is_action_just_released("pallete_color_2"):
+		palette_color_change(2)
+	elif Input.is_action_just_released("pallete_color_3"):
+		palette_color_change(3)
+	elif Input.is_action_just_released("pallete_color_4"):
+		palette_color_change(4)
+	elif Input.is_action_just_released("pallete_color_5"):
+		palette_color_change(5)
+	elif Input.is_action_just_released("pallete_color_6"):
+		palette_color_change(6)
+	elif Input.is_action_just_released("pallete_color_7"):
+		palette_color_change(7)
+	elif Input.is_action_just_released("pallete_color_8"):
+		palette_color_change(8)
+	elif Input.is_action_just_released("pallete_color_9"):
+		palette_color_change(9)
+	elif Input.is_action_just_released("pallete_color_10"):
+		palette_color_change(10)
+	elif Input.is_action_just_released("brush_size_xs"):
+		brush_size_change(0)
+	elif Input.is_action_just_released("brush_size_s"):
+		brush_size_change(1)
+	elif Input.is_action_just_released("brush_size_m"):
+		brush_size_change(2)
+	elif Input.is_action_just_released("brush_size_l"):
+		brush_size_change(3)
+	elif Input.is_action_just_released("brush_size_xl"):
+		brush_size_change(4)
 	match mode:
 		PaintingMode.PIPETTE:
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -128,6 +172,23 @@ func _input(event: InputEvent) -> void:
 					set_drawing_canvas_mouse_pos()
 					if inside_drawing_canvas():
 						bake_drawing()
+		PaintingMode.PIPETTE:
+			if event is InputEventMouseButton and event.is_released():
+				if event.button_index == MOUSE_BUTTON_LEFT:
+					%BrushButtton.button_pressed = true
+
+func palette_color_change(i: int):
+	if pallete_button_group.get_buttons().size() > i:
+		pallete_button_group.get_pressed_button().button_pressed = false
+		pallete_button_group.get_buttons()[i].button_pressed = true
+		pallete_button_group.get_pressed_button().grab_focus()
+
+func brush_size_change(i: int):
+	brush_size_button_group.get_pressed_button().button_pressed = false
+	var to_press = brush_size_button_group.get_buttons()[i]
+	to_press.button_pressed = true
+	to_press.pressed.emit()
+	to_press.grab_focus()
 
 func set_drawing_canvas_mouse_pos() -> void:
 	mouse_pos = paint_viewport.get_mouse_position()
@@ -148,7 +209,6 @@ func handle_brush_drawing() -> void:
 			drawing_line.default_color = drawing_color
 		PaintingMode.ERASER:
 			drawing_line.default_color = background.color
-		
 	if drawing_line.points.size() == 0:
 		if inside_drawing_canvas():
 			drawing_line.add_point(mouse_pos)
