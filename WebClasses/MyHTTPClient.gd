@@ -38,6 +38,6 @@ func _user_connection_completed(_result, _response_code, _headers, body):
 	players.resize(arr_size)
 	for i in range(arr_size):
 		players[i] = players_dict_arr[i].get("name")
-	WebClient.action_controller.sync_player_list(players)
-	WebClient.action_bus.add_sync_player_list_action(players)
+	GameActionController.sync_player_list(players)
+	WebActionBus.add_sync_player_list_action(players)
 #endregion

@@ -1,8 +1,20 @@
 extends Control
 
-func _process(delta: float) -> void:
-	if modulate != Color(1, 1, 1, 0.2):
-		set_modulate(lerp(get_modulate(), Color(1,1,1,0), 0.01))
+func _ready() -> void:
+	set_physics_process(false)
+	GameActionController.sync_theme_complete.connect(announce_new_theme)
+
+func _physics_process(delta: float) -> void:
+	%ThemeNameLabel.text = Params.drawing_theme.name
+	if modulate.a > 0.6:
+		set_modulate(lerp(get_modulate(), Color(1,1,1,0), 0.005))
+	elif modulate.a > 0:
+		set_modulate(lerp(get_modulate(), Color(1,1,1,0), 0.05))
 	else:
-		set_modulate(Color(1, 1, 1, 0))
-		set_process(false)
+		hide()
+		set_physics_process(false)
+
+func announce_new_theme() -> void:
+	show()
+	modulate = Color(1, 1, 1, 1)
+	set_physics_process(true)

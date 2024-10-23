@@ -5,8 +5,8 @@ var ls: LabelSettings = preload("res://Assets/label_settings.tres")
 func _ready() -> void:
 	if OS.has_feature("debug"):
 		_place_windows_layout()
-	WebClient.action_controller.sync_player_list_complete.connect(update_player_list)
-	WebClient.action_controller.game_started.connect(on_game_joined)
+	GameActionController.sync_player_list_complete.connect(update_player_list)
+	GameActionController.game_started.connect(on_game_joined)
 
 func _place_windows_layout():
 	var arguments = {}
@@ -47,7 +47,7 @@ func _place_windows_layout():
 
 func _on_create_room_button_pressed() -> void:
 	if OS.has_feature("debug"):
-		WebClient.join_room(%PlayerName.text, Params.DEBUG_CODE)
+		WebClient.join_room(%PlayerName.text, WebClient.DEBUG_CODE)
 		WebClient.hosting = true
 	else:
 		WebClient.create_room(%PlayerName.text)
@@ -75,7 +75,7 @@ func update_player_list():
 		%PlayersVBoxContainer.add_child(l)
 
 func _on_start_game_button_pressed() -> void:
-	WebClient.action_bus.add_game_start_action()
+	WebActionBus.add_game_start_action()
 	get_tree().change_scene_to_file("res://DrawingGame/hosted_drawing_game.tscn")
 
 func on_game_joined() -> void:

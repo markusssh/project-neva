@@ -2,24 +2,20 @@ extends Node
 
 signal connected
 
-@export var HTTP_URL = "http://localhost:8080/" #в конфиг
-@export var WS_URL = "ws://localhost:8080/ws" #в конфиг
+const HTTP_URL = "http://localhost:8080/" #в конфиг
+const WS_URL = "ws://localhost:8080/ws" #в конфиг
+
+const DEBUG_CODE = "XDEBUG"
 
 #TODO: to singleton
 var room: Room
 var hosting: bool = false
 var last_tick: int
-
-#TODO: to singleton
-var action_bus: GameActionWebBus = GameActionWebBus.new()
-#TODO: to singleton
-var image_bus: ImageWebBus = ImageWebBus.new()
-#TODO: to singleton
-var action_controller: GameActionController = GameActionController.new()
+var debug_code
 
 func _ready() -> void:
 	end_ticks()
-	MyWebSocketClient.action_recieved.connect(action_controller.handle)
+	MyWebSocketClient.action_recieved.connect(GameActionController.handle)
 
 func throw_web_alert() -> void:
 	OS.alert("Web err!")
@@ -32,11 +28,11 @@ func id_is_valid(i: String) -> bool:
 
 func create_room(n: String) -> void:
 	if name_is_valid(n):
-		var err = MyHTTPClient.create_room()
+		var err = MyWebHTTPClient.create_room()
 		if err != OK:
 			OS.alert("Couldn't connect to the server!", "Network Error")
 		else:
-			await MyHTTPClient.room_created
+			await MyWebHTTPClient.room_created
 			room.my_name = n
 			web_connect()
 	else:
@@ -60,7 +56,7 @@ func web_connect() -> void:
 		GameAction.ActionType.CONNECTED,
 		[room.id]
 	)
-	MyHTTPClient.send_user_connected(str(WebRequestSerializer.to_dict(connected_action)))
+	MyWebHTTPClient.send_user_connected(str(WebRequestSerializer.to_dict(connected_action)))
 	connected.emit()
 	start_ticks()
 
@@ -74,9 +70,9 @@ func end_ticks() -> void:
 func _process(_delta: float) -> void:
 	if Time.get_ticks_msec() - last_tick >= 5:
 		last_tick = Time.get_ticks_msec()
-		if not action_bus.empty():
-			MyWebSocketClient.send_action_bus(action_bus)
-			action_bus.clear()
-		if hosting and not image_bus.empty():
-			MyWebSocketClient.send_image_bus(image_bus)
-			image_bus.clear()
+		if not WebActionBus.empty():
+			MyWebSocketClient.send_action_bus()
+			WebActionBus.clear()
+		if hosting and not WebImageBus.empty():
+			MyWebSocketClient.send_image_bus()
+			WebImageBus.clear()

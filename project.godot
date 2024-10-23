@@ -18,11 +18,14 @@ config/icon="res://Config/icon.svg"
 [autoload]
 
 AlgoUtil="*res://Globals/AlgoUtil.cs"
-MyHTTPClient="*res://WebClasses/MyHTTPClient.gd"
+MyWebHTTPClient="*res://WebClasses/MyHTTPClient.gd"
 MyWebSocketClient="*res://WebClasses/MyWebSocketClient.gd"
 WebClient="*res://WebClasses/WebClient.gd"
 Params="*res://Globals/params.gd"
 WebRequestSerializer="*res://WebClasses/Serializer/WebRequestSerializer.gd"
+GameActionController="*res://WebClasses/Controllers/GameActionController.gd"
+WebActionBus="*res://WebClasses/Buses/WebActionBus.gd"
+WebImageBus="*res://WebClasses/Buses/ImageWebBus.gd"
 
 [display]
 

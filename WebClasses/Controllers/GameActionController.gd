@@ -1,6 +1,7 @@
-class_name GameActionController extends Resource
+extends Node
 
 signal sync_player_list_complete
+signal sync_theme_complete
 signal image_recieved(i: Image)
 signal message_recieved(f: String, m: String)
 signal game_started
@@ -16,6 +17,8 @@ func handle(action: GameAction) -> void:
 			game_started.emit()
 		GameAction.ActionType.MESSAGE:
 			recieve_message(action.from, action.content[0])
+		GameAction.ActionType.SYNC_THEME:
+			sync_theme(action.content[0])
 
 func sync_player_list(content) -> void:
 	WebClient.room.players.clear()
@@ -40,3 +43,11 @@ func recieve_message(from, content) -> void:
 	else:
 		#TODO: LOG
 		printerr("GameActionController error: Not An Image")
+
+func sync_theme(content) -> void:
+	if content is int:
+		Params.set_theme_by_idx(content)
+		sync_theme_complete.emit()
+	else:
+		#TODO: LOG
+		printerr("GameActionController error: Not An Integer")

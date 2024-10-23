@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://h5xlijcfafmi"]
+[gd_scene load_steps=6 format=3 uid="uid://h5xlijcfafmi"]
 
 [ext_resource type="Script" path="res://DrawingGame/guest_drawing_game.gd" id="1_agvsw"]
 [ext_resource type="Texture2D" uid="uid://4b1oe0iahn2t" path="res://Assets/WoodenTexture.jpg" id="2_1tx4e"]
 [ext_resource type="PackedScene" uid="uid://8ieargn5wxga" path="res://ChatBox/chat_box.tscn" id="3_vsl1l"]
+[ext_resource type="PackedScene" uid="uid://bkr7s0bxwurme" path="res://DrawingGame/theme_intro.tscn" id="4_oh2xr"]
 
 [sub_resource type="ImageTexture" id="ImageTexture_pwfb4"]
 
@@ -67,3 +68,7 @@ theme_override_constants/margin_right = 225
 
 [node name="ChatBox" parent="MarginContainer" instance=ExtResource("3_vsl1l")]
 layout_mode = 2
+
+[node name="ThemeIntro" parent="." instance=ExtResource("4_oh2xr")]
+unique_name_in_owner = true
+layout_mode = 1

@@ -49,7 +49,7 @@ var history_scroll_idx: int = 1
 var drawing_history: Array[ImageTexture]
 #TODO: can be loaded from
 #1. presets
-#2. most common color from chosen art
+#2. most common color from chosen art https://spin.atomicobject.com/pixels-and-palettes-extracting-color-palettes-from-images/
 var pallete: Array[Color] = [
 	Color.DARK_SLATE_GRAY,
 	Color.BROWN,

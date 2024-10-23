@@ -1,4 +1,4 @@
-class_name ImageWebBus extends Resource
+extends Node
 
 const PACKET_SIZE = 15000
 

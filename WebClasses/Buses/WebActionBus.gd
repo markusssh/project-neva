@@ -1,4 +1,4 @@
-class_name GameActionWebBus extends Resource
+extends Node
 
 var actions: Array[GameAction] = []
 
@@ -10,6 +10,9 @@ func add_game_start_action() -> void:
 
 func add_sync_player_list_action(players: Array[String]) -> void:
 	actions.append(GameAction.new(WebClient.room.my_name, GameAction.ActionType.SYNC_PLAYER_LIST, players))
+
+func add_sync_theme_action(theme_id: int) -> void:
+	actions.append(GameAction.new(WebClient.room.my_name, GameAction.ActionType.SYNC_THEME, [theme_id]))
 
 func empty() -> bool:
 	return actions.is_empty()

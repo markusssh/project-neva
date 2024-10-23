@@ -6,7 +6,8 @@ enum ActionType {
 	START_GAME,
 	CONNECTED,
 	MESSAGE,
-	IMAGE
+	IMAGE,
+	SYNC_THEME
 }
 
 var from: String

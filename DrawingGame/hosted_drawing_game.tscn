@@ -10,16 +10,9 @@
 [ext_resource type="ButtonGroup" uid="uid://c5loj0s0h4wiw" path="res://Assets/instrument_button_group.tres" id="8_ts6ga"]
 [ext_resource type="StyleBox" uid="uid://busm6ftr5rwv1" path="res://Assets/lower_panel_background_style.tres" id="9_0q4tm"]
 [ext_resource type="ButtonGroup" uid="uid://d4i1tamup7b5u" path="res://Assets/brush_size_button_group.tres" id="10_mkdh1"]
+[ext_resource type="PackedScene" uid="uid://bkr7s0bxwurme" path="res://DrawingGame/theme_intro.tscn" id="11_j03f0"]
 [ext_resource type="PackedScene" uid="uid://8ieargn5wxga" path="res://ChatBox/chat_box.tscn" id="11_mjdcr"]
-[ext_resource type="Script" path="res://DrawingGame/theme_intro.gd" id="12_c4l04"]
-
-[sub_resource type="LabelSettings" id="LabelSettings_m7pxf"]
-font_size = 166
-font_color = Color(0, 0, 0, 1)
-outline_size = 15
-outline_color = Color(1, 0.45, 0.45, 1)
-shadow_size = 41
-shadow_color = Color(0, 0, 0, 0.164706)
+[ext_resource type="Script" path="res://DrawingGame/timeout_progress.gd" id="13_4l6ds"]
 
 [node name="HostedDrawingGame" type="Control"]
 layout_mode = 3
@@ -342,61 +335,42 @@ toggle_mode = true
 button_group = ExtResource("10_mkdh1")
 text = "XL"
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -190.0
-offset_right = 190.0
-offset_bottom = 110.0
-grow_horizontal = 2
-theme_override_constants/margin_top = 140
-theme_override_constants/margin_bottom = 110
-
-[node name="ChatBox" parent="MarginContainer" instance=ExtResource("11_mjdcr")]
-layout_mode = 2
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="GameModeTimer" type="Timer" parent="."]
 unique_name_in_owner = true
+wait_time = 5.0
+one_shot = true
 
-[node name="ThemeIntro" type="Control" parent="CanvasLayer"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("12_c4l04")
-
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer/ThemeIntro"]
+[node name="ThemeIntro" parent="." instance=ExtResource("11_j03f0")]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 1)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/ThemeIntro"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -515.0
-offset_top = -179.5
-offset_right = 515.0
-offset_bottom = 179.5
-grow_horizontal = 2
-grow_vertical = 2
+[node name="TempGUI" type="CanvasLayer" parent="."]
 
-[node name="ThemeName" type="Label" parent="CanvasLayer/ThemeIntro/VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "ThemeName"
-label_settings = SubResource("LabelSettings_m7pxf")
+[node name="ChatBox" parent="TempGUI" instance=ExtResource("11_mjdcr")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 840.0
+offset_top = 146.0
+offset_right = 1220.0
+offset_bottom = 146.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="TimeoutProgress" type="ProgressBar" parent="TempGUI"]
+offset_left = 255.0
+offset_top = 1046.0
+offset_right = 748.0
+offset_bottom = 1114.0
+show_percentage = false
+script = ExtResource("13_4l6ds")
+
+[node name="ThemeImage" type="TextureRect" parent="TempGUI"]
+unique_name_in_owner = true
+offset_left = 484.0
+offset_top = 14.0
+offset_right = 724.0
+offset_bottom = 225.0
+expand_mode = 1
 
 [connection signal="image_changed" from="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" to="." method="_on_drawing_canvas_image_changed"]
 [connection signal="toggled" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/PalleteHFlowContainer/ColorButton" to="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/PalleteHFlowContainer/ColorButton" method="_on_toggled"]

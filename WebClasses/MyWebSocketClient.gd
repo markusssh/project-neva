@@ -24,12 +24,12 @@ func connect_to_url(url: String) -> int:
 	last_state = socket.get_ready_state()
 	return OK
 
-func send_action_bus(bus: GameActionWebBus):
-	for action in bus.actions:
+func send_action_bus():
+	for action in WebActionBus.actions:
 		socket.send(WebRequestSerializer.to_bytes(action))
 
-func send_image_bus(bus: ImageWebBus):
-	for packet in bus.packetize_image():
+func send_image_bus():
+	for packet in WebImageBus.packetize_image():
 		socket.send(WebRequestSerializer.to_bytes(packet))
 
 func close(code: int = 1000, reason: String = "") -> void:

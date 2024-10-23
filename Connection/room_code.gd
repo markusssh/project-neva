@@ -5,7 +5,7 @@ var regex = RegEx.new()
 func _ready() -> void:
 	regex.compile("^[A-Z]{0,6}$")
 	if OS.has_feature("debug"):
-		text = Params.DEBUG_CODE
+		text = WebClient.DEBUG_CODE
 
 func _on_text_changed(new_text: String) -> void:
 	new_text = new_text.to_upper()
