@@ -68,7 +68,7 @@ func update_player_list():
 	#ALERT: FIX LOGIC
 	for child in %PlayersVBoxContainer.get_children():
 		child.queue_free()
-	for player in WebClient.room.players:
+	for player in Room.players:
 		var l := Label.new()
 		l.text = player.name
 		l.label_settings = ls

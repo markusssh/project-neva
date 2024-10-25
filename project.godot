@@ -26,6 +26,7 @@ WebRequestSerializer="*res://WebClasses/Serializer/WebRequestSerializer.gd"
 GameActionController="*res://WebClasses/Controllers/GameActionController.gd"
 WebActionBus="*res://WebClasses/Buses/WebActionBus.gd"
 WebImageBus="*res://WebClasses/Buses/ImageWebBus.gd"
+Room="*res://WebClasses/Entities/Room.gd"
 
 [display]
 

@@ -1,27 +1,27 @@
 extends Node
 
-func to_dict(req: WebSocketRequest) -> Dictionary:
+func to_dict(obj: Object) -> Dictionary:
 	var data: Dictionary
-	if req is GameAction:
+	if obj is GameAction:
 		data = {
-			"from": req.from,
-			"action_type": req.action_type,
-			"content": req.content
+			"from": obj.from,
+			"action_type": obj.action_type,
+			"content": obj.content
 		}
-	elif req is ImagePacket:
+	elif obj is ImagePacket:
 		data = {
-			"data": req.data,
-			"original_size": req.original_size,
-			"packet_num": req.packet_num,
-			"total_packets": req.total_packets
+			"data": obj.data,
+			"original_size": obj.original_size,
+			"packet_num": obj.packet_num,
+			"total_packets": obj.total_packets
 		}
 	else:
 		return {}
-	data["type"] = req.type
+	data["type"] = obj.type
 	return data
 
-func to_bytes(req: WebSocketRequest) -> PackedByteArray:
-	var data = to_dict(req)
+func to_bytes(obj: Object) -> PackedByteArray:
+	var data = to_dict(obj)
 	if data != {}:
 		return var_to_bytes(data)
 	else:
@@ -29,7 +29,7 @@ func to_bytes(req: WebSocketRequest) -> PackedByteArray:
 		printerr("Cannot convert util class WebSocketRequest to bytes")
 		return []
 
-func from_bytes(bytes: PackedByteArray) -> WebSocketRequest:
+func from_bytes(bytes: PackedByteArray) -> Object:
 	var data = bytes_to_var(bytes)
 	if data is Dictionary:
 		var type = data.get("type")

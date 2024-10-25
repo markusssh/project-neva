@@ -7,8 +7,6 @@ const WS_URL = "ws://localhost:8080/ws" #в конфиг
 
 const DEBUG_CODE = "XDEBUG"
 
-#TODO: to singleton
-var room: Room
 var hosting: bool = false
 var last_tick: int
 var debug_code
@@ -33,28 +31,27 @@ func create_room(n: String) -> void:
 			OS.alert("Couldn't connect to the server!", "Network Error")
 		else:
 			await MyWebHTTPClient.room_created
-			room.my_name = n
+			Room.my_name = n
 			web_connect()
 	else:
 		throw_web_alert()
 
 func join_room(n: String, i: String) -> void:
 	if name_is_valid(n) and id_is_valid(i):
-		room = Room.new()
-		room.id = i
-		room.my_name = n
+		Room.id = i
+		Room.my_name = n
 		web_connect()
 	else:
 		throw_web_alert()
 
 func web_connect() -> void:
-	assert(room.id != "" and room.my_name != "")
+	assert(Room.id != "" and Room.my_name != "")
 	MyWebSocketClient.connect_to_url(WS_URL)
 	await MyWebSocketClient.connected_to_server
 	var connected_action = GameAction.new(
-		room.my_name,
+		Room.my_name,
 		GameAction.ActionType.CONNECTED,
-		[room.id]
+		[Room.id]
 	)
 	MyWebHTTPClient.send_user_connected(str(WebRequestSerializer.to_dict(connected_action)))
 	connected.emit()

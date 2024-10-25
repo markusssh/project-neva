@@ -16,8 +16,7 @@ func _create_room_completed(_result, _response_code, _headers, body):
 	var json = JSON.new()
 	json.parse(body.get_string_from_utf8())
 	var id = json.get_data().get("id")
-	WebClient.room = Room.new()
-	WebClient.room.id = id
+	Room.id = id
 	room_created.emit()
 	DisplayServer.clipboard_set(id)
 #endregion

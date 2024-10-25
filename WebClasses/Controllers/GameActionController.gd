@@ -21,10 +21,11 @@ func handle(action: GameAction) -> void:
 			sync_theme(action.content[0])
 
 func sync_player_list(content) -> void:
-	WebClient.room.players.clear()
+	Room.players.clear()
 	for name in content:
 		if name is String:
-			WebClient.room.players.append(Player.new(name))
+			var p := Player.new(name)
+			Room.players.append(p)
 		else:
 			#TODO: LOG
 			printerr("GameActionController error: Wrong Player Data")

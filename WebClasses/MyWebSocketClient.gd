@@ -15,7 +15,7 @@ signal connection_closed()
 signal action_recieved(action: GameAction)
 
 func connect_to_url(url: String) -> int:
-	handshake_headers.append("roomId: " + WebClient.room.id)
+	handshake_headers.append("roomId: " + Room.id)
 	socket.supported_protocols = supported_protocols
 	socket.handshake_headers = handshake_headers
 	var err := socket.connect_to_url(url, tls_options)
