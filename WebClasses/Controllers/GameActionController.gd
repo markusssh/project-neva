@@ -22,9 +22,9 @@ func handle(action: GameAction) -> void:
 
 func sync_player_list(content) -> void:
 	Room.players.clear()
-	for name in content:
-		if name is String:
-			var p := Player.new(name)
+	for p_name in content:
+		if p_name is String:
+			var p := Player.new(p_name)
 			Room.players.append(p)
 		else:
 			#TODO: LOG
