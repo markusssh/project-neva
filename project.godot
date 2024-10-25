@@ -18,6 +18,7 @@ config/icon="res://Config/icon.svg"
 [autoload]
 
 Global="*res://Main/Global.gd"
+Network="*res://Main/Network.gd"
 AlgoUtil="*res://Globals/AlgoUtil.cs"
 MyWebHTTPClient="*res://WebClasses/MyHTTPClient.gd"
 MyWebSocketClient="*res://WebClasses/MyWebSocketClient.gd"

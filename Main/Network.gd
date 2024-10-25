@@ -12,6 +12,10 @@ func _ready() -> void:
 	Steam.lobby_joined.connect(_on_lobby_joined)
 	Steam.p2p_session_request.connect(_on_p2p_session_request)
 
+func _process(delta: float) -> void:
+	if lobby_id > 0:
+		read_all_p2p_packets()
+
 func create_lobby():
 	if lobby_id == 0:
 		Steam.createLobby(Steam.LOBBY_TYPE_PUBLIC, lobby_members_max)
@@ -21,6 +25,7 @@ func _on_lobby_created(connect: int, this_lobby_id: int):
 		lobby_id = this_lobby_id
 		Steam.setLobbyJoinable(lobby_id, true)
 		Steam.setLobbyData(lobby_id, "name", "Mark's Lobby")
+		print("CREATED LOBBY: ", lobby_id)
 		var set_relay: bool = Steam.allowP2PPacketRelay(true)
 
 func join_lobby(this_lobby_id: int):
@@ -29,6 +34,9 @@ func join_lobby(this_lobby_id: int):
 func _on_lobby_joined(this_lobby_id: int, _permissions: int, _locked: bool, response: int):
 	if response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
 		lobby_id = this_lobby_id
+		get_lobby_members()
+		make_p2p_handshake()
+		print(lobby_members)
 
 func get_lobby_members():
 	lobby_members.clear()
@@ -53,6 +61,9 @@ func _on_p2p_session_request(remote_id: int):
 	var this_requester: String = Steam.getFriendPersonaName(remote_id)
 	Steam.acceptP2PSessionWithUser(remote_id)
 
+func make_p2p_handshake():
+	send_p2p_packet(0, {"message": "handshake", "steam_id": Global.steam_id, "username": Global.steam_username})
+
 func read_all_p2p_packets(read_count: int = 0):
 	if read_count >= PACKET_READ_LIMIT:
 		return
@@ -67,3 +78,8 @@ func read_p2p_packet():
 		var packet_sender: int = this_packet['remote_steam_id']
 		var packet_code: PackedByteArray = this_packet['data']
 		var readable_data: Dictionary = bytes_to_var(packet_code)
+		if readable_data.has("message"):
+			match readable_data["message"]:
+				"handshake":
+					print("PLAYER: ", readable_data["username"], " HAS JOINED!!!")
+					get_lobby_members()
