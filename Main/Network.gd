@@ -36,7 +36,6 @@ func _on_lobby_joined(this_lobby_id: int, _permissions: int, _locked: bool, resp
 		lobby_id = this_lobby_id
 		get_lobby_members()
 		make_p2p_handshake()
-		print(lobby_members)
 
 func get_lobby_members():
 	lobby_members.clear()
