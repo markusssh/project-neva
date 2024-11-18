@@ -11,12 +11,17 @@ config_version=5
 [application]
 
 config/name="Project Neva"
-run/main_scene="res://Connection/connection.tscn"
+run/main_scene="res://Main/Main.tscn"
 config/features=PackedStringArray("4.3", "C#", "Forward Plus")
-config/icon="res://Config/icon.svg"
+boot_splash/bg_color=Color(0.112322, 0.120753, 0.268748, 1)
+boot_splash/image="res://icon.png"
+boot_splash/fullsize=false
+config/icon="res://icon.svg"
 
 [autoload]
 
+MultiplayerController="*res://Main/Networking/MultiplayerController.cs"
+Networking="*res://Main/Networking/Networking.cs"
 AlgoUtil="*res://Globals/AlgoUtil.cs"
 MyWebHTTPClient="*res://WebClasses/MyHTTPClient.gd"
 MyWebSocketClient="*res://WebClasses/MyWebSocketClient.gd"
@@ -39,7 +44,7 @@ project/assembly_name="Project Neva"
 
 [editor_plugins]
 
-enabled=PackedStringArray()
+enabled=PackedStringArray("res://addons/script-ide/plugin.cfg")
 
 [input]
 

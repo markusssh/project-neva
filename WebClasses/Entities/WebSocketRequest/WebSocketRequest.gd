@@ -1,4 +1,4 @@
-class_name WebSocketRequest extends Object
+class_name WebSocketRequest extends Resource
 
 enum RequestType {
 	GAME_ACTION,

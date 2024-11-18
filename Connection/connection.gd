@@ -3,8 +3,9 @@ extends Control
 var ls: LabelSettings = preload("res://Assets/label_settings.tres")
 
 func _ready() -> void:
-	if OS.has_feature("debug"):
-		_place_windows_layout()
+	printerr("I'm lost!")
+	#if OS.has_feature("debug"):
+		#_place_windows_layout()
 	GameActionController.sync_player_list_complete.connect(update_player_list)
 	GameActionController.game_started.connect(on_game_joined)
 

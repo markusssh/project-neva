@@ -1,0 +1,60 @@
+[gd_scene load_steps=3 format=3 uid="uid://c1m5n02nyhijv"]
+
+[ext_resource type="Script" path="res://Main/main.gd" id="1_qf5cr"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_0xo67"]
+font_size = 60
+outline_size = 11
+outline_color = Color(0, 0, 0, 1)
+
+[node name="Main" type="Node"]
+script = ExtResource("1_qf5cr")
+
+[node name="BackgroundColor" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1848, 0.26224, 0.33, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="JoinGameContainer" type="VBoxContainer" parent="CenterContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="JoinGameButton" type="Button" parent="CenterContainer/JoinGameContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 90
+text = "Join Server"
+
+[node name="PlayerNamesContainer" type="VBoxContainer" parent="CenterContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="PlayerCountLabel" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -90.5
+offset_top = -83.0
+offset_right = 90.5
+grow_horizontal = 2
+grow_vertical = 0
+text = "0/4"
+label_settings = SubResource("LabelSettings_0xo67")
+horizontal_alignment = 1
+
+[connection signal="pressed" from="CenterContainer/JoinGameContainer/JoinGameButton" to="." method="_on_join_game_button_pressed"]
