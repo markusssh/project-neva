@@ -16,11 +16,40 @@ public partial class Networking : Node
     private const string ServerIp = "127.0.0.1";
     private const int ServerPort = 8081;
     private const int ServerPeerId = 1;
-    private const int ServerMaxConnections = 3;
+    public const int ServerMaxConnections = 100;
     public readonly Dictionary<int, AuthResponseDto> PeerAuthData = new();
+
+    private string DebugAuthData;
 
     public override void _EnterTree()
     {
+        //грязь
+        if (OS.HasFeature("player1"))
+        {
+            DebugAuthData = "1";
+        }
+        else if (OS.HasFeature("player2"))
+        {
+            DebugAuthData = "2";
+        }
+        else if (OS.HasFeature("player3"))
+        {
+            DebugAuthData = "3";
+        }
+        else if (OS.HasFeature("player4"))
+        {
+            DebugAuthData = "4";
+        }
+        else if (OS.HasFeature("player5"))
+        {
+            DebugAuthData = "5";
+        }
+        else if (OS.HasFeature("player6"))
+        {
+            DebugAuthData = "6";
+        }
+        
+        
         //TODO: make --is_server only for debug!!!
         if (OS.HasFeature("dedicated_server") || OS.GetCmdlineArgs().Contains("--is_server")) IsServer = true;
         if (GetTree().GetMultiplayer() is SceneMultiplayer)
@@ -65,7 +94,7 @@ public partial class Networking : Node
             Multiplayer.PeerAuthenticating += (peerId) =>
             {
                 if (peerId != ServerPeerId) return;
-                Multiplayer.SendAuth(ServerPeerId, Encoding.UTF8.GetBytes("1"));
+                Multiplayer.SendAuth(ServerPeerId, Encoding.UTF8.GetBytes(DebugAuthData));
                 GD.Print($"Authenticating...");
             };
             Multiplayer.PeerAuthenticationFailed += (peerId) =>
@@ -207,9 +236,11 @@ public static class RestServerPlaceholder
         return jwt switch
         {
             "1" => new AuthResponseDto(true, "0", "Ваня"),
-            "2" => new AuthResponseDto(true, "1", "Таня"),
-            "3" => new AuthResponseDto(true, "0", "Маня"),
-            "4" => new AuthResponseDto(true, "1", "Саня"),
+            "2" => new AuthResponseDto(true, "0", "Галя"),
+            "3" => new AuthResponseDto(true, "0", "Рита"),
+            "4" => new AuthResponseDto(true, "1", "Таня"),
+            "5" => new AuthResponseDto(true, "1", "Саня"),
+            "6" => new AuthResponseDto(true, "1", "Галя"),
             _ => throw new ArgumentOutOfRangeException(nameof(jwt), jwt, null)
         };
     }

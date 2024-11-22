@@ -3,9 +3,8 @@ extends Control
 var ls: LabelSettings = preload("res://Assets/label_settings.tres")
 
 func _ready() -> void:
-	printerr("I'm lost!")
-	#if OS.has_feature("debug"):
-		#_place_windows_layout()
+	if OS.has_feature("debug"):
+		_place_windows_layout()
 	GameActionController.sync_player_list_complete.connect(update_player_list)
 	GameActionController.game_started.connect(on_game_joined)
 
@@ -25,9 +24,9 @@ func _place_windows_layout():
 				placement = Vector2i.LEFT
 			"right":
 				placement = Vector2i.RIGHT
-			"up":
+			"top":
 				placement = Vector2i.UP
-			"down":
+			"bottom":
 				placement = Vector2i.DOWN
 			"top_right":
 				placement = Vector2i.ONE

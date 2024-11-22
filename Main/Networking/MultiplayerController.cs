@@ -39,6 +39,7 @@ public partial class MultiplayerController : Node
         if (room.Peers.Count == 0)
         {
             _roomRepo.Remove(roomId);
+            GD.Print($"Room {roomId} removed");
         }
     }
 
@@ -51,7 +52,7 @@ public partial class MultiplayerController : Node
         };
         
         var room = GetRoomElseCreate(peerAuthData.RoomId);
-        if (room.State != Room.RoomState.WaitingPlayers)
+        if (room.State != Room.RoomState.WaitingPlayers || room.Peers.Count >= room.MaxPlayers)
         {
             //TODO: add ability to reconnect
             
@@ -64,6 +65,7 @@ public partial class MultiplayerController : Node
         Networking.Instance.PeerAuthData.Remove((int)peerId);
         _peerIdToRoomId.Add(peerId, room.RoomId);
         room.Peers.Add(peerId, peer);
+        RpcId(peerId, MethodName.SyncMaxPlayers, room.MaxPlayers);
         
         foreach (var existingPeerId in room.Peers.Keys)
         {
@@ -120,7 +122,7 @@ public partial class MultiplayerController : Node
 //     \____/  \_____/  \_____/  \____/   \_| \_/    \_/            \____/   \_____/  |___/    \____/ 
 //
     public readonly Godot.Collections.Dictionary<long, Peer> CurrentRoomPeers = new();
-    
+    public int MaxPlayers = -1;
     
     [Signal]
     public delegate void PeerJoinedRoomEventHandler(long peerId);
@@ -144,6 +146,12 @@ public partial class MultiplayerController : Node
         EmitSignal(SignalName.PeerJoinedRoom, peerId);
         GD.Print($"Peer {peerId} joined the room.");
     }
+
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void SyncMaxPlayers(int maxPlayers)
+    {
+        MaxPlayers = maxPlayers;
+    }
     
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void OnPeerDisconnectedRpc(long peerId)
@@ -166,7 +174,6 @@ public partial class MultiplayerController : Node
         EmitSignal(SignalName.PeerBecameDrawer, peerId);
     }
     
-    
 }
 
 public class Room
@@ -186,6 +193,8 @@ public class Room
     }
 
     public string RoomId { get; set; }
+
+    public int MaxPlayers { get; set; } = Networking.ServerMaxConnections;
 
     public Dictionary<long, Peer> Peers { get; set; } = new();
     
