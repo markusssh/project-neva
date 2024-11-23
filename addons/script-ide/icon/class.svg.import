@@ -3,12 +3,12 @@
 importer="image"
 type="Image"
 uid="uid://csik7oxvt7tq3"
-path="res://.godot/imported/class.svg-e6f2816a1f06041fb421c2af52817a4a.image"
+path="res://.godot/imported/class.svg-efff02eda720b210b7f672a0cd246d31.image"
 
 [deps]
 
-source_file="res://addons/script-ide/icon/class.svg"
-dest_files=["res://.godot/imported/class.svg-e6f2816a1f06041fb421c2af52817a4a.image"]
+source_file="res://Addons/script-ide/icon/class.svg"
+dest_files=["res://.godot/imported/class.svg-efff02eda720b210b7f672a0cd246d31.image"]
 
 [params]
 

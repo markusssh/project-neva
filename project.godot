@@ -22,16 +22,8 @@ config/icon="res://icon.svg"
 
 MultiplayerController="*res://Main/Networking/MultiplayerController.cs"
 Networking="*res://Main/Networking/Networking.cs"
-AlgoUtil="*res://Globals/AlgoUtil.cs"
-MyWebHTTPClient="*res://WebClasses/MyHTTPClient.gd"
-MyWebSocketClient="*res://WebClasses/MyWebSocketClient.gd"
-WebClient="*res://WebClasses/WebClient.gd"
-Params="*res://Globals/params.gd"
-WebRequestSerializer="*res://WebClasses/Serializer/WebRequestSerializer.gd"
-GameActionController="*res://WebClasses/Controllers/GameActionController.gd"
-WebActionBus="*res://WebClasses/Buses/WebActionBus.gd"
-WebImageBus="*res://WebClasses/Buses/ImageWebBus.gd"
-Room="*res://WebClasses/Entities/Room.gd"
+AlgoUtil="*res://Main/DrawingGame/Drawer/AlgoUtil.cs"
+Params="*res://Main/DrawingGame/Globals/params.gd"
 
 [display]
 
@@ -45,6 +37,18 @@ project/assembly_name="Project Neva"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/script-ide/plugin.cfg")
+
+[file_customization]
+
+folder_colors={
+"res://Addons/": "yellow",
+"res://Legacy/": "gray",
+"res://Main/": "red",
+"res://Main/Assets/": "purple",
+"res://Main/DrawingGame/": "green",
+"res://Main/MainUI/": "teal",
+"res://Main/Networking/": "blue"
+}
 
 [input]
 

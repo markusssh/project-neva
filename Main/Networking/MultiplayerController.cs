@@ -52,7 +52,7 @@ public partial class MultiplayerController : Node
         };
         
         var room = GetRoomElseCreate(peerAuthData.RoomId);
-        if (room.State != Room.RoomState.WaitingPlayers || room.Peers.Count >= room.MaxPlayers)
+        if (room.State != Room.RoomState.WaitingPlayers || room.Peers.Count >= room.RoomSize)
         {
             //TODO: add ability to reconnect
             
@@ -61,11 +61,11 @@ public partial class MultiplayerController : Node
             return;
         }
         
-        var peer = new Peer(peerAuthData.PlayerName);
+        var peer = new Peer(peerId, peerAuthData.PlayerName);
         Networking.Instance.PeerAuthData.Remove((int)peerId);
         _peerIdToRoomId.Add(peerId, room.RoomId);
         room.Peers.Add(peerId, peer);
-        RpcId(peerId, MethodName.SyncMaxPlayers, room.MaxPlayers);
+        RpcId(peerId, MethodName.SyncMaxPlayers, room.RoomSize);
         
         foreach (var existingPeerId in room.Peers.Keys)
         {
@@ -77,6 +77,13 @@ public partial class MultiplayerController : Node
         }
         
         GD.Print($"Peer {peerId} connected to room {room.RoomId}");
+
+        if (room.Peers.Count == room.RoomSize)
+        {
+            GD.Print($"Launching game in room {room.RoomId}");
+            room.State = Room.RoomState.LoadingPlayers;
+            OnRoomLoadingPlayers(room);
+        }
     }
 
     public void OnPeerDisconnected(long peerId)
@@ -98,12 +105,19 @@ public partial class MultiplayerController : Node
         GD.PrintErr($"Peer {peerId} disconnected from room {roomId}");
     }
     
-    public void OnRoomLoadingPlayers(string roomId)
+    private void OnRoomLoadingPlayers(Room room)
     {
-        throw new NotImplementedException();
+        var drawer = room.SetRandomDrawer();
+        RpcId(drawer.PlayerId, MethodName.StartDrawerScene);
+        foreach (var peer in room.Peers.Values)
+        {
+            if (peer.PlayerId == drawer.PlayerId) continue;
+            RpcId(peer.PlayerId, MethodName.StartGuesserScene);
+        }
+        OnPlaying(room);
     }
     
-    public void OnRoomPendingRoundStart(string roomId)
+    public void OnPlaying(Room room)
     {
         throw new NotImplementedException();
     }
@@ -142,7 +156,7 @@ public partial class MultiplayerController : Node
             GD.PrintErr($"Peer {peerId} is already connected to a room.");
             return;
         }
-        CurrentRoomPeers[peerId] = new Peer(playerName);
+        CurrentRoomPeers[peerId] = new Peer(peerId, playerName);
         EmitSignal(SignalName.PeerJoinedRoom, peerId);
         GD.Print($"Peer {peerId} joined the room.");
     }
@@ -166,89 +180,15 @@ public partial class MultiplayerController : Node
     }
     
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void OnPeerIsDrawerChange(long peerId, bool isDrawer)
+    private void StartDrawerScene()
     {
-        if (!CurrentRoomPeers.TryGetValue(peerId, out var peer)) return;
-        if (peer.IsDrawer == isDrawer) return;
-        peer.IsDrawer = isDrawer;
-        EmitSignal(SignalName.PeerBecameDrawer, peerId);
+        GetTree().ChangeSceneToFile("res://Main/DrawingGame/Drawer/drawer_scene.tscn");
     }
     
-}
-
-public class Room
-{
-    public enum RoomState
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void StartGuesserScene()
     {
-        WaitingPlayers,
-        LoadingPlayers,
-        PendingRoundStart,
-        Playing,
-        Closing
+        GetTree().ChangeSceneToFile("res://Main/DrawingGame/Guesser/guesser_scene.tscn");
     }
-
-    public Room(string roomId)
-    {
-        RoomId = roomId;
-    }
-
-    public string RoomId { get; set; }
-
-    public int MaxPlayers { get; set; } = Networking.ServerMaxConnections;
-
-    public Dictionary<long, Peer> Peers { get; set; } = new();
-    
-    private RoomState _state = RoomState.WaitingPlayers;
-    public RoomState State
-    {
-        get => _state;
-        set
-        {
-            switch (value)
-            {
-                case RoomState.LoadingPlayers:
-                    MultiplayerController.Instance.OnRoomLoadingPlayers(RoomId);
-                    break;
-                case RoomState.PendingRoundStart:
-                    MultiplayerController.Instance.OnRoomPendingRoundStart(RoomId);
-                    break;
-                case RoomState.WaitingPlayers:
-                    break;
-                case RoomState.Playing:
-                    break;
-                case RoomState.Closing:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
-            }
-
-            _state = value;
-        }
-    }
-    
-    
-}
-
-public partial class Peer : GodotObject
-{
-    public Peer()
-    {
-    }
-
-    public Peer(string playerName)
-    {
-        PlayerName = playerName;
-    }
-
-    public string PlayerName { get; set; }
-    public bool WinState { get; set; } = false;
-    public int Score { get; set; } = 0;
-    public bool IsDrawer { get; set; } = false;
-}
-
-public struct PlayerGameAction
-{
-    public bool WinState { get; set; }
-    public int Score { get; set; }
     
 }

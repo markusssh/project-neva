@@ -6,4 +6,7 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>ProjectNeva</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Main\Assets\" />
+  </ItemGroup>
 </Project>
