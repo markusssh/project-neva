@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using Godot;
 
 namespace ProjectNeva.Main.Networking;
@@ -71,9 +74,9 @@ public partial class MultiplayerController : Node
         {
             if (peerId != existingPeerId)
             {
-                RpcId(peerId, MethodName.OnPeerConnectedRpc, existingPeerId, room.Peers[existingPeerId].PlayerName);
+                RpcId(peerId, MethodName.HandlePeerConnectedOnClient, existingPeerId, room.Peers[existingPeerId].PlayerName);
             }
-            RpcId(existingPeerId, MethodName.OnPeerConnectedRpc, peerId, room.Peers[peerId].PlayerName);
+            RpcId(existingPeerId, MethodName.HandlePeerConnectedOnClient, peerId, room.Peers[peerId].PlayerName);
         }
         
         GD.Print($"Peer {peerId} connected to room {room.RoomId}");
@@ -96,9 +99,9 @@ public partial class MultiplayerController : Node
         {
             if (peerId != existingPeerId)
             {
-                RpcId(peerId, MethodName.OnPeerDisconnectedRpc, existingPeerId);
+                RpcId(peerId, MethodName.HandlePeerDisconnectedOnClient, existingPeerId);
             }
-            RpcId(existingPeerId, MethodName.OnPeerDisconnectedRpc, peerId);
+            RpcId(existingPeerId, MethodName.HandlePeerDisconnectedOnClient, peerId);
         }
 
         DisconnectPeerFromRoom(peerId, roomId);
@@ -109,17 +112,30 @@ public partial class MultiplayerController : Node
     {
         var drawer = room.SetRandomDrawer();
         RpcId(drawer.PlayerId, MethodName.StartDrawerScene);
-        foreach (var peer in room.Peers.Values)
+
+
+        foreach (var peer in room.Peers.Values.Where(peer => peer.PlayerId != drawer.PlayerId))
         {
-            if (peer.PlayerId == drawer.PlayerId) continue;
             RpcId(peer.PlayerId, MethodName.StartGuesserScene);
         }
-        OnPlaying(room);
+
+        //OnPlaying(room);
     }
     
-    public void OnPlaying(Room room)
+    private void OnPlaying(Room room)
     {
         throw new NotImplementedException();
+    }
+    
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void OnImageChangeReceived(byte[] imageBytes)
+    {
+        var peerId = Multiplayer.GetRemoteSenderId();
+        if (!_roomRepo.TryGetValue(_peerIdToRoomId[peerId], out var room)) return;
+        foreach (var peer in room.Peers.Values.Where(peer => peer.PlayerId != peerId))
+        {
+            RpcId(peer.PlayerId, MethodName.HandleImageChangeReceivedOnClient, imageBytes);
+        }
     }
 
     public override void _Ready()
@@ -143,13 +159,16 @@ public partial class MultiplayerController : Node
     
     [Signal]
     public delegate void PeerLeftRoomEventHandler(long peerId);
-    
+
     [Signal]
     public delegate void PeerBecameDrawerEventHandler(long peerId);
 
+    [Signal]
+    public delegate void ImageBytesReceivedEventHandler(byte[] bytes);
+
     
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void OnPeerConnectedRpc(long peerId, string playerName)
+    private void HandlePeerConnectedOnClient(long peerId, string playerName)
     {
         if (_peerIdToRoomId.ContainsKey(peerId))
         {
@@ -168,7 +187,7 @@ public partial class MultiplayerController : Node
     }
     
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void OnPeerDisconnectedRpc(long peerId)
+    private void HandlePeerDisconnectedOnClient(long peerId)
     {
         if (!CurrentRoomPeers.Remove(peerId))
         {
@@ -184,11 +203,45 @@ public partial class MultiplayerController : Node
     {
         GetTree().ChangeSceneToFile("res://Main/DrawingGame/Drawer/drawer_scene.tscn");
     }
-    
+
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void StartGuesserScene()
     {
         GetTree().ChangeSceneToFile("res://Main/DrawingGame/Guesser/guesser_scene.tscn");
     }
+
+    private void SendImageChangeByDrawer(Image image)
+    {
+        var imageBytes = image.GetData();
+        GD.Print($"SendImageChangeByDrawer called with {imageBytes.Length} bytes.");
+        imageBytes = Compress(imageBytes);
+        RpcId(Networking.ServerPeerId, MethodName.OnImageChangeReceived, imageBytes);
+    }
+
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void HandleImageChangeReceivedOnClient(byte[] imageBytes)
+    {
+        GD.Print($"HandleImageChangeReceivedOnClient called with {imageBytes.Length} bytes.");
+        imageBytes = Decompress(imageBytes);
+        EmitSignal(SignalName.ImageBytesReceived, imageBytes);
+    }
     
+    private static byte[] Compress(byte[] data)
+    {
+        using var compressedStream = new MemoryStream();
+        using var gzipStream = new BrotliStream(compressedStream, CompressionLevel.Optimal);
+        gzipStream.Write(data, 0, data.Length);
+        gzipStream.Close();
+        return compressedStream.ToArray();
+    }
+
+    private static byte[] Decompress(byte[] data)
+    {
+        using var compressedStream = new MemoryStream(data);
+        using var gzipStream = new BrotliStream(compressedStream, CompressionMode.Decompress);
+        using var resultStream = new MemoryStream();
+        gzipStream.CopyTo(resultStream);
+        return resultStream.ToArray();
+    }
+
 }

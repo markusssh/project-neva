@@ -15,7 +15,7 @@ public partial class Networking : Node
     private bool IsServer { get; set; }
     private const string ServerIp = "127.0.0.1";
     private const int ServerPort = 8081;
-    private const int ServerPeerId = 1;
+    public const int ServerPeerId = 1;
     public const int ServerMaxConnections = 100;
     public readonly Dictionary<int, AuthResponseDto> PeerAuthData = new();
 

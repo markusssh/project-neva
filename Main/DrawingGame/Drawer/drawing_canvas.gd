@@ -1,6 +1,6 @@
 extends Control
 
-signal image_changed(i: PackedByteArray)
+signal image_changed(i: Image)
 
 enum PaintingMode {
 	PIPETTE,
@@ -249,7 +249,7 @@ func bake_drawing() -> void:
 			painted_image.texture = ImageTexture.create_from_image(viewport_image)
 			drawing_line.clear_points()
 	update_history()
-	emit_signal("image_changed", get_baked_image().get_data())
+	emit_signal("image_changed", get_baked_image())
 
 func get_baked_image() -> Image:
 	return painted_image.texture.get_image()
