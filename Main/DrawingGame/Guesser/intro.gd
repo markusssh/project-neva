@@ -1,10 +1,11 @@
-extends Control
+class_name Intro extends Control
 
-func _ready() -> void:
+func _init() -> void:
 	set_physics_process(false)
+	show()
+	MultiplayerController.RoundStarted.connect(_on_round_start)
 
 func _physics_process(delta: float) -> void:
-	%ThemeNameLabel.text = Params.drawing_theme.name
 	if modulate.a > 0.6:
 		set_modulate(lerp(get_modulate(), Color(1,1,1,0), 0.005))
 	elif modulate.a > 0:
@@ -13,7 +14,5 @@ func _physics_process(delta: float) -> void:
 		hide()
 		set_physics_process(false)
 
-func announce_new_theme() -> void:
-	show()
-	modulate = Color(1, 1, 1, 1)
+func _on_round_start() -> void:
 	set_physics_process(true)

@@ -2,7 +2,7 @@
 
 namespace ProjectNeva.Main.Networking;
 
-public partial class Peer : GodotObject
+public partial class Peer : Resource
 {
     public Peer()
     {

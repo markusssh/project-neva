@@ -245,16 +245,16 @@ public static class RestServerPlaceholder
         };
     }
     
-    public static GameThemeDto GetRandomGameThemeDto()
+    public static RoundTheme GetRandomTheme()
     {
         Random rnd = new();
         var rndInt = rnd.Next(0, 4);
         return rndInt switch
         {
-            0 => new GameThemeDto("Илья Ефимович Репин", "Бурлаки на Волге"),
-            1 => new GameThemeDto("Леонардо да Винчи", "Мона Лиза"),
-            2 => new GameThemeDto("Каспар Давид Фридрих", "Странник над морем тумана"),
-            3 => new GameThemeDto("Иван Константинович Айвазовский", "Девятый вал"),
+            0 => new RoundTheme("Бурлаки на Волге", "Илья Ефимович Репин"),
+            1 => new RoundTheme("Мона Лиза", "Леонардо да Винчи"),
+            2 => new RoundTheme("Странник над морем тумана", "Каспар Давид Фридрих"),
+            3 => new RoundTheme("Девятый вал", "Иван Константинович Айвазовский"),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -262,4 +262,3 @@ public static class RestServerPlaceholder
 }
 
 public record AuthResponseDto(bool AuthSuccess, string RoomId, string PlayerName);
-public record GameThemeDto(string AuthorName, string PaintingName);

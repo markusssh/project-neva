@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://d3nhi2w5tqpck"]
+[gd_scene load_steps=14 format=3 uid="uid://d3nhi2w5tqpck"]
 
 [ext_resource type="Script" path="res://Main/DrawingGame/Drawer/drawer_scene.gd" id="1_da58w"]
 [ext_resource type="Script" path="res://Main/DrawingGame/Drawer/drawing_canvas.gd" id="2_b0q1k"]
@@ -10,8 +10,16 @@
 [ext_resource type="ButtonGroup" uid="uid://c5loj0s0h4wiw" path="res://Main/Assets/instrument_button_group.tres" id="8_43mr8"]
 [ext_resource type="StyleBox" uid="uid://busm6ftr5rwv1" path="res://Main/Assets/lower_panel_background_style.tres" id="9_6l5tb"]
 [ext_resource type="ButtonGroup" uid="uid://d4i1tamup7b5u" path="res://Main/Assets/brush_size_button_group.tres" id="10_i1k64"]
-[ext_resource type="PackedScene" uid="uid://bkr7s0bxwurme" path="res://Main/DrawingGame/Intro/theme_intro.tscn" id="11_nw125"]
+[ext_resource type="Script" path="res://Main/DrawingGame/Drawer/theme_intro.gd" id="11_qhmvo"]
 [ext_resource type="Script" path="res://Main/DrawingGame/Intro/timeout_progress.gd" id="13_ew6fi"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_m7pxf"]
+font_size = 96
+font_color = Color(0, 0, 0, 1)
+outline_size = 15
+outline_color = Color(1, 0.45, 0.45, 1)
+shadow_size = 41
+shadow_color = Color(0, 0, 0, 0.164706)
 
 [node name="DrawerScene" type="Control"]
 layout_mode = 3
@@ -341,8 +349,55 @@ unique_name_in_owner = true
 wait_time = 5.0
 one_shot = true
 
-[node name="ThemeIntro" parent="." instance=ExtResource("11_nw125")]
+[node name="ThemeIntro" type="Control" parent="."]
 layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("11_qhmvo")
+
+[node name="ColorRect" type="ColorRect" parent="ThemeIntro"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="ThemeVBoxContainer" type="VBoxContainer" parent="ThemeIntro"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -515.0
+offset_top = -179.5
+offset_right = 515.0
+offset_bottom = 179.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HeaderLabel" type="Label" parent="ThemeIntro/ThemeVBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Тема:"
+label_settings = SubResource("LabelSettings_m7pxf")
+horizontal_alignment = 1
+
+[node name="ThemeNameLabel" type="Label" parent="ThemeIntro/ThemeVBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+label_settings = SubResource("LabelSettings_m7pxf")
 
 [node name="TempGUI" type="CanvasLayer" parent="."]
 

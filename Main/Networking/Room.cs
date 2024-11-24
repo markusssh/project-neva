@@ -7,14 +7,12 @@ namespace ProjectNeva.Main.Networking;
 public class Room
 {
     private const int RoomDefaultSize = 3;
+    private const int RoomDefaultRounds = 1;
     
     public enum RoomState
     {
         WaitingPlayers,
-        LoadingPlayers,
-        PendingRoundStart, //Maybe add logic for waiting for players to load?
-        Playing,
-        Closing
+        Playing
     }
 
     public Room(string roomId)
@@ -25,6 +23,8 @@ public class Room
     public string RoomId { get; set; }
 
     public int RoomSize { get; set; } = RoomDefaultSize;
+    
+    public int MaxRounds { get; set; } = RoomDefaultRounds;
 
     public Dictionary<long, Peer> Peers { get; set; } = new();
     

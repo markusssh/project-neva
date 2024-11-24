@@ -84,8 +84,8 @@ public partial class MultiplayerController : Node
         if (room.Peers.Count == room.RoomSize)
         {
             GD.Print($"Launching game in room {room.RoomId}");
-            room.State = Room.RoomState.LoadingPlayers;
-            OnRoomLoadingPlayers(room);
+            room.State = Room.RoomState.Playing;
+            OnPlaying(room);
         }
     }
 
@@ -107,26 +107,27 @@ public partial class MultiplayerController : Node
         DisconnectPeerFromRoom(peerId, roomId);
         GD.PrintErr($"Peer {peerId} disconnected from room {roomId}");
     }
-    
-    private void OnRoomLoadingPlayers(Room room)
+
+    private void OnPlaying(Room room)
+    {
+        for (var i = 0; i < room.MaxRounds; i++)
+        {
+            OnRoomRoundStart(room);
+        }
+    }
+
+    private void OnRoomRoundStart(Room room)
     {
         var drawer = room.SetRandomDrawer();
+        var theme = RestServerPlaceholder.GetRandomTheme();
         RpcId(drawer.PlayerId, MethodName.StartDrawerScene);
-
-
+        RpcId(drawer.PlayerId, MethodName.HandleRoundThemeReceivedOnClient, theme.ThemeName, theme.Author);
         foreach (var peer in room.Peers.Values.Where(peer => peer.PlayerId != drawer.PlayerId))
         {
             RpcId(peer.PlayerId, MethodName.StartGuesserScene);
         }
+    }
 
-        //OnPlaying(room);
-    }
-    
-    private void OnPlaying(Room room)
-    {
-        throw new NotImplementedException();
-    }
-    
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     private void OnImageChangeReceived(byte[] imageBytes)
     {
@@ -165,6 +166,12 @@ public partial class MultiplayerController : Node
 
     [Signal]
     public delegate void ImageBytesReceivedEventHandler(byte[] bytes);
+    
+    [Signal]
+    public delegate void RoundThemeReceivedEventHandler(RoundTheme roundTheme);
+    
+    [Signal]
+    public delegate void RoundStartedEventHandler();
 
     
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
@@ -210,10 +217,23 @@ public partial class MultiplayerController : Node
         GetTree().ChangeSceneToFile("res://Main/DrawingGame/Guesser/guesser_scene.tscn");
     }
 
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void HandleRoundThemeReceivedOnClient(string name, string author)
+    {
+        GD.Print("HandleRoundThemeReceivedOnClient: " + name + ", author: " + author);
+        var roundTheme = new RoundTheme(name, author);
+        EmitSignal(SignalName.RoundThemeReceived, roundTheme);
+    }
+    
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void HandleRoundStartOnClient()
+    {
+        EmitSignal(SignalName.RoundStarted);
+    }
+
     private void SendImageChangeByDrawer(Image image)
     {
         var imageBytes = image.GetData();
-        GD.Print($"SendImageChangeByDrawer called with {imageBytes.Length} bytes.");
         imageBytes = Compress(imageBytes);
         RpcId(Networking.ServerPeerId, MethodName.OnImageChangeReceived, imageBytes);
     }
@@ -221,27 +241,25 @@ public partial class MultiplayerController : Node
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void HandleImageChangeReceivedOnClient(byte[] imageBytes)
     {
-        GD.Print($"HandleImageChangeReceivedOnClient called with {imageBytes.Length} bytes.");
         imageBytes = Decompress(imageBytes);
         EmitSignal(SignalName.ImageBytesReceived, imageBytes);
     }
-    
+
     private static byte[] Compress(byte[] data)
     {
         using var compressedStream = new MemoryStream();
-        using var gzipStream = new BrotliStream(compressedStream, CompressionLevel.Optimal);
-        gzipStream.Write(data, 0, data.Length);
-        gzipStream.Close();
+        using var brotliStream = new BrotliStream(compressedStream, CompressionLevel.Optimal);
+        brotliStream.Write(data, 0, data.Length);
+        brotliStream.Close();
         return compressedStream.ToArray();
     }
 
     private static byte[] Decompress(byte[] data)
     {
         using var compressedStream = new MemoryStream(data);
-        using var gzipStream = new BrotliStream(compressedStream, CompressionMode.Decompress);
+        using var brotliStream = new BrotliStream(compressedStream, CompressionMode.Decompress);
         using var resultStream = new MemoryStream();
-        gzipStream.CopyTo(resultStream);
+        brotliStream.CopyTo(resultStream);
         return resultStream.ToArray();
     }
-
 }

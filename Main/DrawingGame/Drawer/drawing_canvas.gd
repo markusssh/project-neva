@@ -249,7 +249,7 @@ func bake_drawing() -> void:
 			painted_image.texture = ImageTexture.create_from_image(viewport_image)
 			drawing_line.clear_points()
 	update_history()
-	emit_signal("image_changed", get_baked_image())
+	emit_signal("image_changed", drawing_history.back().get_image())
 
 func get_baked_image() -> Image:
 	return painted_image.texture.get_image()
@@ -268,14 +268,16 @@ func update_history() -> void:
 func history_step_back() -> void:
 	if history_scroll_idx + 1 <= drawing_history.size():
 		history_scroll_idx += 1
-		painted_image.texture = drawing_history[-history_scroll_idx]
-		emit_signal("image_changed", get_baked_image().get_data())
+		var curr_texture = drawing_history[-history_scroll_idx]
+		painted_image.texture = curr_texture
+		emit_signal("image_changed", curr_texture.get_image())
 
 func history_step_forward() -> void:
 	if history_scroll_idx >= 2:
 		history_scroll_idx -= 1
-		painted_image.texture = drawing_history[-history_scroll_idx]
-		emit_signal("image_changed", get_baked_image().get_data())
+		var curr_texture = drawing_history[-history_scroll_idx]
+		painted_image.texture = curr_texture
+		emit_signal("image_changed", curr_texture.get_image())
 
 #region COLOR PICKER UI
 func _on_color_picker_color_changed(color: Color) -> void:
