@@ -6,7 +6,7 @@ namespace ProjectNeva.Main.Networking;
 
 public class Room
 {
-    private const int RoomDefaultSize = 3;
+    private const int RoomDefaultSize = 2;
     private const int RoomDefaultRounds = 1;
     
     public enum RoomState
