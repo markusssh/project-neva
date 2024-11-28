@@ -8,6 +8,5 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Main\Assets\" />
-    <Folder Include="Main\DrawingGame\Intro\" />
   </ItemGroup>
 </Project>

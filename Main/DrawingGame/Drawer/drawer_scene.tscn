@@ -11,7 +11,7 @@
 [ext_resource type="StyleBox" uid="uid://busm6ftr5rwv1" path="res://Main/Assets/lower_panel_background_style.tres" id="9_6l5tb"]
 [ext_resource type="ButtonGroup" uid="uid://d4i1tamup7b5u" path="res://Main/Assets/brush_size_button_group.tres" id="10_i1k64"]
 [ext_resource type="Script" path="res://Main/DrawingGame/Drawer/theme_intro.gd" id="11_qhmvo"]
-[ext_resource type="Script" path="res://Main/DrawingGame/Intro/timeout_progress.gd" id="13_ew6fi"]
+[ext_resource type="PackedScene" uid="uid://bw671qewpntp1" path="res://Main/DrawingGame/Timer/game_mode_timer.tscn" id="12_s80va"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_m7pxf"]
 font_size = 96
@@ -344,11 +344,6 @@ toggle_mode = true
 button_group = ExtResource("10_i1k64")
 text = "XL"
 
-[node name="GameModeTimer" type="Timer" parent="."]
-unique_name_in_owner = true
-wait_time = 5.0
-one_shot = true
-
 [node name="ThemeIntro" type="Control" parent="."]
 visible = false
 layout_mode = 1
@@ -400,15 +395,10 @@ layout_mode = 2
 size_flags_horizontal = 4
 label_settings = SubResource("LabelSettings_m7pxf")
 
-[node name="TempGUI" type="CanvasLayer" parent="."]
+[node name="GameModeTimer" parent="." instance=ExtResource("12_s80va")]
+unique_name_in_owner = true
 
-[node name="TimeoutProgress" type="ProgressBar" parent="TempGUI"]
-offset_left = 255.0
-offset_top = 1046.0
-offset_right = 748.0
-offset_bottom = 1114.0
-show_percentage = false
-script = ExtResource("13_ew6fi")
+[node name="TempGUI" type="CanvasLayer" parent="."]
 
 [node name="ThemeImage" type="TextureRect" parent="TempGUI"]
 unique_name_in_owner = true

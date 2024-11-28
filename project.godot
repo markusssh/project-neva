@@ -20,8 +20,8 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-MultiplayerController="*res://Main/Networking/MultiplayerController.cs"
-Networking="*res://Main/Networking/Networking.cs"
+MultiplayerController="*res://Main/NetworkingArchitecture/MultiplayerController.cs"
+Networking="*res://Main/NetworkingArchitecture/Networking.cs"
 AlgoUtil="*res://Main/DrawingGame/Drawer/AlgoUtil.cs"
 Params="*res://Main/DrawingGame/Globals/params.gd"
 

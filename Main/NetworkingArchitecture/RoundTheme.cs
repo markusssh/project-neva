@@ -1,7 +1,6 @@
-﻿using System;
-using Godot;
+﻿using Godot;
 
-namespace ProjectNeva.Main.Networking;
+namespace ProjectNeva.Main.NetworkingArchitecture;
 
 [GlobalClass]
 public partial class RoundTheme : Resource

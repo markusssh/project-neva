@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://h5xlijcfafmi"]
+[gd_scene load_steps=7 format=3 uid="uid://h5xlijcfafmi"]
 
 [ext_resource type="Script" path="res://Main/DrawingGame/Guesser/guesser_scene.gd" id="1_agx3p"]
 [ext_resource type="Texture2D" uid="uid://4b1oe0iahn2t" path="res://Main/Assets/WoodenTexture.jpg" id="2_c0ujh"]
 [ext_resource type="Script" path="res://Main/DrawingGame/Guesser/intro.gd" id="3_40umg"]
+[ext_resource type="PackedScene" uid="uid://bw671qewpntp1" path="res://Main/DrawingGame/Timer/game_mode_timer.tscn" id="4_1e82j"]
 
 [sub_resource type="ImageTexture" id="ImageTexture_pwfb4"]
 
@@ -123,3 +124,5 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 label_settings = SubResource("LabelSettings_m7pxf")
+
+[node name="GameModeTimer" parent="." instance=ExtResource("4_1e82j")]

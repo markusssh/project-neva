@@ -4,8 +4,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using Godot;
+using ProjectNeva.Main.LoggerUtils;
 
-namespace ProjectNeva.Main.Networking;
+namespace ProjectNeva.Main.NetworkingArchitecture;
 
 public partial class MultiplayerController : Node
 {
@@ -42,7 +43,7 @@ public partial class MultiplayerController : Node
         if (room.Peers.Count == 0)
         {
             _roomRepo.Remove(roomId);
-            GD.Print($"Room {roomId} removed");
+            Logger.LogNetwork($"Room {roomId} removed");
         }
     }
 
@@ -68,8 +69,14 @@ public partial class MultiplayerController : Node
         Networking.Instance.PeerAuthData.Remove((int)peerId);
         _peerIdToRoomId.Add(peerId, room.RoomId);
         room.Peers.Add(peerId, peer);
-        RpcId(peerId, MethodName.SyncMaxPlayers, room.RoomSize);
         
+        // Synchronize Room Settings With Newbie
+        RpcId(peerId, MethodName.HandleSyncRoomSettingsOnClient, 
+            room.RoomSize,
+            room.MaxRounds,
+            room.RoundLength);
+        
+        // Handle Peer Connected Func On Clients
         foreach (var existingPeerId in room.Peers.Keys)
         {
             if (peerId != existingPeerId)
@@ -79,11 +86,11 @@ public partial class MultiplayerController : Node
             RpcId(existingPeerId, MethodName.HandlePeerConnectedOnClient, peerId, room.Peers[peerId].PlayerName);
         }
         
-        GD.Print($"Peer {peerId} connected to room {room.RoomId}");
+        Logger.LogNetwork($"Peer {peerId} connected to room {room.RoomId}");
 
         if (room.Peers.Count == room.RoomSize)
         {
-            GD.Print($"Launching game in room {room.RoomId}");
+            Logger.LogNetwork($"Launching game in room {room.RoomId}");
             room.State = Room.RoomState.Playing;
             OnPlaying(room);
         }
@@ -126,6 +133,10 @@ public partial class MultiplayerController : Node
         {
             RpcId(peer.PlayerId, MethodName.StartGuesserScene);
         }
+        foreach (var peer in room.Peers.Values)
+        {
+            RpcId(peer.PlayerId, MethodName.HandleRoundStartOnClient);
+        }
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
@@ -153,7 +164,9 @@ public partial class MultiplayerController : Node
 //     \____/  \_____/  \_____/  \____/   \_| \_/    \_/            \____/   \_____/  |___/    \____/ 
 //
     public readonly Godot.Collections.Dictionary<long, Peer> CurrentRoomPeers = new();
-    public int MaxPlayers = -1;
+    public int MaxPlayers;
+    public int MaxRounds;
+    public int RoundLength;
     
     [Signal]
     public delegate void PeerJoinedRoomEventHandler(long peerId);
@@ -172,37 +185,36 @@ public partial class MultiplayerController : Node
     
     [Signal]
     public delegate void RoundStartedEventHandler();
+    
+    private readonly Queue<Action> _eventQueue = new();
 
     
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void HandlePeerConnectedOnClient(long peerId, string playerName)
     {
         if (_peerIdToRoomId.ContainsKey(peerId))
-        {
-            GD.PrintErr($"Peer {peerId} is already connected to a room.");
             return;
-        }
         CurrentRoomPeers[peerId] = new Peer(peerId, playerName);
         EmitSignal(SignalName.PeerJoinedRoom, peerId);
-        GD.Print($"Peer {peerId} joined the room.");
     }
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void SyncMaxPlayers(int maxPlayers)
+    private void HandleSyncRoomSettingsOnClient(
+        int maxPlayers, 
+        int maxRounds, 
+        int roundLength)
     {
         MaxPlayers = maxPlayers;
+        MaxRounds = maxRounds;
+        RoundLength = roundLength;
     }
     
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void HandlePeerDisconnectedOnClient(long peerId)
     {
         if (!CurrentRoomPeers.Remove(peerId))
-        {
-            GD.PrintErr($"Could not remove peer {peerId} from room.");
             return;
-        };
         EmitSignal(SignalName.PeerLeftRoom, peerId);
-        GD.Print($"Peer {peerId} left the room.");
     }
     
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
@@ -220,7 +232,7 @@ public partial class MultiplayerController : Node
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void HandleRoundThemeReceivedOnClient(string name, string author)
     {
-        GD.Print("HandleRoundThemeReceivedOnClient: " + name + ", author: " + author);
+        Logger.LogNetwork("HandleRoundThemeReceivedOnClient: " + name + ", author: " + author);
         var roundTheme = new RoundTheme(name, author);
         EmitSignal(SignalName.RoundThemeReceived, roundTheme);
     }
@@ -228,7 +240,7 @@ public partial class MultiplayerController : Node
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void HandleRoundStartOnClient()
     {
-        EmitSignal(SignalName.RoundStarted);
+        _eventQueue.Enqueue(() => EmitSignal(SignalName.RoundStarted));
     }
 
     private void SendImageChangeByDrawer(Image image)
@@ -243,6 +255,15 @@ public partial class MultiplayerController : Node
     {
         imageBytes = Decompress(imageBytes);
         EmitSignal(SignalName.ImageBytesReceived, imageBytes);
+    }
+
+    private void ProcessEventQueue()
+    {
+        while (_eventQueue.Count > 0)
+        {
+            _eventQueue.Dequeue().Invoke();
+            Logger.LogNetwork("Round Started!");
+        }
     }
 
     private static byte[] Compress(byte[] data)

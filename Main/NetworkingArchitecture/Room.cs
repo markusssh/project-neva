@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ProjectNeva.Main.Networking;
+namespace ProjectNeva.Main.NetworkingArchitecture;
 
 public class Room
 {
     private const int RoomDefaultSize = 2;
     private const int RoomDefaultRounds = 1;
+    private const int RoomDefaultRoundLength = 30;
     
     public enum RoomState
     {
@@ -25,6 +26,8 @@ public class Room
     public int RoomSize { get; set; } = RoomDefaultSize;
     
     public int MaxRounds { get; set; } = RoomDefaultRounds;
+
+    public int RoundLength { get; set; } = RoomDefaultRoundLength;
 
     public Dictionary<long, Peer> Peers { get; set; } = new();
     

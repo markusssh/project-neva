@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace ProjectNeva.Main.Networking;
+namespace ProjectNeva.Main.NetworkingArchitecture;
 
 public partial class Peer : Resource
 {
