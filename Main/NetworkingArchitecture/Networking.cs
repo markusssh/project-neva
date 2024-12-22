@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Godot;
 using ProjectNeva.Main.LoggerUtils;
@@ -10,8 +9,7 @@ namespace ProjectNeva.Main.NetworkingArchitecture;
 public partial class Networking : Node
 {
     public static Networking Instance { get; private set; } = null!;
-    
-    public new SceneMultiplayer Multiplayer { get; set; }
+
 
     private bool IsServer { get; set; }
     private const string ServerIp = "127.0.0.1";
@@ -22,9 +20,22 @@ public partial class Networking : Node
 
     private string DebugAuthData;
 
+    public new SceneMultiplayer Multiplayer { get; set; }
+
     public override void _EnterTree()
     {
-        //грязь
+        if (OS.HasFeature("dedicated_server")) IsServer = true;
+        if (GetTree().GetMultiplayer() is SceneMultiplayer)
+        {
+            Multiplayer = GetTree().GetMultiplayer() as SceneMultiplayer;
+            ConnectMultiplayerHandlers();
+        }
+        else
+        {
+            GD.PrintErr("MultiplayerAPIs implementation is not supported!");
+            GetTree().Paused = true;
+        }
+
         if (OS.HasFeature("player1"))
         {
             DebugAuthData = "1";
@@ -49,21 +60,8 @@ public partial class Networking : Node
         {
             DebugAuthData = "6";
         }
-        
-        
-        //TODO: make --is_server only for debug!!!
-        if (OS.HasFeature("dedicated_server") || OS.GetCmdlineArgs().Contains("--is_server")) IsServer = true;
-        if (GetTree().GetMultiplayer() is SceneMultiplayer)
-        {
-            Multiplayer = GetTree().GetMultiplayer() as SceneMultiplayer;
-            ConnectMultiplayerHandlers();
-        }
-        else
-        {
-            GD.PrintErr("MultiplayerAPIs implementation is not supported!");
-            GetTree().Paused = true;
-        }
     }
+
 
     private void ConnectMultiplayerHandlers()
     {
@@ -76,54 +74,33 @@ public partial class Networking : Node
                     Logger.LogNetwork($"Peer {id} connected to server.");
                 }
             };
-            Multiplayer.PeerDisconnected += (id) =>
-            {
-                Logger.LogNetwork($"Peer {id} disconnected from server.");
-            };
-            Multiplayer.ConnectionFailed += () =>
-            {
-                Logger.LogNetwork($"Connection failed!");
-            };
-            Multiplayer.ConnectedToServer += () =>
-            {
-                Logger.LogNetwork("Connection successful.");
-            };
-            Multiplayer.ServerDisconnected += () =>
-            {
-                Logger.LogNetwork("Disconnected.");
-            };
+            Multiplayer.PeerDisconnected += (id) => { Logger.LogNetwork($"Peer {id} disconnected from server."); };
+            Multiplayer.ConnectionFailed += () => { Logger.LogNetwork($"Connection failed!"); };
+            Multiplayer.ConnectedToServer += () => { Logger.LogNetwork("Connection successful."); };
+            Multiplayer.ServerDisconnected += () => { Logger.LogNetwork("Disconnected."); };
             Multiplayer.PeerAuthenticating += (peerId) =>
             {
                 if (peerId != ServerPeerId) return;
                 Multiplayer.SendAuth(ServerPeerId, Encoding.UTF8.GetBytes(DebugAuthData));
                 Logger.LogNetwork($"Authenticating...");
             };
-            Multiplayer.PeerAuthenticationFailed += (peerId) =>
-            {
-                GD.PrintErr($"Authentication failed!");
-            };
+            Multiplayer.PeerAuthenticationFailed += (peerId) => { GD.PrintErr($"Authentication failed!"); };
             Multiplayer.SetAuthCallback(new Callable(this, nameof(ClientAuthRequestHandle)));
         }
         else
         {
             Multiplayer.PeerConnected += (id) =>
-            { 
+            {
                 Logger.LogNetwork($"Peer {id} connected to server.");
                 MultiplayerController.Instance.OnPeerConnected(id);
             };
             Multiplayer.PeerDisconnected += (id) =>
-            { 
+            {
                 Logger.LogNetwork($"Peer {id} disconnected from server.");
                 MultiplayerController.Instance.OnPeerDisconnected(id);
             };
-            Multiplayer.PeerAuthenticating += (id) =>
-            {
-                Logger.LogNetwork($"Peer {id} authenticating...");
-            };
-            Multiplayer.PeerAuthenticationFailed += (id) =>
-            {
-                GD.PrintErr($"Peer {id} authentication failed!");
-            };
+            Multiplayer.PeerAuthenticating += (id) => { Logger.LogNetwork($"Peer {id} authenticating..."); };
+            Multiplayer.PeerAuthenticationFailed += (id) => { GD.PrintErr($"Peer {id} authentication failed!"); };
             Multiplayer.SetAuthCallback(new Callable(this, nameof(ServerAuthRequestHandle)));
         }
     }
@@ -134,7 +111,7 @@ public partial class Networking : Node
         Multiplayer.CompleteAuth(id);
         Logger.LogNetwork($"Authentication complete.");
     }
-    
+
     private void ServerAuthRequestHandle(int id, byte[] data)
     {
         var s = Encoding.UTF8.GetString(data);
@@ -151,7 +128,7 @@ public partial class Networking : Node
             Multiplayer.DisconnectPeer(id);
         }
     }
-    
+
     //TODO: add logic
     //server remembers peer id if auth data is valid
     private bool AuthIsValid(string data, int id)
@@ -167,20 +144,20 @@ public partial class Networking : Node
         Instance = this;
         if (IsServer)
         {
-            Logger.LogNetwork("Starting server..."); 
+            Logger.LogNetwork("Starting server...");
             if (StartServer() != Error.Ok)
             {
                 GD.PrintErr("Server start failed!");
                 return;
             }
+
             GetTree().GetRoot().Ready += () =>
             {
-                //CreateNewEmptyRoom();
                 Logger.LogNetwork("Server is ready!");
             };
         }
     }
-    
+
     private Error StartServer()
     {
         if (!IsServer) return Error.Failed;
@@ -207,9 +184,10 @@ public partial class Networking : Node
             GD.PrintErr("Failed to create client!");
             return error;
         }
+
         Logger.LogNetwork($"Client started on peer {Multiplayer.GetUniqueId()}!");
         Multiplayer.MultiplayerPeer = peer;
-        
+
         var args = OS.GetCmdlineArgs();
         foreach (var arg in args)
         {
@@ -218,6 +196,7 @@ public partial class Networking : Node
             Multiplayer.SendAuth(ServerPeerId, Encoding.UTF8.GetBytes(jwt));
             break;
         }
+
         return Error.Ok;
     }
 }
@@ -246,7 +225,7 @@ public static class RestServerPlaceholder
             _ => throw new ArgumentOutOfRangeException(nameof(jwt), jwt, null)
         };
     }
-    
+
     public static RoundTheme GetRandomTheme()
     {
         Random rnd = new();
@@ -260,7 +239,6 @@ public static class RestServerPlaceholder
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-    
 }
 
-public record AuthResponseDto(bool AuthSuccess, string RoomId, string PlayerName);
+public record AuthResponseDto(bool AuthSuccess, string LobbyId, string PlayerName);

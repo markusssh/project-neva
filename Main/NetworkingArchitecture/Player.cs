@@ -2,13 +2,13 @@
 
 namespace ProjectNeva.Main.NetworkingArchitecture;
 
-public partial class Peer : Resource
+public partial class Player : RefCounted
 {
-    public Peer()
+    public Player()
     {
     }
 
-    public Peer(long playerId, string playerName)
+    public Player(long playerId, string playerName)
     {
         PlayerId = playerId;
         PlayerName = playerName;

@@ -1,0 +1,76 @@
+[gd_resource type="Theme" load_steps=8 format=3 uid="uid://r7pqoqyivvll"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_87b74"]
+bg_color = Color(0.497333, 0.623996, 0.673477, 1)
+border_width_bottom = 10
+border_color = Color(0.3108, 0.37996, 0.42, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+shadow_size = 5
+shadow_offset = Vector2(2, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_epel0"]
+bg_color = Color(0.497333, 0.623996, 0.673477, 1)
+border_width_bottom = 10
+border_color = Color(0.3108, 0.37996, 0.42, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+shadow_size = 5
+shadow_offset = Vector2(2, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clooh"]
+bg_color = Color(0.497333, 0.623996, 0.673477, 1)
+border_width_bottom = 10
+border_color = Color(0.3108, 0.37996, 0.42, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+shadow_color = Color(0.53, 0.53, 0.53, 0.6)
+shadow_size = 3
+shadow_offset = Vector2(2, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_omsnb"]
+bg_color = Color(0.497333, 0.623996, 0.673477, 1)
+border_width_bottom = 10
+border_color = Color(0.3108, 0.37996, 0.42, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+shadow_size = 5
+shadow_offset = Vector2(2, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1o1p7"]
+bg_color = Color(0.497333, 0.623996, 0.673477, 1)
+border_width_bottom = 10
+border_color = Color(0.3108, 0.37996, 0.42, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+shadow_color = Color(0.529412, 0.529412, 0.529412, 0.6)
+shadow_size = 8
+shadow_offset = Vector2(3, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5dsww"]
+bg_color = Color(0.23922, 0.2214, 0.27, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f1fjj"]
+bg_color = Color(0.239216, 0.219608, 0.270588, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.16456, 0.1292, 0.17, 1)
+border_blend = true
+expand_margin_left = 5.0
+expand_margin_top = 5.0
+expand_margin_right = 5.0
+expand_margin_bottom = 5.0
+shadow_size = 5
+
+[resource]
+Button/colors/font_color = Color(0.17, 0.17, 0.17, 1)
+Button/colors/font_hover_color = Color(0.77, 0.77, 0.77, 1)
+Button/styles/disabled = SubResource("StyleBoxFlat_87b74")
+Button/styles/focus = SubResource("StyleBoxFlat_epel0")
+Button/styles/hover = SubResource("StyleBoxFlat_clooh")
+Button/styles/normal = SubResource("StyleBoxFlat_omsnb")
+Button/styles/pressed = SubResource("StyleBoxFlat_1o1p7")
+Panel/styles/panel = SubResource("StyleBoxFlat_5dsww")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_f1fjj")

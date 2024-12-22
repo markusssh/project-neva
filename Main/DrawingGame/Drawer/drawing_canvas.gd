@@ -3,7 +3,7 @@ extends Control
 signal image_changed(i: Image)
 
 enum PaintingMode {
-	PIPETTE,
+	PICKER,
 	BRUSH,
 	ERASER,
 	BUCKET,
@@ -102,8 +102,8 @@ func _process(_delta: float) -> void:
 		history_step_forward()
 	elif Input.is_action_just_released("step_back"):
 		history_step_back()
-	elif Input.is_action_just_released("set_pipette_instr"):
-		%PipetteButtton.button_pressed = true
+	elif Input.is_action_just_released("set_picker_instr"):
+		%PickerButtton.button_pressed = true
 	elif Input.is_action_just_released("set_brush_instr"):
 		%BrushButtton.button_pressed = true
 	elif Input.is_action_just_released("set_eraser_instr"):
@@ -141,10 +141,10 @@ func _process(_delta: float) -> void:
 	elif Input.is_action_just_released("brush_size_xl"):
 		brush_size_change(4)
 	match mode:
-		PaintingMode.PIPETTE:
+		PaintingMode.PICKER:
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 				set_drawing_canvas_mouse_pos()
-				handle_pipette_pick()
+				handle_picker_pick()
 		PaintingMode.BRUSH:
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 				set_drawing_canvas_mouse_pos()
@@ -172,7 +172,7 @@ func _input(event: InputEvent) -> void:
 					set_drawing_canvas_mouse_pos()
 					if inside_drawing_canvas():
 						bake_drawing()
-		PaintingMode.PIPETTE:
+		PaintingMode.PICKER:
 			if event is InputEventMouseButton and event.is_released():
 				if event.button_index == MOUSE_BUTTON_LEFT:
 					%BrushButtton.button_pressed = true
@@ -196,7 +196,7 @@ func set_drawing_canvas_mouse_pos() -> void:
 func inside_drawing_canvas() -> bool:
 	return mouse_pos.x < paint_viewport.size.x and mouse_pos.y < paint_viewport.size.y and mouse_pos.x >= 0 and mouse_pos.y >= 0
 
-func handle_pipette_pick() -> void:
+func handle_picker_pick() -> void:
 	if inside_drawing_canvas():
 		var p: Color = paint_viewport.get_texture().get_image().get_pixelv(mouse_pos)
 		if p.a != 0:
@@ -286,9 +286,9 @@ func _on_color_picker_color_changed(color: Color) -> void:
 #endregion
 
 #region INSTRUMENT BUTTON GROUP
-func _on_pipette_buttton_toggled(toggled_on: bool) -> void:
+func _on_picker_buttton_toggled(toggled_on: bool) -> void:
 	if toggled_on:
-		mode = PaintingMode.PIPETTE
+		mode = PaintingMode.PICKER
 
 func _on_brush_buttton_toggled(toggled_on: bool) -> void:
 	if toggled_on:

@@ -1,6 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://c1m5n02nyhijv"]
+[gd_scene load_steps=5 format=3 uid="uid://c1m5n02nyhijv"]
 
-[ext_resource type="Script" path="res://Main/main.gd" id="1_qf5cr"]
+[ext_resource type="Script" path="res://Main/main.gd" id="1_18u4m"]
+[ext_resource type="Theme" uid="uid://r7pqoqyivvll" path="res://Main/Assets/Themes/main_theme.tres" id="2_hgkde"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_g4rmm"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_0xo67"]
 font_size = 60
@@ -8,7 +11,7 @@ outline_size = 11
 outline_color = Color(0, 0, 0, 1)
 
 [node name="Main" type="Node"]
-script = ExtResource("1_qf5cr")
+script = ExtResource("1_18u4m")
 
 [node name="BackgroundColor" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -31,9 +34,11 @@ layout_mode = 2
 
 [node name="JoinGameButton" type="Button" parent="CenterContainer/JoinGameContainer"]
 unique_name_in_owner = true
+material = SubResource("ShaderMaterial_g4rmm")
 layout_mode = 2
+theme = ExtResource("2_hgkde")
 theme_override_font_sizes/font_size = 90
-text = "Find Room"
+text = "Find Lobby"
 
 [node name="PlayerNamesContainer" type="VBoxContainer" parent="CenterContainer"]
 unique_name_in_owner = true

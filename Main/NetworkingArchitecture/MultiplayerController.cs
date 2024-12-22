@@ -21,132 +21,132 @@ public partial class MultiplayerController : Node
 //    \____/   \____/   |_| \_\  |___/    \____/   |_| \_\          \____/   \_____/  |___/    \____/ 
 //
     
-    private readonly Dictionary<string, Room> _roomRepo = new();
-    private readonly Dictionary<long, string> _peerIdToRoomId = new();
+    private readonly Dictionary<string, Lobby> _lobbyRepo = new();
+    private readonly Dictionary<long, string> _playerIdToLobbyId = new();
 
-    private Room GetRoomElseCreate(string roomId)
+    private Lobby GetLobbyElseCreate(string lobbyId)
     {
-        if (_roomRepo.TryGetValue(roomId, out var room))
+        if (_lobbyRepo.TryGetValue(lobbyId, out var lobby))
         {
-            return room;
+            return lobby;
         }
 
-        var createRoom = new Room(roomId);
-        _roomRepo[roomId] = createRoom;
-        return createRoom;
+        var createLobby = new Lobby(lobbyId);
+        _lobbyRepo[lobbyId] = createLobby;
+        return createLobby;
     }
 
-    private void DisconnectPeerFromRoom(long peerId, string roomId)
+    private void DisconnectPlayerFromLobby(long playerId, string lobbyId)
     {
-        if (!_roomRepo.TryGetValue(roomId, out var room)) return;
-        room.Peers.Remove(peerId);
-        if (room.Peers.Count == 0)
+        if (!_lobbyRepo.TryGetValue(lobbyId, out var lobby)) return;
+        lobby.Players.Remove(playerId);
+        if (lobby.Players.Count == 0)
         {
-            _roomRepo.Remove(roomId);
-            Logger.LogNetwork($"Room {roomId} removed");
+            _lobbyRepo.Remove(lobbyId);
+            Logger.LogNetwork($"Lobby {lobbyId} removed");
         }
     }
 
-    public void OnPeerConnected(long peerId)
+    public void OnPeerConnected(long newPeerId)
     {
-        if (!Networking.Instance.PeerAuthData.TryGetValue((int)peerId, out var peerAuthData))
+        if (!Networking.Instance.PeerAuthData.TryGetValue((int)newPeerId, out var peerAuthData))
         {
-            GD.PrintErr($"Peer {peerId} AuthData is null");
+            GD.PrintErr($"Peer {newPeerId} AuthData is null");
             return;
         };
         
-        var room = GetRoomElseCreate(peerAuthData.RoomId);
-        if (room.State != Room.RoomState.WaitingPlayers || room.Peers.Count >= room.RoomSize)
+        var lobby = GetLobbyElseCreate(peerAuthData.LobbyId);
+        if (lobby.State != Lobby.LobbyState.WaitingPlayers || lobby.Players.Count >= lobby.LobbySize)
         {
             //TODO: add ability to reconnect
             
-            GD.PrintErr($"Cannot connect peer {peerId}! Room {room.RoomId} is not accepting players.");
-            Networking.Instance.Multiplayer.DisconnectPeer((int)peerId);
+            GD.PrintErr($"Cannot connect peer {newPeerId}! Lobby {lobby.LobbyId} is not accepting players.");
+            Networking.Instance.Multiplayer.DisconnectPeer((int)newPeerId);
             return;
         }
         
-        var peer = new Peer(peerId, peerAuthData.PlayerName);
-        Networking.Instance.PeerAuthData.Remove((int)peerId);
-        _peerIdToRoomId.Add(peerId, room.RoomId);
-        room.Peers.Add(peerId, peer);
+        var player = new Player(newPeerId, peerAuthData.PlayerName);
+        Networking.Instance.PeerAuthData.Remove((int)newPeerId);
+        _playerIdToLobbyId.Add(newPeerId, lobby.LobbyId);
+        lobby.Players.Add(newPeerId, player);
         
-        // Synchronize Room Settings With Newbie
-        RpcId(peerId, MethodName.HandleSyncRoomSettingsOnClient, 
-            room.RoomSize,
-            room.MaxRounds,
-            room.RoundLength);
+        // Synchronize Lobby Settings With Newbie
+        RpcId(newPeerId, MethodName.HandleSyncLobbySettingsOnClient, 
+            lobby.LobbySize,
+            lobby.MaxRounds,
+            lobby.RoundLength);
         
         // Handle Peer Connected Func On Clients
-        foreach (var existingPeerId in room.Peers.Keys)
+        foreach (var playerId in lobby.Players.Keys)
         {
-            if (peerId != existingPeerId)
+            if (newPeerId != playerId)
             {
-                RpcId(peerId, MethodName.HandlePeerConnectedOnClient, existingPeerId, room.Peers[existingPeerId].PlayerName);
+                RpcId(newPeerId, MethodName.HandlePlayerConnectedOnClient, playerId, lobby.Players[playerId].PlayerName);
             }
-            RpcId(existingPeerId, MethodName.HandlePeerConnectedOnClient, peerId, room.Peers[peerId].PlayerName);
+            RpcId(playerId, MethodName.HandlePlayerConnectedOnClient, newPeerId, lobby.Players[newPeerId].PlayerName);
         }
         
-        Logger.LogNetwork($"Peer {peerId} connected to room {room.RoomId}");
+        Logger.LogNetwork($"Player {newPeerId} connected to lobby {lobby.LobbyId}");
 
-        if (room.Peers.Count == room.RoomSize)
+        if (lobby.Players.Count == lobby.LobbySize)
         {
-            Logger.LogNetwork($"Launching game in room {room.RoomId}");
-            room.State = Room.RoomState.Playing;
-            OnPlaying(room);
+            Logger.LogNetwork($"Launching game in lobby {lobby.LobbyId}");
+            lobby.State = Lobby.LobbyState.Playing;
+            OnPlaying(lobby);
         }
     }
 
-    public void OnPeerDisconnected(long peerId)
+    public void OnPeerDisconnected(long disconnectingPeerId)
     {
-        if (!_peerIdToRoomId.TryGetValue(peerId, out var roomId)) return;
-        Networking.Instance.PeerAuthData.Remove((int)peerId);
-        _peerIdToRoomId.Remove(peerId);
+        if (!_playerIdToLobbyId.TryGetValue(disconnectingPeerId, out var lobbyId)) return;
+        Networking.Instance.PeerAuthData.Remove((int)disconnectingPeerId);
+        _playerIdToLobbyId.Remove(disconnectingPeerId);
 
-        foreach (var existingPeerId in _roomRepo[roomId].Peers.Keys)
+        foreach (var playerId in _lobbyRepo[lobbyId].Players.Keys)
         {
-            if (peerId != existingPeerId)
+            if (disconnectingPeerId != playerId)
             {
-                RpcId(peerId, MethodName.HandlePeerDisconnectedOnClient, existingPeerId);
+                RpcId(disconnectingPeerId, MethodName.HandlePlayerDisconnectedOnClient, playerId);
             }
-            RpcId(existingPeerId, MethodName.HandlePeerDisconnectedOnClient, peerId);
+            RpcId(playerId, MethodName.HandlePlayerDisconnectedOnClient, disconnectingPeerId);
         }
 
-        DisconnectPeerFromRoom(peerId, roomId);
-        GD.PrintErr($"Peer {peerId} disconnected from room {roomId}");
+        DisconnectPlayerFromLobby(disconnectingPeerId, lobbyId);
+        GD.PrintErr($"Peer {disconnectingPeerId} disconnected from lobby {lobbyId}");
     }
 
-    private void OnPlaying(Room room)
+    private void OnPlaying(Lobby lobby)
     {
-        for (var i = 0; i < room.MaxRounds; i++)
+        for (var i = 0; i < lobby.MaxRounds; i++)
         {
-            OnRoomRoundStart(room);
+            OnLobbyRoundStart(lobby);
         }
     }
 
-    private void OnRoomRoundStart(Room room)
+    private void OnLobbyRoundStart(Lobby lobby)
     {
-        var drawer = room.SetRandomDrawer();
+        var drawer = lobby.SetRandomDrawer();
         var theme = RestServerPlaceholder.GetRandomTheme();
         RpcId(drawer.PlayerId, MethodName.StartDrawerScene);
         RpcId(drawer.PlayerId, MethodName.HandleRoundThemeReceivedOnClient, theme.ThemeName, theme.Author);
-        foreach (var peer in room.Peers.Values.Where(peer => peer.PlayerId != drawer.PlayerId))
+        foreach (var player in lobby.Players.Values.Where(player => player.PlayerId != drawer.PlayerId))
         {
-            RpcId(peer.PlayerId, MethodName.StartGuesserScene);
+            RpcId(player.PlayerId, MethodName.StartGuesserScene);
         }
-        foreach (var peer in room.Peers.Values)
+        foreach (var player in lobby.Players.Values)
         {
-            RpcId(peer.PlayerId, MethodName.HandleRoundStartOnClient);
+            RpcId(player.PlayerId, MethodName.HandleRoundStartOnClient);
         }
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     private void OnImageChangeReceived(byte[] imageBytes)
     {
-        var peerId = Multiplayer.GetRemoteSenderId();
-        if (!_roomRepo.TryGetValue(_peerIdToRoomId[peerId], out var room)) return;
-        foreach (var peer in room.Peers.Values.Where(peer => peer.PlayerId != peerId))
+        var playerId = Multiplayer.GetRemoteSenderId();
+        if (!_lobbyRepo.TryGetValue(_playerIdToLobbyId[playerId], out var lobby)) return;
+        foreach (var player in lobby.Players.Values.Where(player => player.PlayerId != playerId))
         {
-            RpcId(peer.PlayerId, MethodName.HandleImageChangeReceivedOnClient, imageBytes);
+            RpcId(player.PlayerId, MethodName.HandleImageChangeReceivedOnClient, imageBytes);
         }
     }
 
@@ -163,19 +163,19 @@ public partial class MultiplayerController : Node
 //    | \__/\  | |____   _| |_   | |___   | |\  |    | |            /\__/ /   _| |_   | |/ /   | |___ 
 //     \____/  \_____/  \_____/  \____/   \_| \_/    \_/            \____/   \_____/  |___/    \____/ 
 //
-    public readonly Godot.Collections.Dictionary<long, Peer> CurrentRoomPeers = new();
+    public readonly Godot.Collections.Dictionary<long, Player> CurrentLobbyPlayers = new();
     public int MaxPlayers;
     public int MaxRounds;
     public int RoundLength;
     
     [Signal]
-    public delegate void PeerJoinedRoomEventHandler(long peerId);
+    public delegate void PlayerJoinedLobbyEventHandler(long playerId);
     
     [Signal]
-    public delegate void PeerLeftRoomEventHandler(long peerId);
+    public delegate void PlayerLeftLobbyEventHandler(long playerId);
 
     [Signal]
-    public delegate void PeerBecameDrawerEventHandler(long peerId);
+    public delegate void PlayerBecameDrawerEventHandler(long playerId);
 
     [Signal]
     public delegate void ImageBytesReceivedEventHandler(byte[] bytes);
@@ -190,16 +190,16 @@ public partial class MultiplayerController : Node
 
     
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void HandlePeerConnectedOnClient(long peerId, string playerName)
+    private void HandlePlayerConnectedOnClient(long playerId, string playerName)
     {
-        if (_peerIdToRoomId.ContainsKey(peerId))
+        if (_playerIdToLobbyId.ContainsKey(playerId))
             return;
-        CurrentRoomPeers[peerId] = new Peer(peerId, playerName);
-        EmitSignal(SignalName.PeerJoinedRoom, peerId);
+        CurrentLobbyPlayers[playerId] = new Player(playerId, playerName);
+        EmitSignal(SignalName.PlayerJoinedLobby, playerId);
     }
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void HandleSyncRoomSettingsOnClient(
+    private void HandleSyncLobbySettingsOnClient(
         int maxPlayers, 
         int maxRounds, 
         int roundLength)
@@ -210,11 +210,11 @@ public partial class MultiplayerController : Node
     }
     
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void HandlePeerDisconnectedOnClient(long peerId)
+    private void HandlePlayerDisconnectedOnClient(long playerId)
     {
-        if (!CurrentRoomPeers.Remove(peerId))
+        if (!CurrentLobbyPlayers.Remove(playerId))
             return;
-        EmitSignal(SignalName.PeerLeftRoom, peerId);
+        EmitSignal(SignalName.PlayerLeftLobby, playerId);
     }
     
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]

@@ -1,7 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://h5xlijcfafmi"]
+[gd_scene load_steps=6 format=3 uid="uid://h5xlijcfafmi"]
 
 [ext_resource type="Script" path="res://Main/DrawingGame/Guesser/guesser_scene.gd" id="1_agx3p"]
-[ext_resource type="Texture2D" uid="uid://4b1oe0iahn2t" path="res://Main/Assets/WoodenTexture.jpg" id="2_c0ujh"]
 [ext_resource type="Script" path="res://Main/DrawingGame/Guesser/intro.gd" id="3_40umg"]
 [ext_resource type="PackedScene" uid="uid://bw671qewpntp1" path="res://Main/DrawingGame/Timer/game_mode_timer.tscn" id="4_1e82j"]
 
@@ -24,15 +23,14 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_agx3p")
 
-[node name="BackgorundTextureRect" type="TextureRect" parent="."]
+[node name="BackgorundTextureRect" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_c0ujh")
-expand_mode = 2
+color = Color(0.168627, 0.168627, 0.168627, 1)
 
 [node name="BackgroundColorRect" type="ColorRect" parent="."]
 unique_name_in_owner = true
@@ -76,6 +74,7 @@ theme_override_constants/margin_right = 225
 
 [node name="Intro" type="Control" parent="."]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
