@@ -1,10 +1,11 @@
 extends Control
 
+@export var canvas_size: Vector2i = Vector2(Params.CANV_W, Params.CANV_H)
+
 func _ready() -> void:
-	%BackgroundColorRect.size = Vector2(Params.CANV_W, Params.CANV_H)
-	%BackgroundColorRect.position -= %BackgroundColorRect.size / 2
-	%TextureRect.size = %BackgroundColorRect.size
-	%TextureRect.position = %BackgroundColorRect.position
+	%BackgroundColorRect.custom_minimum_size = canvas_size
+	%TextureRect.custom_minimum_size = %BackgroundColorRect.size
+	
 	MultiplayerController.ImageBytesReceived.connect(update_texture)
 
 func update_texture(i: PackedByteArray) -> void:

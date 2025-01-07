@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://d3nhi2w5tqpck"]
+[gd_scene load_steps=13 format=3 uid="uid://d3nhi2w5tqpck"]
 
 [ext_resource type="Script" path="res://Main/DrawingGame/Drawer/drawer_scene.gd" id="1_da58w"]
 [ext_resource type="Theme" uid="uid://r7pqoqyivvll" path="res://Main/Assets/Themes/main_theme.tres" id="1_pxe1l"]
@@ -8,6 +8,7 @@
 [ext_resource type="LabelSettings" uid="uid://bv26f3wi54brd" path="res://Main/Assets/label_settings.tres" id="7_unjb5"]
 [ext_resource type="ButtonGroup" uid="uid://c5loj0s0h4wiw" path="res://Main/Assets/instrument_button_group.tres" id="8_43mr8"]
 [ext_resource type="ButtonGroup" uid="uid://d4i1tamup7b5u" path="res://Main/Assets/brush_size_button_group.tres" id="10_i1k64"]
+[ext_resource type="PackedScene" uid="uid://80qhg4to1d0c" path="res://Main/DrawingGame/DraggableWindow/draggable_window.tscn" id="11_k2adu"]
 [ext_resource type="Script" path="res://Main/DrawingGame/Drawer/theme_intro.gd" id="11_qhmvo"]
 [ext_resource type="PackedScene" uid="uid://bw671qewpntp1" path="res://Main/DrawingGame/Timer/game_mode_timer.tscn" id="12_s80va"]
 
@@ -47,7 +48,7 @@ script = ExtResource("2_b0q1k")
 drawing_line = NodePath("PaintViewportContainer/PaintViewport/DrawingLine")
 paint_viewport = NodePath("PaintViewportContainer/PaintViewport")
 painted_image = NodePath("PaintViewportContainer/PaintViewport/PaintedImage")
-background = NodePath("Background")
+background = NodePath("PaintViewportContainer/PaintViewport/Background")
 erase_mask_line = NodePath("EraseMaskViewportContainer/EraseMaskViewport/EraseMaskLine")
 erase_mask_viewport = NodePath("EraseMaskViewportContainer/EraseMaskViewport")
 color_picker = NodePath("../PanelContainer/VBoxContainer/ColorPicker")
@@ -93,21 +94,6 @@ begin_cap_mode = 2
 end_cap_mode = 2
 antialiased = true
 
-[node name="Background" type="ColorRect" parent="CanvasAndInstrumentsHSplitContainer/DrawingCanvas"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -413.0
-offset_top = -324.0
-offset_right = 413.0
-offset_bottom = 324.0
-grow_horizontal = 2
-grow_vertical = 2
-pivot_offset = Vector2(413, 324)
-
 [node name="PaintViewportContainer" type="SubViewportContainer" parent="CanvasAndInstrumentsHSplitContainer/DrawingCanvas"]
 layout_mode = 1
 anchors_preset = 8
@@ -127,6 +113,14 @@ transparent_bg = true
 handle_input_locally = false
 size = Vector2i(826, 648)
 render_target_update_mode = 4
+
+[node name="Background" type="ColorRect" parent="CanvasAndInstrumentsHSplitContainer/DrawingCanvas/PaintViewportContainer/PaintViewport"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(413, 324)
 
 [node name="PaintedImage" type="TextureRect" parent="CanvasAndInstrumentsHSplitContainer/DrawingCanvas/PaintViewportContainer/PaintViewport"]
 offset_right = 40.0
@@ -254,30 +248,28 @@ button_group = ExtResource("8_43mr8")
 text = "Full Circle
 "
 
-[node name="ActionsHBoxContainer" type="HBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -91.0
-offset_top = -50.0
-grow_horizontal = 0
-grow_vertical = 0
+[node name="ActionsHBoxContainer" type="HBoxContainer" parent="CanvasAndInstrumentsHSplitContainer/PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
 size_flags_vertical = 8
 theme_override_constants/separation = 40
 alignment = 2
 
-[node name="ActionBackButton" type="Button" parent="ActionsHBoxContainer"]
+[node name="ActionBackButton" type="Button" parent="CanvasAndInstrumentsHSplitContainer/PanelContainer/ActionsHBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "⬅"
 
-[node name="ActionForwardButton" type="Button" parent="ActionsHBoxContainer"]
+[node name="ActionForwardButton" type="Button" parent="CanvasAndInstrumentsHSplitContainer/PanelContainer/ActionsHBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "⮕"
+
+[node name="SaveButton" type="Button" parent="CanvasAndInstrumentsHSplitContainer/PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+text = "💾"
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -407,6 +399,14 @@ offset_right = 724.0
 offset_bottom = 225.0
 expand_mode = 1
 
+[node name="DraggableWindowScene" parent="." instance=ExtResource("11_k2adu")]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_right = 0.0
+grow_horizontal = 1
+grow_vertical = 0
+
 [connection signal="image_changed" from="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" to="." method="_on_drawing_canvas_image_changed"]
 [connection signal="toggled" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/PalleteHFlowContainer/ColorButton" to="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/PalleteHFlowContainer/ColorButton" method="_on_toggled"]
 [connection signal="color_changed" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/ColorPicker" to="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" method="_on_color_picker_color_changed"]
@@ -420,8 +420,9 @@ expand_mode = 1
 [connection signal="toggled" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/HFlowContainer/FullRectangleButton" to="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" method="_on_full_rectangle_button_toggled"]
 [connection signal="toggled" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/HFlowContainer/EmptyCircleButton" to="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" method="_on_empty_circle_button_toggled"]
 [connection signal="toggled" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/VBoxContainer/HFlowContainer/FullCircleButton" to="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" method="_on_full_circle_button_toggled"]
-[connection signal="pressed" from="ActionsHBoxContainer/ActionBackButton" to="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" method="_on_action_back_button_pressed"]
-[connection signal="pressed" from="ActionsHBoxContainer/ActionForwardButton" to="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" method="_on_action_forward_button_pressed"]
+[connection signal="pressed" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/ActionsHBoxContainer/ActionBackButton" to="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" method="_on_action_back_button_pressed"]
+[connection signal="pressed" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/ActionsHBoxContainer/ActionForwardButton" to="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" method="_on_action_forward_button_pressed"]
+[connection signal="pressed" from="CanvasAndInstrumentsHSplitContainer/PanelContainer/SaveButton" to="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" method="_on_save_button_pressed"]
 [connection signal="pressed" from="PanelContainer/ExtraDrawingSettingsHBoxContainer/XSButton" to="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" method="_on_xs_button_pressed"]
 [connection signal="pressed" from="PanelContainer/ExtraDrawingSettingsHBoxContainer/SButton" to="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" method="_on_s_button_pressed"]
 [connection signal="pressed" from="PanelContainer/ExtraDrawingSettingsHBoxContainer/MButton" to="CanvasAndInstrumentsHSplitContainer/DrawingCanvas" method="_on_m_button_pressed"]

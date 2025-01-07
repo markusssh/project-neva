@@ -8,6 +8,18 @@
 
 config_version=5
 
+[addons]
+
+resources_spreadsheet_view/array_color_tint=100.0
+resources_spreadsheet_view/color_rows=true
+resources_spreadsheet_view/array_min_width=128.0
+resources_spreadsheet_view/resource_preview_size=32.0
+resources_spreadsheet_view/clip_headers=false
+resources_spreadsheet_view/dupe_arrays=true
+resources_spreadsheet_view/context_menu_on_leftclick=false
+resources_spreadsheet_view/fold_docks=true
+resources_spreadsheet_view/resource_cell_label_mode=1
+
 [application]
 
 config/name="Project Neva"
@@ -20,6 +32,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+Database="*res://Main/Database/database.gd"
 MultiplayerController="*res://Main/NetworkingArchitecture/MultiplayerController.cs"
 Networking="*res://Main/NetworkingArchitecture/Networking.cs"
 AlgoUtil="*res://Main/DrawingGame/Drawer/AlgoUtil.cs"
@@ -34,20 +47,28 @@ window/size/viewport_height=972
 
 project/assembly_name="Project Neva"
 
+[editor]
+
+movie_writer/movie_file="C:/Users/mrher/Videos/Godot/here.avi"
+movie_writer/fps=30
+
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/script-ide/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot-sqlite/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
 [file_customization]
 
 folder_colors={
-"res://Addons/": "yellow",
 "res://Legacy/": "gray",
 "res://Main/": "red",
 "res://Main/Assets/": "purple",
+"res://Main/Database/": "orange",
 "res://Main/DrawingGame/": "green",
+"res://Main/LoggerUtils/": "gray",
 "res://Main/MainUI/": "teal",
-"res://Main/Networking/": "blue"
+"res://Main/Networking/": "blue",
+"res://Main/NetworkingArchitecture/": "pink",
+"res://addons/": "yellow"
 }
 
 [input]
@@ -185,6 +206,11 @@ brush_size_l={
 brush_size_xl={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":71,"key_label":0,"unicode":103,"location":0,"echo":false,"script":null)
+]
+}
+save_painting={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":true,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":83,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 

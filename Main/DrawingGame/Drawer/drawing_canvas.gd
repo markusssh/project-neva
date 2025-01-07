@@ -98,7 +98,9 @@ func allign_canvas() -> void:
 	background.pivot_offset = canv_size / 2
 
 func _process(_delta: float) -> void:
-	if Input.is_action_just_released("step_forward"):
+	if Input.is_action_just_released("save_painting"):
+		save_painting()
+	elif Input.is_action_just_released("step_forward"):
 		history_step_forward()
 	elif Input.is_action_just_released("step_back"):
 		history_step_back()
@@ -238,7 +240,7 @@ func bake_drawing() -> void:
 			for row in canv_size.y:
 				for column in canv_size.x:
 					if erase_mask.get_pixel(column, row) == Color.BLACK:
-						image.set_pixel(column, row, Color(0, 0, 0, 0))
+						image.set_pixel(column, row, Color.TRANSPARENT)
 			painted_image.texture = ImageTexture.create_from_image(image)
 			drawing_line.clear_points()
 		PaintingMode.BUCKET:
@@ -359,3 +361,15 @@ func _set_palette_buttons() -> void:
 
 func _on_color_picked(c: Color) -> void:
 	drawing_color = c
+
+func save_painting() -> void:
+	var i: Image = get_baked_image()
+	var save_path := "user://1.png"
+	var err = i.save_png(save_path)
+	if err != OK:
+		Logger.LogMessage("[color=red]Couldn't save the painting to: [i]" + save_path + "[/i][/color]")
+	else:
+		Logger.LogMessage("Painting was saved to: [i]" + save_path + "[/i]")
+
+func _on_save_button_pressed() -> void:
+	save_painting()

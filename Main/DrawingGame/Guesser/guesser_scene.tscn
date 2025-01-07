@@ -1,18 +1,17 @@
-[gd_scene load_steps=6 format=3 uid="uid://h5xlijcfafmi"]
+[gd_scene load_steps=8 format=3 uid="uid://h5xlijcfafmi"]
 
 [ext_resource type="Script" path="res://Main/DrawingGame/Guesser/guesser_scene.gd" id="1_agx3p"]
-[ext_resource type="Script" path="res://Main/DrawingGame/Guesser/intro.gd" id="3_40umg"]
+[ext_resource type="Theme" uid="uid://r7pqoqyivvll" path="res://Main/Assets/Themes/main_theme.tres" id="1_r88jc"]
 [ext_resource type="PackedScene" uid="uid://bw671qewpntp1" path="res://Main/DrawingGame/Timer/game_mode_timer.tscn" id="4_1e82j"]
+[ext_resource type="PackedScene" uid="uid://6msa652gid52" path="res://Main/DrawingGame/AnswerPicker/AnswerPicker.tscn" id="4_slnl2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e15rx"]
+bg_color = Color(0.15, 0.1305, 0.133425, 1)
 
 [sub_resource type="ImageTexture" id="ImageTexture_pwfb4"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_m7pxf"]
-font_size = 96
-font_color = Color(0, 0, 0, 1)
-outline_size = 15
-outline_color = Color(1, 0.45, 0.45, 1)
-shadow_size = 41
-shadow_color = Color(0, 0, 0, 0.164706)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3mdkw"]
+bg_color = Color(0.11, 0.11, 0.11, 1)
 
 [node name="GuesserScene" type="Control"]
 layout_mode = 3
@@ -21,107 +20,53 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_r88jc")
 script = ExtResource("1_agx3p")
 
-[node name="BackgorundTextureRect" type="ColorRect" parent="."]
+[node name="Panel" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.168627, 0.168627, 0.168627, 1)
+theme_override_styles/panel = SubResource("StyleBoxFlat_e15rx")
 
-[node name="BackgroundColorRect" type="ColorRect" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="TextureRect" type="TextureRect" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("ImageTexture_pwfb4")
-
-[node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-grow_horizontal = 0
-theme_override_constants/margin_top = 175
-theme_override_constants/margin_right = 225
-
-[node name="Intro" type="Control" parent="."]
-unique_name_in_owner = true
-visible = false
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-script = ExtResource("3_40umg")
+split_offset = 1085
+dragger_visibility = 2
 
-[node name="ColorRect" type="ColorRect" parent="Intro"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0, 0, 0, 1)
-
-[node name="ThemeVBoxContainer" type="VBoxContainer" parent="Intro"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -515.0
-offset_top = -179.5
-offset_right = 515.0
-offset_bottom = 179.5
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="HeaderLabel" type="Label" parent="Intro/ThemeVBoxContainer"]
-unique_name_in_owner = true
+[node name="CenterContainer" type="CenterContainer" parent="HSplitContainer"]
 layout_mode = 2
-text = "Тема:"
-label_settings = SubResource("LabelSettings_m7pxf")
-horizontal_alignment = 1
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="ThemeNameLabel" type="Label" parent="Intro/ThemeVBoxContainer"]
+[node name="BackgroundColorRect" type="ColorRect" parent="HSplitContainer/CenterContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
-label_settings = SubResource("LabelSettings_m7pxf")
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="HSplitContainer/CenterContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = SubResource("ImageTexture_pwfb4")
+
+[node name="PanelContainer" type="PanelContainer" parent="HSplitContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_3mdkw")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/PanelContainer"]
+layout_mode = 2
+
+[node name="AnswerPicker" parent="HSplitContainer/PanelContainer/VBoxContainer" instance=ExtResource("4_slnl2")]
+custom_minimum_size = Vector2(0.3, 318.38)
+layout_mode = 2
 
 [node name="GameModeTimer" parent="." instance=ExtResource("4_1e82j")]

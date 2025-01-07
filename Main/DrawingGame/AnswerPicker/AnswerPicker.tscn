@@ -1,0 +1,59 @@
+[gd_scene load_steps=4 format=3 uid="uid://6msa652gid52"]
+
+[ext_resource type="Theme" uid="uid://r7pqoqyivvll" path="res://Main/Assets/Themes/main_theme.tres" id="1_gfedq"]
+[ext_resource type="Script" path="res://Main/DrawingGame/AnswerPicker/answer_picker.gd" id="2_3rchc"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_skdgb"]
+font_size = 32
+outline_size = 11
+outline_color = Color(0, 0, 0, 1)
+
+[node name="AnswerPicker" type="Control" node_paths=PackedStringArray("content_grid")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_gfedq")
+script = ExtResource("2_3rchc")
+content_grid = NodePath("PanelContainer/FlowContainer")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FlowContainer" type="HFlowContainer" parent="PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/h_separation = 15
+theme_override_constants/v_separation = 15
+
+[node name="BackButton" type="Button" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+offset_bottom = 10.0
+theme_override_font_sizes/font_size = 32
+text = "<="
+
+[node name="PickedPaintingLabel" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -83.0
+offset_right = 507.0
+grow_vertical = 0
+text = "Выбранный ответ: "
+label_settings = SubResource("LabelSettings_skdgb")
+vertical_alignment = 2
+
+[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
