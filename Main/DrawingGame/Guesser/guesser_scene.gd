@@ -3,6 +3,10 @@ extends Control
 @export var canvas_size: Vector2i = Vector2(Params.CANV_W, Params.CANV_H)
 
 func _ready() -> void:
+	MultiplayerController.PlayerLoadedGameScene.emit()
+	
+	%DebugLabel.text = str(multiplayer.multiplayer_peer.get_unique_id())
+	
 	%BackgroundColorRect.custom_minimum_size = canvas_size
 	%TextureRect.custom_minimum_size = %BackgroundColorRect.size
 	

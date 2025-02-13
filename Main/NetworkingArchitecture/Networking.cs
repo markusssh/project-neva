@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Godot;
 using ProjectNeva.Main.LoggerUtils;
@@ -11,7 +12,7 @@ public partial class Networking : Node
     public static Networking Instance { get; private set; } = null!;
 
 
-    private bool IsServer { get; set; }
+    public bool IsServer { get; set; }
     private const string ServerIp = "127.0.0.1";
     private const int ServerPort = 8081;
     public const int ServerPeerId = 1;
@@ -24,7 +25,8 @@ public partial class Networking : Node
 
     public override void _EnterTree()
     {
-        if (OS.HasFeature("dedicated_server")) IsServer = true;
+        if (OS.HasFeature("dedicated_server") ||
+            OS.HasFeature("debug") && OS.GetCmdlineArgs().Contains("--is_server")) IsServer = true;
         if (GetTree().GetMultiplayer() is SceneMultiplayer)
         {
             Multiplayer = GetTree().GetMultiplayer() as SceneMultiplayer;

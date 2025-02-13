@@ -19,27 +19,38 @@ public class Lobby
     public Lobby(string lobbyId)
     {
         LobbyId = lobbyId;
+        TopicIdSet = MultiplayerController.Instance.TopicIds;
     }
 
     public string LobbyId { get; set; }
-
-    public int LobbySize { get; set; } = LobbyDefaultSize;
-    
-    public int MaxRounds { get; set; } = LobbyDefaultRounds;
-
-    public int RoundLength { get; set; } = LobbyDefaultRoundLength;
-
     public Dictionary<long, Player> Players { get; set; } = new();
-    
     public LobbyState State = LobbyState.WaitingPlayers;
 
-    public Player SetRandomDrawer()
+    public int LobbySize { get; set; } = LobbyDefaultSize;
+    public int MaxRounds { get; set; } = LobbyDefaultRounds;
+    public int RoundLength { get; set; } = LobbyDefaultRoundLength;
+   
+    public long DrawerId = -1;
+    private HashSet<int> TopicIdSet { get; set; }
+    public int CurrentTopicId { get; set; } = -1;
+
+    public void SetRandomTopicId()
+    {
+        if (TopicIdSet.Count == 0) 
+            throw new InvalidOperationException("No topics available to choose from.");
+
+        Random random = new();
+        int randomIndex = random.Next(0, TopicIdSet.Count);
+        CurrentTopicId = TopicIdSet.ElementAt(randomIndex);
+        TopicIdSet.Remove(CurrentTopicId);
+    }
+
+    public void SetRandomDrawerId()
     {
         if (Players.Count == 0) throw new InvalidOperationException("No peer to choose random drawer.");
         Random random = new();
         var randomIndex = random.Next(0, Players.Count);
-        var chosen = Players.ElementAt(randomIndex).Value;
-        chosen.IsDrawer = true;
-        return chosen;
+        var chosen = Players.ElementAt(randomIndex).Key;
+        DrawerId = chosen;
     }
 }

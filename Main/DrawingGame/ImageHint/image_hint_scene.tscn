@@ -1,0 +1,58 @@
+[gd_scene load_steps=3 format=3 uid="uid://80qhg4to1d0c"]
+
+[ext_resource type="Theme" uid="uid://r7pqoqyivvll" path="res://Main/Assets/Themes/main_theme.tres" id="1_28tk1"]
+[ext_resource type="Script" path="res://Main/DrawingGame/ImageHint/image_hint_scene.gd" id="2_xutke"]
+
+[node name="ImageHintScene" type="PanelContainer"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -89.0
+offset_right = 88.0
+grow_vertical = 0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = ExtResource("1_28tk1")
+script = ExtResource("2_xutke")
+
+[node name="PanelsVBoxContainer" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ItemPanel" type="PanelContainer" parent="PanelsVBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ImageItem" type="TextureRect" parent="PanelsVBoxContainer/ItemPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+stretch_mode = 2
+
+[node name="TopPanel" type="PanelContainer" parent="PanelsVBoxContainer"]
+unique_name_in_owner = true
+self_modulate = Color(0.69, 0.69, 0.69, 1)
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 1
+theme = ExtResource("1_28tk1")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelsVBoxContainer/TopPanel"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_filter = 2
+
+[node name="MaximizeButton" type="Button" parent="PanelsVBoxContainer/TopPanel/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+text = "🗖"
+
+[node name="MinimizeButton" type="Button" parent="PanelsVBoxContainer/TopPanel/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+text = "🗕"
+
+[connection signal="pressed" from="PanelsVBoxContainer/TopPanel/HBoxContainer/MaximizeButton" to="." method="_on_maximize_button_pressed"]
+[connection signal="pressed" from="PanelsVBoxContainer/TopPanel/HBoxContainer/MinimizeButton" to="." method="_on_minimize_button_pressed"]

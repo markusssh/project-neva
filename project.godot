@@ -22,26 +22,26 @@ resources_spreadsheet_view/resource_cell_label_mode=1
 
 [application]
 
-config/name="Project Neva"
+config/name="Drawle"
 run/main_scene="res://Main/Main.tscn"
 config/features=PackedStringArray("4.3", "C#", "Forward Plus")
-boot_splash/bg_color=Color(0.112322, 0.120753, 0.268748, 1)
-boot_splash/image="res://icon.png"
-boot_splash/fullsize=false
-config/icon="res://icon.svg"
+boot_splash/bg_color=Color(0.878431, 0.478431, 0.372549, 1)
+boot_splash/image="res://Main/Assets/Project Design/Главная Сцена.png"
+config/icon="res://Main/Assets/Project Design/Лого.png"
 
 [autoload]
 
 Database="*res://Main/Database/database.gd"
-MultiplayerController="*res://Main/NetworkingArchitecture/MultiplayerController.cs"
 Networking="*res://Main/NetworkingArchitecture/Networking.cs"
+MultiplayerController="*res://Main/NetworkingArchitecture/MultiplayerController.cs"
 AlgoUtil="*res://Main/DrawingGame/Drawer/AlgoUtil.cs"
 Params="*res://Main/DrawingGame/Globals/params.gd"
 
 [display]
 
-window/size/viewport_width=1728
-window/size/viewport_height=972
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="viewport"
 
 [dotnet]
 
@@ -63,6 +63,7 @@ folder_colors={
 "res://Main/": "red",
 "res://Main/Assets/": "purple",
 "res://Main/Database/": "orange",
+"res://Main/Debug/": "gray",
 "res://Main/DrawingGame/": "green",
 "res://Main/LoggerUtils/": "gray",
 "res://Main/MainUI/": "teal",

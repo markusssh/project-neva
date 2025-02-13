@@ -1,0 +1,86 @@
+[gd_scene load_steps=11 format=3 uid="uid://c7pptfenwq7by"]
+
+[ext_resource type="Texture2D" uid="uid://c4q42tuuxy5v5" path="res://Main/Assets/Project Design/Componenets/Logo.png" id="1_apfa4"]
+[ext_resource type="Shader" path="res://Main/MainUI/BackgroundShader.gdshader" id="1_qhyat"]
+[ext_resource type="FontFile" uid="uid://bc2ymi24jrbyf" path="res://Main/Assets/Project Design/Fonts/JustAnotherHand-Regular.ttf" id="2_48mud"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ikfpr"]
+noise_type = 2
+frequency = 0.0073
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_0pxoq"]
+noise = SubResource("FastNoiseLite_ikfpr")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8pr7c"]
+shader = ExtResource("1_qhyat")
+shader_parameter/noise_img = SubResource("NoiseTexture2D_0pxoq")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ts3g3"]
+texture = ExtResource("1_apfa4")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hpotw"]
+texture = ExtResource("1_apfa4")
+region_rect = Rect2(0, 0, 530, 537)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_augql"]
+texture = ExtResource("1_apfa4")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_co1s7"]
+texture = ExtResource("1_apfa4")
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_8pr7c")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.878431, 0.478431, 0.372549, 1)
+
+[node name="Start" type="Button" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -269.0
+offset_top = -272.5
+offset_right = 269.0
+offset_bottom = 272.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/focus = SubResource("StyleBoxTexture_ts3g3")
+theme_override_styles/hover = SubResource("StyleBoxTexture_hpotw")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_augql")
+theme_override_styles/normal = SubResource("StyleBoxTexture_co1s7")
+
+[node name="Drawle" type="Label" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -226.5
+offset_top = -301.0
+offset_right = 226.5
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.956863, 0.945098, 0.870588, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.25)
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("2_48mud")
+theme_override_font_sizes/font_size = 300
+text = "Drawle"

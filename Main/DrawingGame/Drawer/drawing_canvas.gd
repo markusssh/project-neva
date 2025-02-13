@@ -1,4 +1,5 @@
-extends Control
+class_name DrawingCanvas
+extends PanelContainer
 
 signal image_changed(i: Image)
 
@@ -49,6 +50,7 @@ var mode: PaintingMode = PaintingMode.BRUSH
 var canv_size: Vector2i
 var history_scroll_idx: int = 1
 var drawing_history: Array[ImageTexture]
+
 #TODO: can be loaded from
 #1. presets
 #2. most common color from chosen art https://spin.atomicobject.com/pixels-and-palettes-extracting-color-palettes-from-images/
@@ -196,7 +198,10 @@ func set_drawing_canvas_mouse_pos() -> void:
 	mouse_pos = paint_viewport.get_mouse_position()
 
 func inside_drawing_canvas() -> bool:
-	return mouse_pos.x < paint_viewport.size.x and mouse_pos.y < paint_viewport.size.y and mouse_pos.x >= 0 and mouse_pos.y >= 0
+	return mouse_pos.x < paint_viewport.size.x \
+	and mouse_pos.y < paint_viewport.size.y \
+	and mouse_pos.x >= 0 \
+	and mouse_pos.y >= 0
 
 func handle_picker_pick() -> void:
 	if inside_drawing_canvas():
