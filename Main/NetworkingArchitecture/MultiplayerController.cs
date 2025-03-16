@@ -1,49 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
-using ProjectNeva.Main.LoggerUtils;
-using Array = Godot.Collections.Array;
-using FileAccess = Godot.FileAccess;
+using ProjectNeva.Main.Utils;
+using Logger = ProjectNeva.Main.Utils.Logger.Logger;
 
 namespace ProjectNeva.Main.NetworkingArchitecture;
 
 public partial class MultiplayerController : Node
 {
-    public static MultiplayerController Instance {get; private set;}
+    public static MultiplayerController Instance { get; private set; }
+    public float DrawingRoundTimeSec = 3.0f;
+    public float TimeToRateOneSec = 20.0f;
 
     public override void _Ready()
     {
         Instance = this;
 
-        if (Networking.Instance.IsServer)
-        {
-            if (FileAccess.FileExists(NetExportFile))
-            {
-                var file = FileAccess.Open(NetExportFile, FileAccess.ModeFlags.Read);
-                var json = "";
-                while (!file.EofReached())
-                {
-                    json += file.GetLine();
-                }
-
-                var topicIds = (Array)Json.ParseString(json);
-                foreach (int topicId in topicIds)
-                {
-                    TopicIds.Add(topicId);
-                }
-            }
-            else
-            {
-                throw new FileNotFoundException("NetExportFile not found");
-            }
-        }
-        
         PlayerLoadedGameScene += OnPlayerLoadedGameScene;
-        PlayerMadeAGuess += OnPlayerMadeAGuess;
     }
 
 
@@ -56,16 +29,12 @@ public partial class MultiplayerController : Node
     //    \____/   \____/   |_| \_\  |___/    \____/   |_| \_\          \____/   \_____/  |___/    \____/ 
     //
 
-    private const string NetExportFile = "res://Main/NetworkingArchitecture/NetExportData.json";
-
     private readonly Dictionary<string, Lobby> _lobbyRepo = new();
 
     private readonly Dictionary<long, string> _playerIdToLobbyId = new();
 
     [Signal]
     public delegate void LobbyIsLoadedEventHandler(string lobbyId);
-
-    public HashSet<int> TopicIds = new();
 
     private Lobby GetLobbyElseCreate(string lobbyId)
     {
@@ -96,39 +65,38 @@ public partial class MultiplayerController : Node
         {
             GD.PrintErr($"Peer {newPeerId} AuthData is null");
             return;
-        };
-        
+        }
+
         var lobby = GetLobbyElseCreate(peerAuthData.LobbyId);
         if (lobby.State != Lobby.LobbyState.WaitingPlayers || lobby.Players.Count >= lobby.LobbySize)
         {
             //TODO: add ability to reconnect
-            
+
             GD.PrintErr($"Cannot connect peer {newPeerId}! Lobby {lobby.LobbyId} is not accepting players.");
             Networking.Instance.Multiplayer.DisconnectPeer((int)newPeerId);
             return;
         }
-        
+
         var player = new Player(newPeerId, peerAuthData.PlayerName);
         Networking.Instance.PeerAuthData.Remove((int)newPeerId);
         _playerIdToLobbyId.Add(newPeerId, lobby.LobbyId);
         lobby.Players.Add(newPeerId, player);
-        
-        // Synchronize Lobby Settings With Newbie
-        RpcId(newPeerId, MethodName.HandleSyncLobbySettingsOnClient, 
+
+        RpcId(newPeerId, MethodName.SyncLobbySettingsOnClient,
             lobby.LobbySize,
-            lobby.MaxRounds,
-            lobby.RoundLength);
-        
-        // Handle Peer Connected Func On Clients
+            lobby.Topic);
+
         foreach (var playerId in lobby.Players.Keys)
         {
             if (newPeerId != playerId)
             {
-                RpcId(newPeerId, MethodName.HandlePlayerConnectedOnClient, playerId, lobby.Players[playerId].PlayerName);
+                RpcId(newPeerId, MethodName.HandlePlayerConnectedOnClient, playerId,
+                    lobby.Players[playerId].PlayerName);
             }
+
             RpcId(playerId, MethodName.HandlePlayerConnectedOnClient, newPeerId, lobby.Players[newPeerId].PlayerName);
         }
-        
+
         Logger.LogNetwork($"Player {newPeerId} connected to lobby {lobby.LobbyId}");
 
         if (lobby.Players.Count == lobby.LobbySize)
@@ -151,6 +119,7 @@ public partial class MultiplayerController : Node
             {
                 RpcId(disconnectingPeerId, MethodName.HandlePlayerDisconnectedOnClient, playerId);
             }
+
             RpcId(playerId, MethodName.HandlePlayerDisconnectedOnClient, disconnectingPeerId);
         }
 
@@ -160,14 +129,10 @@ public partial class MultiplayerController : Node
 
     private async Task OnPlaying(Lobby lobby)
     {
-        for (var i = 0; i < lobby.MaxRounds; i++)
+        await OnLoading(lobby);
+        foreach (var player in lobby.Players.Values)
         {
-            await OnLoading(lobby);
-            OnRoundStart(lobby);
-            foreach (var player in lobby.Players.Values)
-            {
-                RpcId(player.PlayerId, MethodName.HandleGameReadyOnClient);
-            }
+            RpcId(player.PlayerId, MethodName.HandleGameReadyOnClient);
         }
     }
 
@@ -175,7 +140,6 @@ public partial class MultiplayerController : Node
     {
         var tcs = new TaskCompletionSource();
 
-        // Подписываемся на событие
         void OnLobbyLoaded(string lobbyId)
         {
             if (lobbyId == lobby.LobbyId)
@@ -184,35 +148,40 @@ public partial class MultiplayerController : Node
                 LobbyIsLoaded -= OnLobbyLoaded;
             }
         }
-        
+
         LobbyIsLoaded += OnLobbyLoaded;
 
-        // Выполняем основную логику метода
-        lobby.SetRandomDrawerId();
-        foreach (var player in lobby.Players.Values.Where(player => player.PlayerId != lobby.DrawerId))
+        foreach (var player in lobby.Players.Values)
         {
-            RpcId(player.PlayerId, MethodName.StartGuesserScene);
+            RpcId(player.PlayerId, MethodName.StartDrawingRound);
         }
-        RpcId(lobby.DrawerId, MethodName.StartDrawerScene);
 
-        // Ждем, пока сигнал будет вызван
         await tcs.Task;
+
+        CreateLobbyDrawingTimer(lobby.LobbyId);
     }
 
-    private void OnRoundStart(Lobby lobby)
+    private void CreateLobbyDrawingTimer(string lobbyId)
     {
-        lobby.SetRandomTopicId();
-        RpcId(lobby.DrawerId, MethodName.HandleTopicIdReceivedOnClient, lobby.CurrentTopicId);
-    }
+        Timer timer = new();
+        AddChild(timer);
+        timer.OneShot = true;
+        timer.Start(DrawingRoundTimeSec);
+        timer.Timeout += OnTimerTimeout;
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void OnImageChangeReceived(byte[] imageBytes)
-    {
-        var playerId = Multiplayer.GetRemoteSenderId();
-        if (!_lobbyRepo.TryGetValue(_playerIdToLobbyId[playerId], out var lobby)) return;
-        foreach (var player in lobby.Players.Values.Where(player => player.PlayerId != playerId))
+        void OnTimerTimeout()
         {
-            RpcId(player.PlayerId, MethodName.HandleImageChangeReceivedOnClient, imageBytes);
+            timer.QueueFree();
+            OnDrawingRoundEnd(lobbyId);
+        }
+    }
+
+    private void OnDrawingRoundEnd(string lobbyId)
+    {
+        if (!_lobbyRepo.TryGetValue(lobbyId, out var lobby)) return;
+        foreach (var player in lobby.Players.Values)
+        {
+            RpcId(player.PlayerId, MethodName.HandleFinalImageRequestOnClient);
         }
     }
 
@@ -223,7 +192,7 @@ public partial class MultiplayerController : Node
         if (!_lobbyRepo.TryGetValue(_playerIdToLobbyId[playerId], out var lobby)) return;
         lobby.Players[playerId].State = Player.PlayerState.Playing;
         Logger.LogNetwork($"Player {playerId} from lobby {lobby.LobbyId} has loaded game scene");
-        
+
         var everyoneIsLoaded = true;
         foreach (var player in lobby.Players.Values)
         {
@@ -238,12 +207,62 @@ public partial class MultiplayerController : Node
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void HandlePlayerGuessOnServer(int topicId)
+    private void HandleFinishedDrawingOnServer()
     {
         var playerId = Multiplayer.GetRemoteSenderId();
         if (!_lobbyRepo.TryGetValue(_playerIdToLobbyId[playerId], out var lobby)) return;
-        var correctGuess = lobby.CurrentTopicId == topicId;
-        Logger.LogNetwork($"Player {playerId} from lobby {lobby.LobbyId} has made a guess: {topicId}, {correctGuess}");
+        lobby.PlayersFinishedDrawingCounter++;
+        if (lobby.PlayersFinishedDrawingCounter == lobby.Players.Count)
+        {
+            Logger.LogNetwork($"Everyone on lobby {lobby.LobbyId} has finished drawing");
+            OnDrawingRoundEnd(lobby.LobbyId);
+        }
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void HandleResumedDrawingOnServer()
+    {
+        var playerId = Multiplayer.GetRemoteSenderId();
+        if (!_lobbyRepo.TryGetValue(_playerIdToLobbyId[playerId], out var lobby)) return;
+        lobby.PlayersFinishedDrawingCounter--;
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void HandleFinalImageResponseOnServer(byte[] imageData)
+    {
+        var playerId = Multiplayer.GetRemoteSenderId();
+        if (!_lobbyRepo.TryGetValue(_playerIdToLobbyId[playerId], out var lobby)) return;
+        lobby.ReceivedFinalDrawingCounter++;
+        lobby.Players[playerId].FinalImageData = imageData;
+        if (lobby.ReceivedFinalDrawingCounter == lobby.Players.Count)
+        {
+            Logger.LogNetwork($"Received every final drawing on lobby {lobby.LobbyId}");
+        }
+
+        Godot.Collections.Dictionary<long, byte[]> playersImageData = new();
+
+        foreach (var player in lobby.Players.Values)
+        {
+            playersImageData[player.PlayerId] = player.FinalImageData;
+        }
+
+        foreach (var player in lobby.Players.Values)
+        {
+            RpcId(player.PlayerId, MethodName.SyncPlayersImagesOnClient, playersImageData);
+        }
+
+        foreach (var player in lobby.Players.Values)
+        {
+            RpcId(player.PlayerId, MethodName.StartRatingRound);
+        }
+    }
+    
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void HandleNewScoreOnServer(int playerToRateId, int score)
+    {
+        var playerId = Multiplayer.GetRemoteSenderId();
+        if (!_lobbyRepo.TryGetValue(_playerIdToLobbyId[playerId], out var lobby)) return;
+        lobby.Players[playerToRateId].AddScore(score);
     }
 
     //                        
@@ -260,6 +279,7 @@ public partial class MultiplayerController : Node
     public int MaxPlayers;
     public int MaxRounds;
     public int RoundLength;
+    public string Topic;
 
     [Signal]
     public delegate void PlayerJoinedLobbyEventHandler(long playerId);
@@ -288,12 +308,7 @@ public partial class MultiplayerController : Node
     public delegate void GameReadyEventHandler();
 
     [Signal]
-    public delegate void PlayerMadeAGuessEventHandler(int topicId);
-
-    private void OnPlayerMadeAGuess(int topicId)
-    {
-        RpcId(Networking.ServerPeerId, MethodName.HandlePlayerGuessOnServer, topicId);
-    }
+    public delegate void FinalImageRequestedEventHandler();
 
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
@@ -306,14 +321,12 @@ public partial class MultiplayerController : Node
     }
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void HandleSyncLobbySettingsOnClient(
-        int maxPlayers, 
-        int maxRounds, 
-        int roundLength)
+    private void SyncLobbySettingsOnClient(
+        int maxPlayers,
+        string topic)
     {
         MaxPlayers = maxPlayers;
-        MaxRounds = maxRounds;
-        RoundLength = roundLength;
+        Topic = topic;
     }
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
@@ -325,22 +338,9 @@ public partial class MultiplayerController : Node
     }
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void StartDrawerScene()
+    private void StartDrawingRound()
     {
-        GetTree().ChangeSceneToFile("res://Main/DrawingGame/Drawer/drawer_scene.tscn");
-    }
-
-    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void StartGuesserScene()
-    {
-        GetTree().ChangeSceneToFile("res://Main/DrawingGame/Guesser/guesser_scene.tscn");
-    }
-
-    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void HandleTopicIdReceivedOnClient(int id)
-    {
-        Logger.LogNetwork("Round topic id is: " + id);
-        EmitSignal(SignalName.TopicIdReceived, id);
+        GetTree().ChangeSceneToFile("res://Main/DrawingGame/Drawing/drawer_scene.tscn");
     }
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
@@ -349,35 +349,43 @@ public partial class MultiplayerController : Node
         EmitSignal(SignalName.GameReady);
     }
 
-    private void SendImageChangeByDrawer(Image image)
+    private void HandleDrawingStateChangeOnClient(bool drawing)
     {
-        var imageBytes = image.GetData();
-        imageBytes = Compress(imageBytes);
-        RpcId(Networking.ServerPeerId, MethodName.OnImageChangeReceived, imageBytes);
+        RpcId(Networking.ServerPeerId,
+            drawing ? MethodName.HandleResumedDrawingOnServer : MethodName.HandleFinishedDrawingOnServer);
     }
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void HandleImageChangeReceivedOnClient(byte[] imageBytes)
+    private void HandleFinalImageRequestOnClient()
     {
-        imageBytes = Decompress(imageBytes);
-        EmitSignal(SignalName.ImageBytesReceived, imageBytes);
+        EmitSignal(SignalName.FinalImageRequested);
     }
 
-    private static byte[] Compress(byte[] data)
+    private void HandleFinalImageResponseOnClient(Image image)
     {
-        using var compressedStream = new MemoryStream();
-        using var brotliStream = new BrotliStream(compressedStream, CompressionLevel.Optimal);
-        brotliStream.Write(data, 0, data.Length);
-        brotliStream.Close();
-        return compressedStream.ToArray();
+        RpcId(Networking.ServerPeerId,
+            MethodName.HandleFinalImageResponseOnServer, ImageHelper.Compress(image.GetData())
+        );
     }
 
-    private static byte[] Decompress(byte[] data)
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void SyncPlayersImagesOnClient(Godot.Collections.Dictionary<long, byte[]> playersImages)
     {
-        using var compressedStream = new MemoryStream(data);
-        using var brotliStream = new BrotliStream(compressedStream, CompressionMode.Decompress);
-        using var resultStream = new MemoryStream();
-        brotliStream.CopyTo(resultStream);
-        return resultStream.ToArray();
+        foreach (var playerId in playersImages.Keys)
+        {
+            CurrentLobbyPlayers[playerId].FinalImageData = playersImages[playerId];
+        }
+    }
+
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void SendScoreFromClient(int player, int score)
+    {
+        if (score > 0) RpcId(Networking.ServerPeerId, MethodName.HandleNewScoreOnServer, player, score);
+    }
+
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void StartRatingRound()
+    {
+        GetTree().ChangeSceneToFile("res://Main/DrawingGame/Rating/RatingScene.tscn");
     }
 }

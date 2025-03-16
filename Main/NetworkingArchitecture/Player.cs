@@ -1,4 +1,5 @@
-﻿using Godot;
+﻿using System;
+using Godot;
 
 namespace ProjectNeva.Main.NetworkingArchitecture;
 
@@ -23,14 +24,19 @@ public partial class Player : RefCounted
     public long PlayerId { get; set; }
 
     public string PlayerName { get; set; }
-    public bool WinState { get; set; } = false;
-    public int Score { get; set; } = 0;
-    public PlayerState State { get; set; } = PlayerState.Loading;
-}
-
-public struct PlayerGameAction
-{
-    public bool WinState { get; set; }
     public int Score { get; set; }
-    
+    public int PlayersVoted { get; set; } 
+    public byte[] FinalImageData { get; set; }
+    public PlayerState State { get; set; } = PlayerState.Loading;
+
+    public void AddScore(int score)
+    {
+        Score += score;
+        PlayersVoted++;
+    }
+
+    public double GetAvgScore()
+    {
+        return Math.Round((double) Score / PlayersVoted, 2);
+    }
 }

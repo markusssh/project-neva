@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Godot;
-using ProjectNeva.Main.LoggerUtils;
+using Logger = ProjectNeva.Main.Utils.Logger.Logger;
 
 namespace ProjectNeva.Main.NetworkingArchitecture;
 
 public partial class Networking : Node
 {
     public static Networking Instance { get; private set; } = null!;
-
-
+    
     public bool IsServer { get; set; }
     private const string ServerIp = "127.0.0.1";
     private const int ServerPort = 8081;
@@ -201,6 +200,12 @@ public partial class Networking : Node
 
         return Error.Ok;
     }
+
+    public bool IsMyPeer(int peerId)
+    {
+        var thisPeer = Multiplayer.MultiplayerPeer.GetUniqueId();
+        return thisPeer == peerId;
+    }
 }
 
 //TODO: make a dedicated server
@@ -227,20 +232,7 @@ public static class RestServerPlaceholder
             _ => throw new ArgumentOutOfRangeException(nameof(jwt), jwt, null)
         };
     }
-
-    public static RoundTheme GetRandomTheme()
-    {
-        Random rnd = new();
-        var rndInt = rnd.Next(0, 4);
-        return rndInt switch
-        {
-            0 => new RoundTheme("Бурлаки на Волге", "Илья Ефимович Репин"),
-            1 => new RoundTheme("Мона Лиза", "Леонардо да Винчи"),
-            2 => new RoundTheme("Странник над морем тумана", "Каспар Давид Фридрих"),
-            3 => new RoundTheme("Девятый вал", "Иван Константинович Айвазовский"),
-            _ => throw new ArgumentOutOfRangeException()
-        };
-    }
+    
 }
 
 public record AuthResponseDto(bool AuthSuccess, string LobbyId, string PlayerName);
