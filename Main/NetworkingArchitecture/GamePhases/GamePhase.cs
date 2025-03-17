@@ -4,24 +4,22 @@ namespace ProjectNeva.Main.NetworkingArchitecture.GamePhases;
 
 public abstract class GamePhase
 {
-    protected Lobby Lobby;
+    protected readonly Lobby Lobby;
 
-    public GamePhase(Lobby lobby)
+    protected GamePhase(Lobby lobby)
     {
         Lobby = lobby;
     }
 
-    public abstract void Enter();
-    public abstract void Exit();
-    public abstract void HandlePlayerDisconnect(long playerId);
-}
+    public void Enter()
+    {
+        Lobby.PlayerDisconnected += HandlePlayerDisconnect;
+    }
 
-public interface IConnectable
-{
-    void HandlePlayerConnect(long playerId);
-}
+    public void Exit()
+    {
+        Lobby.PlayerDisconnected -= HandlePlayerDisconnect;
+    }
 
-public interface IUpdateable
-{
-    void Update(float delta);
+    protected abstract void HandlePlayerDisconnect(long playerId);
 }

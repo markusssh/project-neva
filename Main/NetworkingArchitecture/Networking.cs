@@ -93,7 +93,7 @@ public partial class Networking : Node
             Multiplayer.PeerConnected += (id) =>
             {
                 Logger.LogNetwork($"Peer {id} connected to server.");
-                MultiplayerController.Instance.OnPeerConnected(id);
+                MultiplayerController.Instance.Server_OnPeerConnected(id);
             };
             Multiplayer.PeerDisconnected += (id) =>
             {

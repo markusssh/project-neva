@@ -32,4 +32,9 @@ public class LobbyManager
 
         _currentPhase.Enter();
     }
+
+    public void HandlePlayerConnect(AuthResponseDto authData)
+    {
+        _lobby.OnPlayerConnected(authData);
+    }
 }
