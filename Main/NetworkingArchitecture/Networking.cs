@@ -12,13 +12,14 @@ public partial class Networking : Node
     public static Networking Instance { get; private set; } = null!;
     
     public bool IsServer { get; set; }
+    public bool IsClient => !IsServer;
     private const string ServerIp = "127.0.0.1";
     private const int ServerPort = 8081;
     public const int ServerPeerId = 1;
     public const int ServerMaxConnections = 100;
-    public readonly Dictionary<int, AuthResponseDto> PeerAuthData = new();
+    public readonly Dictionary<long, AuthResponseDto> PeerAuthData = new();
 
-    private string DebugAuthData;
+    private string _debugAuthData;
 
     public new SceneMultiplayer Multiplayer { get; set; }
 
@@ -39,34 +40,33 @@ public partial class Networking : Node
 
         if (OS.HasFeature("player1"))
         {
-            DebugAuthData = "1";
+            _debugAuthData = "1";
         }
         else if (OS.HasFeature("player2"))
         {
-            DebugAuthData = "2";
+            _debugAuthData = "2";
         }
         else if (OS.HasFeature("player3"))
         {
-            DebugAuthData = "3";
+            _debugAuthData = "3";
         }
         else if (OS.HasFeature("player4"))
         {
-            DebugAuthData = "4";
+            _debugAuthData = "4";
         }
         else if (OS.HasFeature("player5"))
         {
-            DebugAuthData = "5";
+            _debugAuthData = "5";
         }
         else if (OS.HasFeature("player6"))
         {
-            DebugAuthData = "6";
+            _debugAuthData = "6";
         }
     }
-
-
+    
     private void ConnectMultiplayerHandlers()
     {
-        if (!IsServer)
+        if (IsClient)
         {
             Multiplayer.PeerConnected += (id) =>
             {
@@ -82,7 +82,7 @@ public partial class Networking : Node
             Multiplayer.PeerAuthenticating += (peerId) =>
             {
                 if (peerId != ServerPeerId) return;
-                Multiplayer.SendAuth(ServerPeerId, Encoding.UTF8.GetBytes(DebugAuthData));
+                Multiplayer.SendAuth(ServerPeerId, Encoding.UTF8.GetBytes(_debugAuthData));
                 Logger.LogNetwork($"Authenticating...");
             };
             Multiplayer.PeerAuthenticationFailed += (peerId) => { GD.PrintErr($"Authentication failed!"); };
@@ -143,20 +143,19 @@ public partial class Networking : Node
     public override void _Ready()
     {
         Instance = this;
-        if (IsServer)
+        if (IsClient) return;
+        
+        Logger.LogNetwork("Starting server...");
+        if (StartServer() != Error.Ok)
         {
-            Logger.LogNetwork("Starting server...");
-            if (StartServer() != Error.Ok)
-            {
-                GD.PrintErr("Server start failed!");
-                return;
-            }
-
-            GetTree().GetRoot().Ready += () =>
-            {
-                Logger.LogNetwork("Server is ready!");
-            };
+            GD.PrintErr("Server start failed!");
+            return;
         }
+
+        GetTree().GetRoot().Ready += () =>
+        {
+            Logger.LogNetwork("Server is ready!");
+        };
     }
 
     private Error StartServer()
@@ -209,14 +208,8 @@ public partial class Networking : Node
 }
 
 //TODO: make a dedicated server
-//                                                
-//    ______    _____    _____    _____            _____    _____   ______    _   _    _____   ______ 
-//    | ___ \  |  ___|  /  ___|  |_   _|          /  ___|  |  ___|  | ___ \  | | | |  |  ___|  | ___ \
-//    | |_/ /  | |__    \ `--.     | |            \ `--.   | |__    | |_/ /  | | | |  | |__    | |_/ /
-//    |    /   |  __|    `--. \    | |             `--. \  |  __|   |    /   | | | |  |  __|   |    / 
-//    | |\ \   | |___   /\__/ /    | |            /\__/ /  | |___   | |\ \   | |/ /   | |___   | |\ \ 
-//    |_| \_\  \____/   \____/     \_/            \____/   \____/   |_| \_\  |___/    \____/   |_| \_\
-//
+#region REST Server Simulation
+
 public static class RestServerPlaceholder
 {
     public static AuthResponseDto Authenticate(string jwt)
@@ -236,3 +229,5 @@ public static class RestServerPlaceholder
 }
 
 public record AuthResponseDto(bool AuthSuccess, string LobbyId, string PlayerName);
+
+#endregion

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
+using ProjectNeva.Main.NetworkingArchitecture.GamePhases;
+using ProjectNeva.Main.NetworkingArchitecture.LobbyLogic;
 using ProjectNeva.Main.Utils;
 using Logger = ProjectNeva.Main.Utils.Logger.Logger;
 
@@ -20,58 +22,36 @@ public partial class MultiplayerController : Node
     }
 
 
-    //                        
-    //     _____    _____   ______    _   _    _____   ______            _____    _____   ______    _____ 
-    //    /  ___|  |  ___|  | ___ \  | | | |  |  ___|  | ___ \          /  ___|  |_   _|  |  _  \  |  ___|
-    //    \ `--.   | |__    | |_/ /  | | | |  | |__    | |_/ /          \ `--.     | |    | | | |  | |__  
-    //     `--. \  |  __|   |    /   | | | |  |  __|   |    /            `--. \    | |    | | | |  |  __| 
-    //    /\__/ /  | |___   | |\ \   | |/ /   | |___   | |\ \           /\__/ /   _| |_   | |/ /   | |___ 
-    //    \____/   \____/   |_| \_\  |___/    \____/   |_| \_\          \____/   \_____/  |___/    \____/ 
-    //
+    #region Server Logic
 
-    private readonly Dictionary<string, Lobby> _lobbyRepo = new();
-
-    private readonly Dictionary<long, string> _playerIdToLobbyId = new();
+    private readonly Dictionary<string, LobbyManager> _lobbyManagers = new();
+    private readonly Dictionary<long, string> _playerIdToLobbyManagerId = new();
 
     [Signal]
     public delegate void LobbyIsLoadedEventHandler(string lobbyId);
 
-    private Lobby GetLobbyElseCreate(string lobbyId)
+    public async Task Server_OnPeerConnected(long newPeerId)
     {
-        if (_lobbyRepo.TryGetValue(lobbyId, out var lobby))
-        {
-            return lobby;
-        }
-
-        var createLobby = new Lobby(lobbyId);
-        _lobbyRepo[lobbyId] = createLobby;
-        return createLobby;
-    }
-
-    private void DisconnectPlayerFromLobby(long playerId, string lobbyId)
-    {
-        if (!_lobbyRepo.TryGetValue(lobbyId, out var lobby)) return;
-        lobby.Players.Remove(playerId);
-        if (lobby.Players.Count == 0)
-        {
-            _lobbyRepo.Remove(lobbyId);
-            Logger.LogNetwork($"Lobby {lobbyId} removed");
-        }
-    }
-
-    public async Task OnPeerConnected(long newPeerId)
-    {
-        if (!Networking.Instance.PeerAuthData.TryGetValue((int)newPeerId, out var peerAuthData))
+        if (!Networking.Instance.PeerAuthData.TryGetValue(newPeerId, out var peerAuthData))
         {
             GD.PrintErr($"Peer {newPeerId} AuthData is null");
             return;
         }
 
-        var lobby = GetLobbyElseCreate(peerAuthData.LobbyId);
+        LobbyManager lobbyManager;
+        if (_lobbyManagers.TryGetValue(peerAuthData.LobbyId, out lobbyManager)) {}
+        else
+        {
+            var lobby = new Lobby(peerAuthData.LobbyId);
+            lobbyManager = new LobbyManager(lobby);
+            lobbyManager.TransitionTo(LobbyState.WaitingPlayers);
+        }
+        
+        
+        
         if (lobby.State != Lobby.LobbyState.WaitingPlayers || lobby.Players.Count >= lobby.LobbySize)
         {
             //TODO: add ability to reconnect
-
             GD.PrintErr($"Cannot connect peer {newPeerId}! Lobby {lobby.LobbyId} is not accepting players.");
             Networking.Instance.Multiplayer.DisconnectPeer((int)newPeerId);
             return;
@@ -105,6 +85,29 @@ public partial class MultiplayerController : Node
             lobby.State = Lobby.LobbyState.Playing;
             await OnPlaying(lobby);
         }
+    }
+
+    private void DisconnectPlayerFromLobby(long playerId, string lobbyId)
+    {
+        if (!_lobbyRepo.TryGetValue(lobbyId, out var lobby)) return;
+        lobby.Players.Remove(playerId);
+        if (lobby.Players.Count == 0)
+        {
+            _lobbyRepo.Remove(lobbyId);
+            Logger.LogNetwork($"Lobby {lobbyId} removed");
+        }
+    }
+
+    private Lobby GetLobbyElseCreate(string lobbyId)
+    {
+        if (_lobbyRepo.TryGetValue(lobbyId, out var lobby))
+        {
+            return lobby;
+        }
+
+        var createLobby = new Lobby(lobbyId);
+        _lobbyRepo[lobbyId] = createLobby;
+        return createLobby;
     }
 
     public void OnPeerDisconnected(long disconnectingPeerId)
@@ -264,16 +267,11 @@ public partial class MultiplayerController : Node
         if (!_lobbyRepo.TryGetValue(_playerIdToLobbyId[playerId], out var lobby)) return;
         lobby.Players[playerToRateId].AddScore(score);
     }
+    
+    #endregion
 
-    //                        
-    //     _____    _        _____    _____    _   _    _____            _____    _____   ______    _____ 
-    //    /  __ \  | |      |_   _|  |  ___|  | \ | |  |_   _|          /  ___|  |_   _|  |  _  \  |  ___|
-    //    | /  \/  | |        | |    | |__    |  \| |    | |            \ `--.     | |    | | | |  | |__  
-    //    | |      | |        | |    |  __|   | . ` |    | |             `--. \    | |    | | | |  |  __| 
-    //    | \__/\  | |____   _| |_   | |___   | |\  |    | |            /\__/ /   _| |_   | |/ /   | |___ 
-    //     \____/  \_____/  \_____/  \____/   \_| \_/    \_/            \____/   \_____/  |___/    \____/ 
-    //
-
+    #region Client Logic
+    
     public readonly Godot.Collections.Dictionary<long, Player> CurrentLobbyPlayers = new();
 
     public int MaxPlayers;
@@ -388,4 +386,12 @@ public partial class MultiplayerController : Node
     {
         GetTree().ChangeSceneToFile("res://Main/DrawingGame/Rating/RatingScene.tscn");
     }
+    
+    #endregion
+
+    #region RPC Methods
+
+    
+
+    #endregion
 }

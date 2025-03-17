@@ -16,26 +16,30 @@ func _ready() -> void:
 	showcase.columns = ceili(sqrt(images.size()))
 	
 	for player in images:
+		var drawing_texure = ImageTexture.create_from_image(images[player])
+		
 		if Networking.IsMyPeer(player):
 			var t: TextureRect = TextureRect.new()
-			t.texture = ImageTexture.create_from_image(images[player])
+			t.texture = drawing_texure
 			showcase.add_child(t)
 			continue
 		
-		var timer: Timer = Timer.new()
-		timer.one_shot = true
-		add_child(timer)
+		curr_drawing.texture = drawing_texure
 		
-		curr_drawing.texture = ImageTexture.create_from_image(images[player])
-		
-		timer.start(MultiplayerController.TimeToRateOneSec)
-		await timer.timeout
-		timer.queue_free()
-		
+		run_timer(MultiplayerController.TimeToRateOneSec)
 		showcase.add_child(curr_drawing.duplicate())
 		var score := stars_container.get_score()
 		MultiplayerController.SendScoreFromClient(player, score)
 		stars_container.clear_score()
 	
+	run_timer(1)
 	drawing_display.hide()
 	showcase.show()
+
+func run_timer(sec: int) -> void:
+	var timer: Timer = Timer.new()
+	timer.one_shot = true
+	add_child(timer)
+	timer.start(sec)
+	await timer.timeout
+	timer.queue_free()
