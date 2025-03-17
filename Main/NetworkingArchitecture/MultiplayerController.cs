@@ -26,11 +26,26 @@ public partial class MultiplayerController : Node
     #region Server Logic
 
     private readonly Dictionary<string, LobbyManager> _lobbyManagers = new();
-
     private readonly Dictionary<long, string> _playerIdToLobbyManagerId = new();
+    
+    #region Broadcasting
+    public void Server_Broadcast(Lobby lobby, string methodName, params Variant[] args)
+    {
+        foreach (var playerId in lobby.Players.Keys)
+        {
+            RpcId(playerId, methodName, args);
+        }
+    }
 
-    [Signal]
-    public delegate void LobbyIsLoadedEventHandler(string lobbyId);
+    public void Server_BroadcastNewPlayer(long joinerId, Lobby lobby)
+    {
+        foreach (var playerId in lobby.Players.Keys)
+        {
+            RpcId(joinerId, MethodName.Client_GetNewPlayer, playerId, lobby.Players[joinerId]);
+            RpcId(playerId, MethodName.Client_GetNewPlayer, joinerId, lobby.Players[playerId]);
+        }
+    }
+    #endregion
 
     public async Task Server_OnPeerConnected(long newPeerId)
     {
@@ -56,16 +71,7 @@ public partial class MultiplayerController : Node
     {
         RpcId(playerId, MethodName.Client_GetLobbySettings, lobby.LobbySize, lobby.Topic);
     }
-    
-    public void Server_BroadcastNewPlayer(long joinerId, Lobby lobby)
-    {
-        foreach (var playerId in lobby.Players.Keys)
-        {
-            RpcId(joinerId, MethodName.Client_GetNewPlayer, playerId, lobby.Players[joinerId]);
-            RpcId(playerId, MethodName.Client_GetNewPlayer, joinerId, lobby.Players[playerId]);
-        }
-    }
-    
+
     public void Server_OnPeerDisconnected(long peerId)
     {
         if (!_playerIdToLobbyManagerId.TryGetValue(peerId, out var lobbyId)) return;
@@ -80,22 +86,6 @@ public partial class MultiplayerController : Node
         _playerIdToLobbyManagerId.Remove(peerId);
         
         Logger.LogMessage($"Peer {peerId} disconnected from this server");
-    }
-
-    public void Server_BroadcastPlayerLeft(long leaverId, Lobby lobby)
-    {
-        foreach (var playerId in lobby.Players.Keys)
-        {
-            RpcId(playerId, MethodName.Client_ClearLeavingPlayer);
-        }
-    }
-
-    public void Server_BroadcastDrawingStart(Lobby lobby)
-    {
-        foreach (var playerId in lobby.Players.Keys)
-        {
-            RpcId(playerId, MethodName.Client_LoadDrawingScene);
-        }
     }
 
     private async Task OnPlaying(Lobby lobby)

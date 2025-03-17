@@ -25,9 +25,13 @@ public abstract class GamePhase
     }
 
     protected abstract void HandlePlayerConnect(long playerId, AuthResponseDto authData);
+
     protected virtual void HandlePlayerDisconnect(long playerId)
     {
         Lobby.Players.Remove(playerId);
-        MultiplayerController.Instance.Server_BroadcastPlayerLeft(playerId, Lobby);
+        MultiplayerController.Instance.Server_Broadcast(
+            Lobby,
+            MultiplayerController.MethodName.Client_ClearLeavingPlayer,
+            playerId);
     }
 }
