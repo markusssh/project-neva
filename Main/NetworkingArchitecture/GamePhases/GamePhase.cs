@@ -4,22 +4,30 @@ namespace ProjectNeva.Main.NetworkingArchitecture.GamePhases;
 
 public abstract class GamePhase
 {
-    protected readonly Lobby Lobby;
+    protected readonly LobbyManager LobbyManager;
+    protected Lobby Lobby => LobbyManager.Lobby;
 
-    protected GamePhase(Lobby lobby)
+    protected GamePhase(LobbyManager lobbyManager)
     {
-        Lobby = lobby;
+        LobbyManager = lobbyManager;
     }
 
-    public void Enter()
+    public virtual void Enter()
     {
+        Lobby.PlayerConnected += HandlePlayerConnect;
         Lobby.PlayerDisconnected += HandlePlayerDisconnect;
     }
 
-    public void Exit()
+    public virtual void Exit()
     {
+        Lobby.PlayerConnected -= HandlePlayerConnect;
         Lobby.PlayerDisconnected -= HandlePlayerDisconnect;
     }
 
-    protected abstract void HandlePlayerDisconnect(long playerId);
+    protected abstract void HandlePlayerConnect(long playerId, AuthResponseDto authData);
+    protected virtual void HandlePlayerDisconnect(long playerId)
+    {
+        Lobby.Players.Remove(playerId);
+        MultiplayerController.Instance.Server_BroadcastPlayerLeft(playerId, Lobby);
+    }
 }

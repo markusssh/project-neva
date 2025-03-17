@@ -3,7 +3,7 @@
 public enum LobbyState
 {
     WaitingPlayers,
-    Loading,
+    LoadingDrawing,
     Drawing,
     FinishedDrawing,
     Rating,

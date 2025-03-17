@@ -5,12 +5,12 @@ namespace ProjectNeva.Main.NetworkingArchitecture.LobbyLogic;
 
 public class LobbyManager
 {
-    private readonly Lobby _lobby;
+    public readonly Lobby Lobby;
     private GamePhase _currentPhase;
 
     public LobbyManager(Lobby lobby)
     {
-        _lobby = lobby;
+        Lobby = lobby;
     }
 
     public void TransitionTo(LobbyState newState)
@@ -19,8 +19,8 @@ public class LobbyManager
 
         _currentPhase = newState switch
         {
-            LobbyState.WaitingPlayers => new WaitingPlayersPhase(_lobby),
-            LobbyState.Loading => expr,
+            LobbyState.WaitingPlayers => new WaitingPlayersPhase(this),
+            LobbyState.LoadingDrawing => new LoadingDrawingPhase(this),
             LobbyState.Drawing => expr,
             LobbyState.FinishedDrawing => expr,
             LobbyState.Rating => expr,
@@ -31,10 +31,5 @@ public class LobbyManager
         };
 
         _currentPhase.Enter();
-    }
-
-    public void HandlePlayerConnect(AuthResponseDto authData)
-    {
-        _lobby.OnPlayerConnected(authData);
     }
 }

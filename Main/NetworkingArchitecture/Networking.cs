@@ -98,7 +98,7 @@ public partial class Networking : Node
             Multiplayer.PeerDisconnected += (id) =>
             {
                 Logger.LogNetwork($"Peer {id} disconnected from server.");
-                MultiplayerController.Instance.OnPeerDisconnected(id);
+                MultiplayerController.Instance.Server_OnPeerDisconnected(id);
             };
             Multiplayer.PeerAuthenticating += (id) => { Logger.LogNetwork($"Peer {id} authenticating..."); };
             Multiplayer.PeerAuthenticationFailed += (id) => { GD.PrintErr($"Peer {id} authentication failed!"); };

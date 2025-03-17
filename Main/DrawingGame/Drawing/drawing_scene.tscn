@@ -1,12 +1,12 @@
 [gd_scene load_steps=37 format=3 uid="uid://d3nhi2w5tqpck"]
 
-[ext_resource type="Script" path="res://Main/DrawingGame/Drawing/drawer_scene.gd" id="1_da58w"]
-[ext_resource type="Script" path="res://Main/DrawingGame/Drawing/drawing_canvas.gd" id="2_b0q1k"]
-[ext_resource type="ButtonGroup" uid="uid://c65o3aj1a6ld4" path="res://Main/Assets/pallete_button_group.tres" id="5_mruvl"]
-[ext_resource type="LabelSettings" uid="uid://bv26f3wi54brd" path="res://Main/Assets/label_settings.tres" id="7_unjb5"]
-[ext_resource type="ButtonGroup" uid="uid://c5loj0s0h4wiw" path="res://Main/Assets/instrument_button_group.tres" id="8_43mr8"]
-[ext_resource type="ButtonGroup" uid="uid://d4i1tamup7b5u" path="res://Main/Assets/brush_size_button_group.tres" id="10_i1k64"]
-[ext_resource type="PackedScene" uid="uid://cvdgrkvjr5e4c" path="res://Main/Debug/debug_label.tscn" id="11_p71pq"]
+[ext_resource type="Script" path="res://Main/DrawingGame/Drawing/drawing_scene.gd" id="1_5b20i"]
+[ext_resource type="Script" path="res://Main/DrawingGame/Drawing/drawing_canvas.gd" id="2_3n3ua"]
+[ext_resource type="ButtonGroup" uid="uid://c65o3aj1a6ld4" path="res://Main/Assets/pallete_button_group.tres" id="3_shcle"]
+[ext_resource type="ButtonGroup" uid="uid://d4i1tamup7b5u" path="res://Main/Assets/brush_size_button_group.tres" id="4_s78lr"]
+[ext_resource type="LabelSettings" uid="uid://bv26f3wi54brd" path="res://Main/Assets/label_settings.tres" id="5_hs7pl"]
+[ext_resource type="ButtonGroup" uid="uid://c5loj0s0h4wiw" path="res://Main/Assets/instrument_button_group.tres" id="6_1pi43"]
+[ext_resource type="PackedScene" uid="uid://cvdgrkvjr5e4c" path="res://Main/Debug/debug_label.tscn" id="7_0fg2h"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nantp"]
 bg_color = Color(0.956863, 0.945098, 0.870588, 1)
@@ -126,14 +126,14 @@ physical_keycode = 83
 [sub_resource type="Shortcut" id="Shortcut_2qjjb"]
 events = [SubResource("InputEventKey_x4w5n")]
 
-[node name="DrawerScene" type="Control" node_paths=PackedStringArray("drawing_canvas", "round_end_timer", "round_end_progress")]
+[node name="DrawingScene" type="Control" node_paths=PackedStringArray("drawing_canvas", "round_end_timer", "round_end_progress")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_da58w")
+script = ExtResource("1_5b20i")
 drawing_canvas = NodePath("HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer")
 round_end_timer = NodePath("RoundEndTimer")
 round_end_progress = NodePath("RoundEndProgress")
@@ -158,7 +158,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_nantp")
-script = ExtResource("2_b0q1k")
+script = ExtResource("2_3n3ua")
 drawing_line = NodePath("PaintViewportContainer/PaintViewport/DrawingLine")
 paint_viewport = NodePath("PaintViewportContainer/PaintViewport")
 painted_image = NodePath("PaintViewportContainer/PaintViewport/PaintedImage")
@@ -166,8 +166,8 @@ background = NodePath("PaintViewportContainer/PaintViewport/Background")
 erase_mask_line = NodePath("EraseMaskViewportContainer/EraseMaskViewport/EraseMaskLine")
 erase_mask_viewport = NodePath("EraseMaskViewportContainer/EraseMaskViewport")
 color_picker = NodePath("../RightPanelContainer/VBoxContainer/ColorPicker")
-pallete_button_group = ExtResource("5_mruvl")
-brush_size_button_group = ExtResource("10_i1k64")
+pallete_button_group = ExtResource("3_shcle")
+brush_size_button_group = ExtResource("4_s78lr")
 picked_color = NodePath("../RightPanelContainer/VBoxContainer/PickedColor")
 
 [node name="EraseMaskViewportContainer" type="SubViewportContainer" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer"]
@@ -235,14 +235,14 @@ theme_override_constants/separation = 10
 [node name="Label" type="Label" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/BrushSizePanelContainer/ExtraDrawingSettingsHBoxContainer"]
 layout_mode = 2
 text = "Brush Size:"
-label_settings = ExtResource("7_unjb5")
+label_settings = ExtResource("5_hs7pl")
 
 [node name="XSButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/BrushSizePanelContainer/ExtraDrawingSettingsHBoxContainer"]
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 toggle_mode = true
-button_group = ExtResource("10_i1k64")
+button_group = ExtResource("4_s78lr")
 shortcut = SubResource("Shortcut_vs7sb")
 text = "XS"
 
@@ -251,7 +251,7 @@ custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 toggle_mode = true
-button_group = ExtResource("10_i1k64")
+button_group = ExtResource("4_s78lr")
 shortcut = SubResource("Shortcut_i6ls5")
 text = "S"
 
@@ -261,7 +261,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 toggle_mode = true
 button_pressed = true
-button_group = ExtResource("10_i1k64")
+button_group = ExtResource("4_s78lr")
 shortcut = SubResource("Shortcut_hddf7")
 text = "M"
 
@@ -270,7 +270,7 @@ custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 toggle_mode = true
-button_group = ExtResource("10_i1k64")
+button_group = ExtResource("4_s78lr")
 shortcut = SubResource("Shortcut_wiot2")
 text = "L"
 
@@ -279,7 +279,7 @@ custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 toggle_mode = true
-button_group = ExtResource("10_i1k64")
+button_group = ExtResource("4_s78lr")
 shortcut = SubResource("Shortcut_36s1x")
 text = "XL"
 
@@ -338,7 +338,7 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 toggle_mode = true
-button_group = ExtResource("8_43mr8")
+button_group = ExtResource("6_1pi43")
 shortcut = SubResource("Shortcut_jm4rq")
 text = "Picker"
 
@@ -348,7 +348,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 toggle_mode = true
 button_pressed = true
-button_group = ExtResource("8_43mr8")
+button_group = ExtResource("6_1pi43")
 shortcut = SubResource("Shortcut_y5iuu")
 text = "Brush"
 
@@ -357,7 +357,7 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 toggle_mode = true
-button_group = ExtResource("8_43mr8")
+button_group = ExtResource("6_1pi43")
 shortcut = SubResource("Shortcut_4uwcl")
 text = "Eraser"
 
@@ -366,7 +366,7 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 toggle_mode = true
-button_group = ExtResource("8_43mr8")
+button_group = ExtResource("6_1pi43")
 shortcut = SubResource("Shortcut_0cg8c")
 text = "Bucket
 "
@@ -375,7 +375,7 @@ text = "Bucket
 visible = false
 layout_mode = 2
 toggle_mode = true
-button_group = ExtResource("8_43mr8")
+button_group = ExtResource("6_1pi43")
 text = "Line
 "
 
@@ -383,28 +383,28 @@ text = "Line
 visible = false
 layout_mode = 2
 toggle_mode = true
-button_group = ExtResource("8_43mr8")
+button_group = ExtResource("6_1pi43")
 text = "Empty Rectangle"
 
 [node name="FullRectangleButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer"]
 visible = false
 layout_mode = 2
 toggle_mode = true
-button_group = ExtResource("8_43mr8")
+button_group = ExtResource("6_1pi43")
 text = "Full Rectangle"
 
 [node name="EmptyCircleButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer"]
 visible = false
 layout_mode = 2
 toggle_mode = true
-button_group = ExtResource("8_43mr8")
+button_group = ExtResource("6_1pi43")
 text = "Empty Circle"
 
 [node name="FullCircleButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer"]
 visible = false
 layout_mode = 2
 toggle_mode = true
-button_group = ExtResource("8_43mr8")
+button_group = ExtResource("6_1pi43")
 text = "Full Circle
 "
 
@@ -435,7 +435,7 @@ theme_override_font_sizes/font_size = 32
 shortcut = SubResource("Shortcut_2qjjb")
 text = "💾"
 
-[node name="DebugLabel" parent="." instance=ExtResource("11_p71pq")]
+[node name="DebugLabel" parent="." instance=ExtResource("7_0fg2h")]
 layout_mode = 0
 
 [node name="RoundEndProgress" type="ProgressBar" parent="."]

@@ -12,12 +12,12 @@ public class Lobby
         LobbyId = lobbyId;
     }
     
-    public event Action<AuthResponseDto> PlayerConnected;
+    public event Action<long, AuthResponseDto> PlayerConnected;
     public event Action<long> PlayerDisconnected;
 
-    public void OnPlayerConnected(AuthResponseDto authData)
+    public void OnPlayerConnected(long playerId, AuthResponseDto authData)
     {
-        PlayerConnected?.Invoke(authData);
+        PlayerConnected?.Invoke(playerId, authData);
     }
 
     public void OnPlayerDisconnected(long playerId)
