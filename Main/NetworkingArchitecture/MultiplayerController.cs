@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
 using ProjectNeva.Main.NetworkingArchitecture.GamePhases;
@@ -18,8 +19,6 @@ public partial class MultiplayerController : Node
     public override void _Ready()
     {
         Instance = this;
-
-        PlayerLoadedGameScene += OnPlayerLoadedGameScene;
     }
 
 
@@ -88,38 +87,13 @@ public partial class MultiplayerController : Node
         Logger.LogMessage($"Peer {peerId} disconnected from this server");
     }
 
-    private async Task OnPlaying(Lobby lobby)
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void Server_HandlePlayerLoadDrawingScene()
     {
-        await OnLoading(lobby);
-        foreach (var player in lobby.Players.Values)
-        {
-            RpcId(player.PlayerId, MethodName.HandleGameReadyOnClient);
-        }
-    }
-
-    private async Task OnLoading(Lobby lobby)
-    {
-        var tcs = new TaskCompletionSource();
-
-        void OnLobbyLoaded(string lobbyId)
-        {
-            if (lobbyId == lobby.LobbyId)
-            {
-                tcs.TrySetResult();
-                LobbyIsLoaded -= OnLobbyLoaded;
-            }
-        }
-
-        LobbyIsLoaded += OnLobbyLoaded;
-
-        foreach (var player in lobby.Players.Values)
-        {
-            RpcId(player.PlayerId, MethodName.StartDrawingRound);
-        }
-
-        await tcs.Task;
-
-        CreateLobbyDrawingTimer(lobby.LobbyId);
+        var playerId = Multiplayer.GetRemoteSenderId();
+        if (!_playerIdToLobbyManagerId.TryGetValue(playerId, out var lobbyId)) return;
+        var lobby = _lobbyManagers[lobbyId].Lobby;
+        lobby.OnPlayerLoadedDrawingScene(playerId);
     }
 
     private void CreateLobbyDrawingTimer(string lobbyId)
@@ -242,14 +216,8 @@ public partial class MultiplayerController : Node
     [Signal] public delegate void PlayerBecameDrawerEventHandler(long playerId);
     [Signal] public delegate void ImageBytesReceivedEventHandler(byte[] bytes);
     [Signal] public delegate void TopicIdReceivedEventHandler(int topicId);
-    [Signal] public delegate void PlayerLoadedGameSceneEventHandler();
-    [Signal] public delegate void GameReadyEventHandler();
+    [Signal] public delegate void DrawingGameStartedEventHandler();
     [Signal] public delegate void FinalImageRequestedEventHandler();
-
-    private void OnPlayerLoadedGameScene()
-    {
-        RpcId(Networking.ServerPeerId, MethodName.HandlePlayerLoadedGameSceneOnServer);
-    }
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void Client_GetLobbySettings(int lobbySize, string topic)
@@ -278,10 +246,15 @@ public partial class MultiplayerController : Node
         GetTree().ChangeSceneToFile("res://Main/DrawingGame/Drawing/drawing_scene.tscn");
     }
 
-    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void HandleGameReadyOnClient()
+    public void Client_NotifyDrawingSceneReady()
     {
-        EmitSignal(SignalName.GameReady);
+        RpcId(Networking.ServerPeerId, MethodName.Server_HandlePlayerLoadDrawingScene);
+    }
+
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void Client_ShootDrawingScene()
+    {
+        EmitSignal(SignalName.DrawingGameStarted);
     }
 
     private void HandleDrawingStateChangeOnClient(bool drawing)

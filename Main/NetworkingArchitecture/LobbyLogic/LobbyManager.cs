@@ -21,7 +21,7 @@ public class LobbyManager
         {
             LobbyState.WaitingPlayers => new WaitingPlayersPhase(this),
             LobbyState.LoadingDrawing => new LoadingDrawingPhase(this),
-            LobbyState.Drawing => expr,
+            LobbyState.Drawing => new DrawingPhase(this),
             LobbyState.FinishedDrawing => expr,
             LobbyState.Rating => expr,
             LobbyState.FinishedRating => expr,

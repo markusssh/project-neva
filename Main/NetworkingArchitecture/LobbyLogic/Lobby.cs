@@ -14,6 +14,7 @@ public class Lobby
     
     public event Action<long, AuthResponseDto> PlayerConnected;
     public event Action<long> PlayerDisconnected;
+    public event Action<long> PlayerLoadedDrawingScene;
 
     public void OnPlayerConnected(long playerId, AuthResponseDto authData)
     {
@@ -23,6 +24,11 @@ public class Lobby
     public void OnPlayerDisconnected(long playerId)
     {
         PlayerDisconnected?.Invoke(playerId);
+    }
+
+    public void OnPlayerLoadedDrawingScene(long playerId)
+    {
+        PlayerLoadedDrawingScene?.Invoke(playerId);
     }
 
     public string LobbyId { get; set; }
