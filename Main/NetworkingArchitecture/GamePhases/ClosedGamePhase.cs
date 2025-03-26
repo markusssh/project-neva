@@ -1,6 +1,4 @@
-﻿using ProjectNeva.Main.NetworkingArchitecture.LobbyLogic;
-
-namespace ProjectNeva.Main.NetworkingArchitecture.GamePhases;
+﻿namespace ProjectNeva.Main.NetworkingArchitecture.GamePhases;
 
 public abstract class ClosedGamePhase : GamePhase
 {

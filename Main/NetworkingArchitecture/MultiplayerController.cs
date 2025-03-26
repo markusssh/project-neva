@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
 using ProjectNeva.Main.NetworkingArchitecture.GamePhases;
-using ProjectNeva.Main.NetworkingArchitecture.LobbyLogic;
 using ProjectNeva.Main.Utils;
 using Logger = ProjectNeva.Main.Utils.Logger.Logger;
 

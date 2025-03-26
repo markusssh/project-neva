@@ -1,7 +1,7 @@
 ﻿using System;
 using ProjectNeva.Main.NetworkingArchitecture.GamePhases;
 
-namespace ProjectNeva.Main.NetworkingArchitecture.LobbyLogic;
+namespace ProjectNeva.Main.NetworkingArchitecture;
 
 public class LobbyManager
 {
@@ -23,8 +23,8 @@ public class LobbyManager
             LobbyState.LoadingDrawing => new LoadingDrawingPhase(this),
             LobbyState.Drawing => new DrawingPhase(this),
             LobbyState.LoadingRating => new LoadingRatingPhase(this),
-            /*LobbyState.Rating => expr,
-            LobbyState.FinishedRating => expr,
+            LobbyState.Rating => new RatingPhase(this),
+            /*LobbyState.FinishedRating => expr,
             LobbyState.ShowingResults => expr,
             LobbyState.Finished => expr,*/
             _ => throw new ArgumentOutOfRangeException(nameof(newState))

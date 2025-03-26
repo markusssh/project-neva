@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ProjectNeva.Main.NetworkingArchitecture.LobbyLogic;
+namespace ProjectNeva.Main.NetworkingArchitecture;
 
 public class Lobby
 {
