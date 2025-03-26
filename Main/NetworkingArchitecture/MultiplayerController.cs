@@ -112,6 +112,13 @@ public partial class MultiplayerController : Node
         Server_GetLobbyByPlayerId(playerId)?.OnPlayerDrawingStateChanged(playerId, drawingOn);
     }
 
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void Server_HandleNewScore(long toPlayerId, int score)
+    {
+        var playerId = Multiplayer.GetRemoteSenderId();
+        Server_GetLobbyByPlayerId(playerId)?.OnNewScoreReceived(playerId, toPlayerId, score);
+    }
+
     #endregion
 
     #region Client Logic

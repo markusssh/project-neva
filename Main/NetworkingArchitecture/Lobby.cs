@@ -15,6 +15,7 @@ public class Lobby
     public event Action<long> PlayerLoadedNewScene;
     public event Action<long, byte[]> PlayerSentFinalImage;
     public event Action<long, bool> PlayerDrawingStateChanged;
+    public event Action<long, long, int> NewScoreReceived;
     public string LobbyId { get; set; }
     public Dictionary<long, Player> Players { get; set; } = new();
     public Godot.Collections.Dictionary Images { get; set; } = new();
@@ -45,5 +46,10 @@ public class Lobby
     public void OnPlayerDrawingStateChanged(long playerId, bool drawingOn)
     {
         PlayerDrawingStateChanged?.Invoke(playerId, drawingOn);
+    }
+
+    public void OnNewScoreReceived(long fromPlayerId, long toPlayerId, int score)
+    {
+        NewScoreReceived?.Invoke(fromPlayerId, toPlayerId, score);
     }
 }
