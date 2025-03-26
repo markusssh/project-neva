@@ -28,7 +28,7 @@ public partial class MultiplayerController : Node
     private readonly Dictionary<long, string> _playerIdToLobbyManagerId = new();
     
     #region Broadcasting
-    public void Server_Broadcast(Lobby lobby, string methodName, params Variant[] args)
+    public void Server_BroadcastLobby(Lobby lobby, string methodName, params Variant[] args)
     {
         foreach (var playerId in lobby.Players.Keys)
         {
@@ -36,7 +36,7 @@ public partial class MultiplayerController : Node
         }
     }
 
-    public void Server_BroadcastNewPlayer(long joinerId, Lobby lobby)
+    public void Server_BroadcastLobbyNewPlayer(long joinerId, Lobby lobby)
     {
         foreach (var playerId in lobby.Players.Keys)
         {
@@ -46,7 +46,7 @@ public partial class MultiplayerController : Node
     }
     #endregion
 
-    public async Task Server_OnPeerConnected(long newPeerId)
+    public void Server_OnPeerConnected(long newPeerId)
     {
         if (!Networking.Instance.PeerAuthData.Remove(newPeerId, out var peerAuthData))
         {
@@ -66,9 +66,18 @@ public partial class MultiplayerController : Node
         _playerIdToLobbyManagerId.Add(newPeerId, lobby.LobbyId);
     }
 
+    private Lobby Server_GetLobbyByPlayerId(long playerId)
+    {
+        return !_playerIdToLobbyManagerId.TryGetValue(playerId, out var lobbyId)
+            ? null : _lobbyManagers[lobbyId].Lobby;
+    }
+
     public void Server_SendLobbySettings(long playerId, Lobby lobby)
     {
-        RpcId(playerId, MethodName.Client_GetLobbySettings, lobby.LobbySize, lobby.Topic);
+        RpcId(playerId, MethodName.Client_GetLobbySettings,
+            lobby.LobbySize, 
+            lobby.Topic, 
+            lobby.DrawingTimeSec);
     }
 
     public void Server_OnPeerDisconnected(long peerId)
@@ -91,75 +100,21 @@ public partial class MultiplayerController : Node
     private void Server_HandlePlayerLoadDrawingScene()
     {
         var playerId = Multiplayer.GetRemoteSenderId();
-        if (!_playerIdToLobbyManagerId.TryGetValue(playerId, out var lobbyId)) return;
-        var lobby = _lobbyManagers[lobbyId].Lobby;
-        lobby.OnPlayerLoadedDrawingScene(playerId);
-    }
-
-    private void CreateLobbyDrawingTimer(string lobbyId)
-    {
-        Timer timer = new();
-        AddChild(timer);
-        timer.OneShot = true;
-        timer.Start(DrawingRoundTimeSec);
-        timer.Timeout += OnTimerTimeout;
-
-        void OnTimerTimeout()
-        {
-            timer.QueueFree();
-            OnDrawingRoundEnd(lobbyId);
-        }
-    }
-
-    private void OnDrawingRoundEnd(string lobbyId)
-    {
-        if (!_lobbyRepo.TryGetValue(lobbyId, out var lobby)) return;
-        foreach (var player in lobby.Players.Values)
-        {
-            RpcId(player.PlayerId, MethodName.HandleFinalImageRequestOnClient);
-        }
+        Server_GetLobbyByPlayerId(playerId)?.OnPlayerLoadedDrawingScene(playerId);
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void HandlePlayerLoadedGameSceneOnServer()
+    private void Server_ReceiveFinalImage(byte[] imageData)
     {
         var playerId = Multiplayer.GetRemoteSenderId();
-        if (!_lobbyRepo.TryGetValue(_playerIdToLobbyId[playerId], out var lobby)) return;
-        lobby.Players[playerId].State = Player.PlayerState.Playing;
-        Logger.LogNetwork($"Player {playerId} from lobby {lobby.LobbyId} has loaded game scene");
-
-        var everyoneIsLoaded = true;
-        foreach (var player in lobby.Players.Values)
-        {
-            if (player.State != Player.PlayerState.Playing) everyoneIsLoaded = false;
-        }
-
-        if (everyoneIsLoaded)
-        {
-            EmitSignal(SignalName.LobbyIsLoaded, lobby.LobbyId);
-            Logger.LogNetwork($"Everyone on lobby {lobby.LobbyId} has been loaded");
-        }
+        Server_GetLobbyByPlayerId(playerId)?.OnPlayerSentFinalImage(playerId, imageData);
     }
-
+    
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void HandleFinishedDrawingOnServer()
+    private void Server_HandlePlayerDrawingStateChange(bool drawingOn)
     {
         var playerId = Multiplayer.GetRemoteSenderId();
-        if (!_lobbyRepo.TryGetValue(_playerIdToLobbyId[playerId], out var lobby)) return;
-        lobby.PlayersFinishedDrawingCounter++;
-        if (lobby.PlayersFinishedDrawingCounter == lobby.Players.Count)
-        {
-            Logger.LogNetwork($"Everyone on lobby {lobby.LobbyId} has finished drawing");
-            OnDrawingRoundEnd(lobby.LobbyId);
-        }
-    }
-
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void HandleResumedDrawingOnServer()
-    {
-        var playerId = Multiplayer.GetRemoteSenderId();
-        if (!_lobbyRepo.TryGetValue(_playerIdToLobbyId[playerId], out var lobby)) return;
-        lobby.PlayersFinishedDrawingCounter--;
+        Server_GetLobbyByPlayerId(playerId)?.OnPlayerDrawingStateChanged(playerId, drawingOn);
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
@@ -208,22 +163,26 @@ public partial class MultiplayerController : Node
 
     public int MaxPlayers;
     public int MaxRounds;
-    public int RoundLength;
+    public float DrawingTimeSec;
     public string Topic;
 
     [Signal] public delegate void PlayerJoinedLobbyEventHandler(long playerId);
+    
     [Signal] public delegate void PlayerLeftLobbyEventHandler(long playerId);
-    [Signal] public delegate void PlayerBecameDrawerEventHandler(long playerId);
-    [Signal] public delegate void ImageBytesReceivedEventHandler(byte[] bytes);
-    [Signal] public delegate void TopicIdReceivedEventHandler(int topicId);
+
     [Signal] public delegate void DrawingGameStartedEventHandler();
+
     [Signal] public delegate void FinalImageRequestedEventHandler();
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void Client_GetLobbySettings(int lobbySize, string topic)
+    private void Client_GetLobbySettings(
+        int lobbySize, 
+        string topic,
+        float drawingTimeSec)
     {
         MaxPlayers = lobbySize;
         Topic = topic;
+        DrawingTimeSec = drawingTimeSec;
     }
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
@@ -257,16 +216,20 @@ public partial class MultiplayerController : Node
         EmitSignal(SignalName.DrawingGameStarted);
     }
 
-    private void HandleDrawingStateChangeOnClient(bool drawing)
-    {
-        RpcId(Networking.ServerPeerId,
-            drawing ? MethodName.HandleResumedDrawingOnServer : MethodName.HandleFinishedDrawingOnServer);
-    }
-
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void HandleFinalImageRequestOnClient()
+    private void Client_CollectFinalImage()
     {
         EmitSignal(SignalName.FinalImageRequested);
+    }
+
+    private void Client_SendFinalImage(byte[] imageData)
+    {
+        RpcId(Networking.ServerPeerId, MethodName.Server_ReceiveFinalImage, imageData);
+    }
+
+    private void Client_NotifyDrawingStateChanged(bool drawingOn)
+    {
+        RpcId(Networking.ServerPeerId, MethodName.Server_HandlePlayerDrawingStateChange, drawingOn);
     }
 
     private void HandleFinalImageResponseOnClient(Image image)

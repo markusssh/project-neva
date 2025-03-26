@@ -5,7 +5,7 @@ public enum LobbyState
     WaitingPlayers,
     LoadingDrawing,
     Drawing,
-    FinishedDrawing,
+    LoadingRating,
     Rating,
     FinishedRating,
     ShowingResults,

@@ -8,7 +8,7 @@ public class LoadingDrawingPhase : ClosedGamePhase
 {
     public LoadingDrawingPhase(LobbyManager lobbyManager) : base(lobbyManager)
     {
-        _readiness = Lobby.Players.Keys.ToDictionary(key => key, value => false);
+        _readiness = Lobby.Players.Keys.ToDictionary(key => key, _ => false);
     }
     
     private readonly Dictionary<long, bool> _readiness;
@@ -18,15 +18,9 @@ public class LoadingDrawingPhase : ClosedGamePhase
     {
         base.Enter();
         Lobby.PlayerLoadedDrawingScene += OnPlayerLoaded;
-        MultiplayerController.Instance.Server_Broadcast(
+        MultiplayerController.Instance.Server_BroadcastLobby(
             Lobby,
             MultiplayerController.MethodName.Client_LoadDrawingScene);
-    }
-
-    public override void Exit()
-    {
-        base.Exit();
-        Lobby.PlayerLoadedDrawingScene -= OnPlayerLoaded;
     }
 
     private void OnPlayerLoaded(long playerId)
@@ -44,5 +38,11 @@ public class LoadingDrawingPhase : ClosedGamePhase
 
     private void Update() {
         if (EveryoneReady) LobbyManager.TransitionTo(LobbyState.Drawing);
+    }
+
+    public override void Exit()
+    {
+        base.Exit();
+        Lobby.PlayerLoadedDrawingScene -= OnPlayerLoaded;
     }
 }

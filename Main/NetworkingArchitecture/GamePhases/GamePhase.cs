@@ -29,7 +29,7 @@ public abstract class GamePhase
     protected virtual void HandlePlayerDisconnect(long playerId)
     {
         Lobby.Players.Remove(playerId);
-        MultiplayerController.Instance.Server_Broadcast(
+        MultiplayerController.Instance.Server_BroadcastLobby(
             Lobby,
             MultiplayerController.MethodName.Client_ClearLeavingPlayer,
             playerId);

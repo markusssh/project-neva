@@ -22,7 +22,7 @@ public class LobbyManager
             LobbyState.WaitingPlayers => new WaitingPlayersPhase(this),
             LobbyState.LoadingDrawing => new LoadingDrawingPhase(this),
             LobbyState.Drawing => new DrawingPhase(this),
-            LobbyState.FinishedDrawing => expr,
+            LobbyState.LoadingRating => expr,
             LobbyState.Rating => expr,
             LobbyState.FinishedRating => expr,
             LobbyState.ShowingResults => expr,

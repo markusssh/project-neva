@@ -22,7 +22,7 @@ public class OpenGamePhase : GamePhase
         Lobby.Players.Add(playerId, player);
 
         MultiplayerController.Instance.Server_SendLobbySettings(playerId, Lobby);
-        MultiplayerController.Instance.Server_BroadcastNewPlayer(playerId, Lobby);
+        MultiplayerController.Instance.Server_BroadcastLobbyNewPlayer(playerId, Lobby);
 
         Logger.LogNetwork($"Player {playerId} joined lobby {Lobby.LobbyId}");
         
