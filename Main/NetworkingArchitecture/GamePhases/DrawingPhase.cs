@@ -6,7 +6,6 @@ using ProjectNeva.Main.NetworkingArchitecture.LobbyLogic;
 
 namespace ProjectNeva.Main.NetworkingArchitecture.GamePhases;
 
-//TODO: переключение готовности + дозагрузка изображений
 public class DrawingPhase : ClosedGamePhase
 {
     public DrawingPhase(LobbyManager lobbyManager) : base(lobbyManager)
@@ -17,7 +16,7 @@ public class DrawingPhase : ClosedGamePhase
 
     private readonly Dictionary<long, bool> _finishedEarly;
     private readonly Dictionary<long, byte[]> _images;
-    private bool EveryoneFinishedEarly => _finishedEarly.Values.All(finished => finished);
+    private bool EveryoneFinishedEarly => _finishedEarly.All(kv => kv.Value);
     private bool EveryoneReady => _images.Values.All(image => image.Length > 0);
     private readonly Timer _timer = new();
 
@@ -78,5 +77,10 @@ public class DrawingPhase : ClosedGamePhase
         base.Exit();
         Lobby.PlayerSentFinalImage -= OnPlayerSentFinalImage;
         Lobby.PlayerDrawingStateChanged -= OnPlayerDrawingStateChanged;
+        
+        foreach (var kvp in _images)
+        {
+            Lobby.Images[kvp.Key] = kvp.Value;
+        }
     }
 }

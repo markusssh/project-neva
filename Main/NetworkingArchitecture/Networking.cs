@@ -184,9 +184,9 @@ public partial class Networking : Node
             GD.PrintErr("Failed to create client!");
             return error;
         }
-
-        Logger.LogNetwork($"Client started on peer {Multiplayer.GetUniqueId()}!");
+        
         Multiplayer.MultiplayerPeer = peer;
+        Logger.LogNetwork($"Client started on peer {Multiplayer.GetUniqueId()}.");
 
         var args = OS.GetCmdlineArgs();
         foreach (var arg in args)

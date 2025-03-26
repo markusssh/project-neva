@@ -12,16 +12,15 @@ public class Lobby
 
     public event Action<long, AuthResponseDto> PlayerConnected;
     public event Action<long> PlayerDisconnected;
-    public event Action<long> PlayerLoadedDrawingScene;
+    public event Action<long> PlayerLoadedNewScene;
     public event Action<long, byte[]> PlayerSentFinalImage;
     public event Action<long, bool> PlayerDrawingStateChanged;
     public string LobbyId { get; set; }
     public Dictionary<long, Player> Players { get; set; } = new();
+    public Godot.Collections.Dictionary Images { get; set; } = new();
     public int LobbySize { get; set; } = 3;
     public string Topic { get; set; } = RoundTopic.Topics[new Random().Next(RoundTopic.Topics.Length - 1)];
-    public float DrawingTimeSec { get; set; } = 10.0f;
-    public int PlayersFinishedDrawingCounter = 0;
-    public int ReceivedFinalDrawingCounter = 0;
+    public float DrawingTimeSec { get; set; } = 7.0f;
 
     public void OnPlayerConnected(long playerId, AuthResponseDto authData)
     {
@@ -33,9 +32,9 @@ public class Lobby
         PlayerDisconnected?.Invoke(playerId);
     }
 
-    public void OnPlayerLoadedDrawingScene(long playerId)
+    public void OnPlayerLoadedNewScene(long playerId)
     {
-        PlayerLoadedDrawingScene?.Invoke(playerId);
+        PlayerLoadedNewScene?.Invoke(playerId);
     }
 
     public void OnPlayerSentFinalImage(long playerId, byte[] imageData)

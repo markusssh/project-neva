@@ -8,25 +8,25 @@ extends Control
 @export var round_end_timer: Timer
 @export var round_end_progress: ProgressBar
 
-var round_time = MultiplayerController.DrawingRoundTimeSec
+var round_time = MultiplayerController.Client_DrawingTimeSec
 var canv_size: Vector2i = Vector2i(
 	ImageHelper.GetCanvasWidth(), 
 	ImageHelper.GetCanvasHeight()
 )
 
 func _ready() -> void:
-	MultiplayerController.PlayerLoadedGameScene.emit()
-	topic = MultiplayerController.Topic
+	topic = MultiplayerController.Client_Topic
 	drawing_canvas.canv_size = canv_size
 	drawing_canvas.allign_canvas()
-	MultiplayerController.GameReady.connect(_on_game_ready)
+	MultiplayerController.DrawingGameStarted.connect(_on_game_ready)
 	MultiplayerController.FinalImageRequested.connect(_on_drawing_image_requested)
+	MultiplayerController.Client_NotifyNewSceneReady();
 
 func _on_game_ready() -> void:
 	round_end_timer.start(round_time)
 
 func _on_drawing_image_requested() -> void:
-	MultiplayerController.HandleFinalImageResponseOnClient(
+	MultiplayerController.Client_SendFinalImage(
 		drawing_canvas.painted_image.texture.get_image()
 	)
 

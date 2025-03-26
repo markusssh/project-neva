@@ -22,11 +22,11 @@ public class LobbyManager
             LobbyState.WaitingPlayers => new WaitingPlayersPhase(this),
             LobbyState.LoadingDrawing => new LoadingDrawingPhase(this),
             LobbyState.Drawing => new DrawingPhase(this),
-            LobbyState.LoadingRating => expr,
-            LobbyState.Rating => expr,
+            LobbyState.LoadingRating => new LoadingRatingPhase(this),
+            /*LobbyState.Rating => expr,
             LobbyState.FinishedRating => expr,
             LobbyState.ShowingResults => expr,
-            LobbyState.Finished => expr,
+            LobbyState.Finished => expr,*/
             _ => throw new ArgumentOutOfRangeException(nameof(newState))
         };
 

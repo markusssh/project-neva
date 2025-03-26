@@ -65,13 +65,13 @@ func _on_join_game_button_pressed() -> void:
 
 func _update_player_num() -> void:
 	%PlayerCountLabel.text = "Ожидаем игроков: %d/%d" % [
-		MultiplayerController.CurrentLobbyPlayers.size(),
-		MultiplayerController.MaxPlayers
+		MultiplayerController.Client_Players.size(),
+		MultiplayerController.Client_MaxPlayers
 	]
 
 func _on_player_joined_room(player_id: int) -> void:
 	var player_label = PlayerLabelTemplate.instantiate()
-	player_label.text = MultiplayerController.CurrentLobbyPlayers[player_id].PlayerName
+	player_label.text = MultiplayerController.Client_Players[player_id].PlayerName
 	player_labels[player_id] = player_label
 	%PlayerNamesContainer.add_child(player_label)
 	_update_player_num()

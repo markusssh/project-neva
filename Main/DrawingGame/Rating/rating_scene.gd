@@ -9,9 +9,9 @@ func _ready() -> void:
 	showcase.hide()
 	var images: Dictionary
 	
-	for player in MultiplayerController.CurrentLobbyPlayers:
+	for player in MultiplayerController.Client_Players:
 		images[player] = ImageHelper.CreateImageFromCompressed(
-			MultiplayerController.CurrentLobbyPlayers[player].FinalImageData)
+			MultiplayerController.Client_Players[player].FinalImageData)
 	
 	showcase.columns = ceili(sqrt(images.size()))
 	
@@ -26,15 +26,17 @@ func _ready() -> void:
 		
 		curr_drawing.texture = drawing_texure
 		
-		run_timer(MultiplayerController.TimeToRateOneSec)
+		#run_timer(MultiplayerController.Client_RatingTimeSec)
 		showcase.add_child(curr_drawing.duplicate())
 		var score := stars_container.get_score()
-		MultiplayerController.SendScoreFromClient(player, score)
+		#MultiplayerController.SendScoreFromClient(player, score)
 		stars_container.clear_score()
 	
 	run_timer(1)
 	drawing_display.hide()
 	showcase.show()
+	
+	MultiplayerController.Client_NotifyNewSceneReady();
 
 func run_timer(sec: int) -> void:
 	var timer: Timer = Timer.new()
