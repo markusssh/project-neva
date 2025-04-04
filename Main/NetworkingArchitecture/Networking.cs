@@ -16,8 +16,6 @@ public partial class Networking : Node
 
     private static string _gameServerIp = "127.0.0.1";
     private static int _gameServerPort = 8081;
-    
-    private static 
 
     public bool IsServer { get; set; }
     public bool IsClient => !IsServer;
@@ -90,7 +88,7 @@ public partial class Networking : Node
                 Logger.LogNetwork($"Authenticating...");
             };
             Multiplayer.PeerAuthenticationFailed += (peerId) => { GD.PrintErr($"Authentication failed!"); };
-            Multiplayer.SetAuthCallback(new Callable(this, nameof(ClientAuthRequestHandle)));
+            Multiplayer.SetAuthCallback(new Callable(this, MethodName.Client_AuthRequestHandle));
         }
         else
         {
@@ -106,18 +104,16 @@ public partial class Networking : Node
             };
             Multiplayer.PeerAuthenticating += (id) => { Logger.LogNetwork($"Peer {id} authenticating..."); };
             Multiplayer.PeerAuthenticationFailed += (id) => { GD.PrintErr($"Peer {id} authentication failed!"); };
-            Multiplayer.SetAuthCallback(new Callable(this, nameof(ServerAuthRequestHandle)));
+            Multiplayer.SetAuthCallback(new Callable(this, MethodName.Server_AuthRequestHandle));
         }
     }
 
-    private void ClientAuthRequestHandle(int id, byte[] data)
+    private void Client_AuthRequestHandle(int id, byte[] data)
     {
-        Logger.LogNetwork($"Authentication data: {Encoding.UTF8.GetString(data)}.");
         Multiplayer.CompleteAuth(id);
-        Logger.LogNetwork($"Authentication complete.");
     }
 
-    private void ServerAuthRequestHandle(int id, byte[] data)
+    private void Server_AuthRequestHandle(int id, byte[] data)
     {
         var s = Encoding.UTF8.GetString(data);
         Logger.LogNetwork($"Peer {id} authentication data: {s}.");
