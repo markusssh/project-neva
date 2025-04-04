@@ -1,5 +1,7 @@
 class_name StarsContainer extends HBoxContainer
 
+signal rated(score: int)
+
 @export var stars_button_group: ButtonGroup
 @export var full_star_texture: CompressedTexture2D
 @export var empty_star_texture: CompressedTexture2D
@@ -16,20 +18,14 @@ func _ready() -> void:
 	stars_button_group.pressed.connect(_on_stars_bg_pressed)
 
 func _on_stars_bg_pressed(button: TextureButton):
-	var button_num := button.name.right(1).to_int()
+	var score := button.name.right(1).to_int()
+	rated.emit(score)
 	
 	for i in 5:
-		if i < button_num:
+		if i < score:
 			set_full_textures(stars_array[i])
 		else:
 			set_empty_textures(stars_array[i])
-
-func get_score() -> int:
-	var pressed: TextureButton = stars_button_group.get_pressed_button()
-	if pressed != null:
-		return pressed.name.right(1).to_int()
-	else:
-		return 0
 
 func clear_score() -> void:
 	var pressed: TextureButton = stars_button_group.get_pressed_button()

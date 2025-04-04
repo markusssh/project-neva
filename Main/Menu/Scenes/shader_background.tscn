@@ -1,0 +1,37 @@
+[gd_scene load_steps=7 format=3 uid="uid://ddu4dpvang7a3"]
+
+[ext_resource type="Shader" path="res://Main/Menu/Assets/Shaders/background_shader.gdshader" id="1_3d2h2"]
+[ext_resource type="Texture2D" uid="uid://br7e811lyr2u5" path="res://Main/Menu/Assets/NoiseTexture/particles_noise_texture.tres" id="2_d7eko"]
+[ext_resource type="Script" path="res://Main/Menu/Scripts/particles.gd" id="3_44lfm"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_8cwjk"]
+
+[sub_resource type="NoiseTexture3D" id="NoiseTexture3D_4ykj8"]
+noise = SubResource("FastNoiseLite_8cwjk")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8kwui"]
+shader = ExtResource("1_3d2h2")
+shader_parameter/blur_size = 5.0
+shader_parameter/edge_start = 0.1
+shader_parameter/edge_end = 0.6
+shader_parameter/noise_img_3d = SubResource("NoiseTexture3D_4ykj8")
+shader_parameter/noise_img = ExtResource("2_d7eko")
+
+[node name="ShaderBackground" type="ColorRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.878431, 0.478431, 0.372549, 1)
+
+[node name="Particles" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_8kwui")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_44lfm")
+noise_texture = ExtResource("2_d7eko")

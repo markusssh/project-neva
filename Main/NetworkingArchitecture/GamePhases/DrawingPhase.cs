@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using ProjectNeva.Main.NetworkingArchitecture.GamePhases.AbstractPhase;
 
 namespace ProjectNeva.Main.NetworkingArchitecture.GamePhases;
 
@@ -73,13 +74,19 @@ public class DrawingPhase : ClosedGamePhase
 
     public override void Exit()
     {
-        base.Exit();
-        Lobby.PlayerSentFinalImage -= OnPlayerSentFinalImage;
-        Lobby.PlayerDrawingStateChanged -= OnPlayerDrawingStateChanged;
-        
         foreach (var kvp in _images)
         {
             Lobby.Images[kvp.Key] = kvp.Value;
         }
+        
+        MultiplayerController.Instance.Server_BroadcastLobby(
+            Lobby,
+            MultiplayerController.MethodName.Client_ReceiveFinalImages,
+            Lobby.Images
+        );
+        
+        base.Exit();
+        Lobby.PlayerSentFinalImage -= OnPlayerSentFinalImage;
+        Lobby.PlayerDrawingStateChanged -= OnPlayerDrawingStateChanged;
     }
 }

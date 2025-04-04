@@ -9,7 +9,7 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5e4pp"]
 bg_color = Color(0.956863, 0.945098, 0.870588, 1)
 
-[node name="RatingScene" type="Control" node_paths=PackedStringArray("showcase", "curr_drawing", "drawing_display", "stars_container")]
+[node name="RatingScene" type="Control" node_paths=PackedStringArray("curr_drawing", "stars_container")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,9 +17,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_34g4c")
-showcase = NodePath("PanelContainer/CenterContainer/EveryDrawingContainer")
 curr_drawing = NodePath("PanelContainer/CenterContainer/PlayerDrawingDisplay/PlayerDrawing")
-drawing_display = NodePath("PanelContainer/CenterContainer/PlayerDrawingDisplay")
 stars_container = NodePath("PanelContainer/CenterContainer/PlayerDrawingDisplay/StarsContainer")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
@@ -90,7 +88,3 @@ button_group = ExtResource("2_dtgmy")
 texture_normal = ExtResource("3_pjx6v")
 texture_pressed = ExtResource("3_pjx6v")
 texture_hover = ExtResource("3_pjx6v")
-
-[node name="EveryDrawingContainer" type="GridContainer" parent="PanelContainer/CenterContainer"]
-visible = false
-layout_mode = 2

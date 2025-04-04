@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Godot;
-using ProjectNeva.Main.NetworkingArchitecture.GamePhases;
 using ProjectNeva.Main.Utils;
 using Logger = ProjectNeva.Main.Utils.Logger.Logger;
 
@@ -24,7 +21,7 @@ public partial class MultiplayerController : Node
     
     #region Broadcasting
     
-    public void Server_BroadcastLobby(Lobby lobby, string methodName, params Variant[] args)
+    public void Server_BroadcastLobby(Lobby lobby, StringName methodName, params Variant[] args)
     {
         foreach (var playerId in lobby.Players.Keys)
         {
@@ -103,6 +100,8 @@ public partial class MultiplayerController : Node
     {
         var playerId = Multiplayer.GetRemoteSenderId();
         Server_GetLobbyByPlayerId(playerId)?.OnPlayerSentFinalImage(playerId, imageData);
+
+        Logger.LogNetwork($"Received final image from {playerId} with {imageData.Length} bytes");
     }
     
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
@@ -124,6 +123,8 @@ public partial class MultiplayerController : Node
     #region Client Logic
 
     public readonly Godot.Collections.Dictionary<long, Player> Client_Players = new();
+    public readonly Godot.Collections.Dictionary<long, Image> Client_FinalImages = new();
+    public Godot.Collections.Dictionary<long, int> Client_Scores;
 
     public int Client_MaxPlayers;
     public int Client_MaxRounds;
@@ -137,6 +138,8 @@ public partial class MultiplayerController : Node
     [Signal] public delegate void DrawingGameStartedEventHandler();
 
     [Signal] public delegate void FinalImageRequestedEventHandler();
+    
+    [Signal] public delegate void ImageToRateReceivedEventHandler(long playerId, Image image);
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void Client_ReceiveLobbySettings(
@@ -163,15 +166,9 @@ public partial class MultiplayerController : Node
         EmitSignal(SignalName.PlayerLeftLobby, playerId);
     }
 
-    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void Client_LoadDrawingScene()
-    {
-        GetTree().ChangeSceneToFile("res://Main/DrawingGame/Drawing/drawing_scene.tscn");
-    }
-
     public void Client_NotifyNewSceneReady()
     {
-        RpcId(Networking.ServerPeerId, MethodName.Server_HandlePlayerLoadNewScene);
+        RpcId(Networking.GameServerPeerId, MethodName.Server_HandlePlayerLoadNewScene);
     }
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
@@ -189,21 +186,48 @@ public partial class MultiplayerController : Node
     private void Client_SendFinalImage(byte[] imageData)
     {
         imageData = ImageHelper.Compress(imageData);
-        RpcId(Networking.ServerPeerId, MethodName.Server_ReceiveFinalImage, imageData);
+        RpcId(Networking.GameServerPeerId, MethodName.Server_ReceiveFinalImage, imageData);
+        Logger.LogNetwork($"Sent final image with {imageData.Length} bytes");
     }
 
     private void Client_NotifyDrawingStateChanged(bool drawingOn)
     {
-        RpcId(Networking.ServerPeerId, MethodName.Server_HandlePlayerDrawingStateChange, drawingOn);
+        RpcId(Networking.GameServerPeerId, MethodName.Server_HandlePlayerDrawingStateChange, drawingOn);
     }
     
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void Client_ReceiveFinalImages(Godot.Collections.Dictionary<long, byte[]> images)
     {
-        foreach (var player in Client_Players.Values)
+        foreach (var playerId in images.Keys)
         {
-            player.FinalImageData = images[player.PlayerId];
+            Client_FinalImages[playerId] = ImageHelper.CreateImageFromCompressed(images[playerId]);
         }
+    }
+
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void Client_ShootRatingNextPlayer(long playerId)
+    {
+        var image = Client_FinalImages[playerId];
+        EmitSignal(SignalName.ImageToRateReceived, playerId, image);
+    }
+    
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void Client_ReceiveScores(Godot.Collections.Dictionary<long, int> scores)
+    {
+        Client_Scores = scores;
+    }
+
+    private void Client_SendScore(long playerId, int score)
+    {
+        RpcId(Networking.GameServerPeerId, MethodName.Server_HandleNewScore, playerId, score);
+    }
+
+    #region Loading Scenes
+
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void Client_LoadDrawingScene()
+    {
+        GetTree().ChangeSceneToFile("res://Main/DrawingGame/Drawing/drawing_scene.tscn");
     }
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
@@ -211,6 +235,15 @@ public partial class MultiplayerController : Node
     {
         GetTree().ChangeSceneToFile("res://Main/DrawingGame/Rating/RatingScene.tscn");
     }
+    
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void Client_LoadResultsScene()
+    {
+        GetTree().ChangeSceneToFile("res://Main/DrawingGame/Results/ResultsScene.tscn");
+    }
+
+
+    #endregion
 
     #endregion
     

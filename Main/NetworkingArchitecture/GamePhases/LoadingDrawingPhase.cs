@@ -1,47 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using ProjectNeva.Main.NetworkingArchitecture.GamePhases.AbstractPhase;
 
 namespace ProjectNeva.Main.NetworkingArchitecture.GamePhases;
 
-public class LoadingDrawingPhase : ClosedGamePhase
+public class LoadingDrawingPhase : LoadingGamePhase
 {
-    public LoadingDrawingPhase(LobbyManager lobbyManager) : base(lobbyManager)
+    public LoadingDrawingPhase(LobbyManager lobbyManager) : base(lobbyManager,
+        MultiplayerController.MethodName.Client_LoadDrawingScene)
     {
-        _readiness = Lobby.Players.Keys.ToDictionary(key => key, _ => false);
-    }
-    
-    private readonly Dictionary<long, bool> _readiness;
-    private bool EveryoneReady => _readiness.Values.All(ready => ready);
-
-    public override void Enter()
-    {
-        base.Enter();
-        Lobby.PlayerLoadedNewScene += OnPlayerLoaded;
-        MultiplayerController.Instance.Server_BroadcastLobby(
-            Lobby,
-            MultiplayerController.MethodName.Client_LoadDrawingScene);
     }
 
-    private void OnPlayerLoaded(long playerId)
+    protected override void OnEveryoneReady()
     {
-        _readiness[playerId] = true;
-        Update();
-    }
-
-    protected override void HandlePlayerDisconnect(long playerId)
-    {
-        base.HandlePlayerDisconnect(playerId);
-        _readiness.Remove(playerId);
-        Update();
-    }
-
-    private void Update() {
-        if (EveryoneReady) LobbyManager.TransitionTo(LobbyState.Drawing);
-    }
-
-    public override void Exit()
-    {
-        base.Exit();
-        Lobby.PlayerLoadedNewScene -= OnPlayerLoaded;
+        LobbyManager.TransitionTo(LobbyState.Drawing);
     }
 }

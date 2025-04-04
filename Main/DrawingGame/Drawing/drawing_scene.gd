@@ -27,10 +27,10 @@ func _on_game_ready() -> void:
 
 func _on_drawing_image_requested() -> void:
 	MultiplayerController.Client_SendFinalImage(
-		drawing_canvas.painted_image.texture.get_image()
+		drawing_canvas.painted_image.texture.get_image().get_data()
 	)
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	round_end_progress.value = round_end_timer.time_left / round_time * 100
 
 func _on_finished_drawing_check_button_toggled(toggled_on: bool) -> void:

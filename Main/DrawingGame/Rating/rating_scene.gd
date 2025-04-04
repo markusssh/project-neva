@@ -1,47 +1,19 @@
 extends Control
 
-@export var showcase: GridContainer
 @export var curr_drawing: TextureRect
-@export var drawing_display: SplitContainer
 @export var stars_container: StarsContainer
 
-func _ready() -> void:
-	showcase.hide()
-	var images: Dictionary
-	
-	for player in MultiplayerController.Client_Players:
-		images[player] = ImageHelper.CreateImageFromCompressed(
-			MultiplayerController.Client_Players[player].FinalImageData)
-	
-	showcase.columns = ceili(sqrt(images.size()))
-	
-	for player in images:
-		var drawing_texure = ImageTexture.create_from_image(images[player])
-		
-		if Networking.IsMyPeer(player):
-			var t: TextureRect = TextureRect.new()
-			t.texture = drawing_texure
-			showcase.add_child(t)
-			continue
-		
-		curr_drawing.texture = drawing_texure
-		
-		#run_timer(MultiplayerController.Client_RatingTimeSec)
-		showcase.add_child(curr_drawing.duplicate())
-		var score := stars_container.get_score()
-		#MultiplayerController.SendScoreFromClient(player, score)
-		stars_container.clear_score()
-	
-	run_timer(1)
-	drawing_display.hide()
-	showcase.show()
-	
-	MultiplayerController.Client_NotifyNewSceneReady();
+var curr_player: int
 
-func run_timer(sec: int) -> void:
-	var timer: Timer = Timer.new()
-	timer.one_shot = true
-	add_child(timer)
-	timer.start(sec)
-	await timer.timeout
-	timer.queue_free()
+func _ready() -> void:
+	MultiplayerController.ImageToRateReceived.connect(_on_image_to_rate_received)
+	stars_container.rated.connect(_on_rated)
+	MultiplayerController.Client_NotifyNewSceneReady()
+
+func _on_image_to_rate_received(player: int, image: Image):
+	stars_container.clear_score()
+	curr_player = player
+	curr_drawing.texture = ImageTexture.create_from_image(image)
+
+func _on_rated(score: int):
+	MultiplayerController.Client_SendScore(curr_player, score)

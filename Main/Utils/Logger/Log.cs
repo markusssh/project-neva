@@ -30,7 +30,7 @@ public class Log
                 break;
             case PrefixType.UId:
                 var id = Networking.Instance.Multiplayer.MultiplayerPeer.GetUniqueId();
-                log = id.Equals(Networking.ServerPeerId) ? "SERVER" : id.ToString();
+                log = id.Equals(Networking.GameServerPeerId) ? "SERVER" : id.ToString();
                 var color = new Color((uint)id)
                 {
                     A = 1

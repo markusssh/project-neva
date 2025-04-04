@@ -18,5 +18,5 @@ public partial class Player : RefCounted
     public long PlayerId { get; set; }
 
     public string PlayerName { get; set; }
-    public byte[] FinalImageData { get; set; }
+    public Image FinalImage { get; set; }
 }

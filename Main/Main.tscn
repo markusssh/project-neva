@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://c1m5n02nyhijv"]
+[gd_scene load_steps=6 format=3 uid="uid://c1m5n02nyhijv"]
 
 [ext_resource type="Script" path="res://Main/main.gd" id="1_18u4m"]
 [ext_resource type="Theme" uid="uid://r7pqoqyivvll" path="res://Main/Assets/Themes/main_theme.tres" id="2_hgkde"]
+[ext_resource type="LabelSettings" uid="uid://bv26f3wi54brd" path="res://Main/Assets/label_settings.tres" id="3_3m762"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_0xo67"]
 font_size = 60
@@ -29,33 +30,54 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+alignment = 1
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Max Players:"
+label_settings = ExtResource("3_3m762")
+
+[node name="MaxPlayers" type="HSlider" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+min_value = 3.0
+max_value = 10.0
+value = 3.0
+tick_count = 7
+ticks_on_borders = true
+
+[node name="CreateGameButton" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_font_sizes/font_size = 60
+text = "Создать"
+
 [node name="PlayerCountLabel" type="Label" parent="PanelContainer"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+size_flags_horizontal = 4
 text = "Ожидаем игроков: 0/4"
 label_settings = SubResource("LabelSettings_0xo67")
 horizontal_alignment = 1
 
-[node name="CenterContainer" type="CenterContainer" parent="PanelContainer"]
-layout_mode = 2
-
-[node name="JoinGameContainer" type="VBoxContainer" parent="PanelContainer/CenterContainer"]
+[node name="JoinGameContainer" type="VBoxContainer" parent="PanelContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 0
+alignment = 1
 
-[node name="JoinGameButton" type="Button" parent="PanelContainer/CenterContainer/JoinGameContainer"]
+[node name="GameCode" type="LineEdit" parent="PanelContainer/JoinGameContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 60
+
+[node name="JoinGameButton" type="Button" parent="PanelContainer/JoinGameContainer"]
 unique_name_in_owner = true
 material = SubResource("ShaderMaterial_g4rmm")
 layout_mode = 2
-theme = ExtResource("2_hgkde")
-theme_type_variation = &"MainMenuItem"
-theme_override_font_sizes/font_size = 90
-text = "Find Lobby"
+theme_override_font_sizes/font_size = 60
+text = "Присоединиться"
 
-[node name="PlayerNamesContainer" type="VBoxContainer" parent="PanelContainer/CenterContainer"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-
-[connection signal="pressed" from="PanelContainer/CenterContainer/JoinGameContainer/JoinGameButton" to="." method="_on_join_game_button_pressed"]
+[connection signal="pressed" from="PanelContainer/JoinGameContainer/JoinGameButton" to="." method="_on_join_game_button_pressed"]

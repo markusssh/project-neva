@@ -1,0 +1,162 @@
+[gd_scene load_steps=21 format=3 uid="uid://c7pptfenwq7by"]
+
+[ext_resource type="Script" path="res://Main/Menu/Scripts/main_menu.gd" id="1_2csck"]
+[ext_resource type="PackedScene" uid="uid://ddu4dpvang7a3" path="res://Main/Menu/Scenes/shader_background.tscn" id="2_jgpxg"]
+[ext_resource type="Material" uid="uid://c05tjl3ok7n6n" path="res://Main/Menu/Assets/Materials/material_dissapear.tres" id="5_kh3xy"]
+[ext_resource type="Texture2D" uid="uid://c4q42tuuxy5v5" path="res://Main/Assets/Project Design/Componenets/Logo.png" id="6_q4gw2"]
+[ext_resource type="FontFile" uid="uid://bc2ymi24jrbyf" path="res://Main/Assets/Project Design/Fonts/JustAnotherHand-Regular.ttf" id="7_h3osn"]
+[ext_resource type="Texture2D" uid="uid://btu2kp7sp4od7" path="res://Main/Assets/Project Design/Componenets/PlayButtonNormal.png" id="8_q6cmg"]
+[ext_resource type="Texture2D" uid="uid://8qfgamabw06k" path="res://Main/Assets/Project Design/Componenets/PlayButtonPressed.png" id="9_x7lxp"]
+[ext_resource type="Texture2D" uid="uid://cob186cd2im2j" path="res://Main/Assets/Project Design/Componenets/SettingsButtonNormal.png" id="10_sjofm"]
+[ext_resource type="Texture2D" uid="uid://b7n6fqhhw1fp5" path="res://Main/Assets/Project Design/Componenets/SettingsButtonPressed.png" id="11_2ym7y"]
+[ext_resource type="Texture2D" uid="uid://cthesxp8ryspo" path="res://Main/Assets/Project Design/Componenets/GalleryButtonNormal.png" id="12_oalp5"]
+[ext_resource type="Texture2D" uid="uid://cix5quldw2rvb" path="res://Main/Assets/Project Design/Componenets/GalleryButtonPressed.png" id="13_ce16r"]
+[ext_resource type="Texture2D" uid="uid://sa6y0fld5gn3" path="res://Main/Assets/Project Design/Componenets/CreditsButtonNormal.png" id="14_603mm"]
+[ext_resource type="Texture2D" uid="uid://c72t6owb1kasf" path="res://Main/Assets/Project Design/Componenets/CreditsButtonPressed.png" id="15_i4bsa"]
+[ext_resource type="Texture2D" uid="uid://ckj11tmj006uo" path="res://Main/Assets/Project Design/Componenets/ExitButtonNormal.png" id="16_74vsq"]
+[ext_resource type="Texture2D" uid="uid://bfj8q5n7c2xwd" path="res://Main/Assets/Project Design/Componenets/ExitButtonPressed.png" id="17_075a2"]
+
+[sub_resource type="Curve" id="Curve_4l1et"]
+min_value = -0.07
+max_value = 1.2
+_data = [Vector2(0, -0.07), 0.0, -0.0978418, 0, 0, Vector2(0.181329, 0.100784), 2.80649, 2.80649, 0, 0, Vector2(0.666068, 0.97145), 1.19645, 1.19645, 0, 0, Vector2(1, 1.2), -7.06379e-07, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ts3g3"]
+texture = ExtResource("6_q4gw2")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hpotw"]
+texture = ExtResource("6_q4gw2")
+region_rect = Rect2(0, 0, 530, 537)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_augql"]
+texture = ExtResource("6_q4gw2")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_co1s7"]
+texture = ExtResource("6_q4gw2")
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_2csck")
+disappear_anim_curve = SubResource("Curve_4l1et")
+
+[node name="ShaderBackground" parent="." instance=ExtResource("2_jgpxg")]
+layout_mode = 1
+
+[node name="Start" type="Button" parent="."]
+unique_name_in_owner = true
+material = ExtResource("5_kh3xy")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -269.0
+offset_top = -272.5
+offset_right = 269.0
+offset_bottom = 272.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/focus = SubResource("StyleBoxTexture_ts3g3")
+theme_override_styles/hover = SubResource("StyleBoxTexture_hpotw")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_augql")
+theme_override_styles/normal = SubResource("StyleBoxTexture_co1s7")
+
+[node name="Drawle" type="Label" parent="."]
+material = ExtResource("5_kh3xy")
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -226.5
+offset_top = -301.0
+offset_right = 226.5
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.956863, 0.945098, 0.870588, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.25)
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("7_h3osn")
+theme_override_font_sizes/font_size = 300
+text = "Drawle"
+
+[node name="AfterIntro" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="AfterIntro"]
+layout_mode = 2
+
+[node name="CenterVBoxContainer" type="VBoxContainer" parent="AfterIntro/CenterContainer"]
+custom_minimum_size = Vector2(70.94, 55.305)
+layout_mode = 2
+
+[node name="Drawle" type="Label" parent="AfterIntro/CenterContainer/CenterVBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.956863, 0.945098, 0.870588, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.25)
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("7_h3osn")
+theme_override_font_sizes/font_size = 300
+text = "Drawle"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="AfterIntro/CenterContainer/CenterVBoxContainer"]
+layout_mode = 2
+
+[node name="Play" type="TextureButton" parent="AfterIntro/CenterContainer/CenterVBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 2
+texture_normal = ExtResource("8_q6cmg")
+texture_pressed = ExtResource("9_x7lxp")
+texture_hover = ExtResource("8_q6cmg")
+ignore_texture_size = true
+
+[node name="Settings" type="TextureButton" parent="AfterIntro/CenterContainer/CenterVBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 2
+texture_normal = ExtResource("10_sjofm")
+texture_pressed = ExtResource("11_2ym7y")
+texture_hover = ExtResource("10_sjofm")
+ignore_texture_size = true
+
+[node name="Gallery" type="TextureButton" parent="AfterIntro/CenterContainer/CenterVBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 2
+texture_normal = ExtResource("12_oalp5")
+texture_pressed = ExtResource("13_ce16r")
+texture_hover = ExtResource("12_oalp5")
+ignore_texture_size = true
+
+[node name="Credits" type="TextureButton" parent="AfterIntro/CenterContainer/CenterVBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 2
+texture_normal = ExtResource("14_603mm")
+texture_pressed = ExtResource("15_i4bsa")
+texture_hover = ExtResource("14_603mm")
+ignore_texture_size = true
+
+[node name="Exit" type="TextureButton" parent="AfterIntro/CenterContainer/CenterVBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 2
+texture_normal = ExtResource("16_74vsq")
+texture_pressed = ExtResource("17_075a2")
+texture_hover = ExtResource("16_74vsq")
+ignore_texture_size = true
+
+[connection signal="pressed" from="Start" to="." method="_on_start_pressed"]

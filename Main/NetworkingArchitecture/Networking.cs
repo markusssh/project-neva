@@ -10,15 +10,19 @@ namespace ProjectNeva.Main.NetworkingArchitecture;
 public partial class Networking : Node
 {
     public static Networking Instance { get; private set; } = null!;
+
+    public const int GameServerPeerId = 1;
+    public const int ServerMaxConnections = 3000;
+
+    private static string _gameServerIp = "127.0.0.1";
+    private static int _gameServerPort = 8081;
     
+    private static 
+
     public bool IsServer { get; set; }
     public bool IsClient => !IsServer;
-    private const string ServerIp = "127.0.0.1";
-    private const int ServerPort = 8081;
-    public const int ServerPeerId = 1;
-    public const int ServerMaxConnections = 100;
-    public readonly Dictionary<long, AuthResponseDto> PeerAuthData = new();
 
+    public readonly Dictionary<long, AuthResponseDto> PeerAuthData = new();
     private string _debugAuthData;
 
     public new SceneMultiplayer Multiplayer { get; set; }
@@ -81,8 +85,8 @@ public partial class Networking : Node
             Multiplayer.ServerDisconnected += () => { Logger.LogNetwork("Disconnected."); };
             Multiplayer.PeerAuthenticating += (peerId) =>
             {
-                if (peerId != ServerPeerId) return;
-                Multiplayer.SendAuth(ServerPeerId, Encoding.UTF8.GetBytes(_debugAuthData));
+                if (peerId != GameServerPeerId) return;
+                Multiplayer.SendAuth(GameServerPeerId, Encoding.UTF8.GetBytes(_debugAuthData));
                 Logger.LogNetwork($"Authenticating...");
             };
             Multiplayer.PeerAuthenticationFailed += (peerId) => { GD.PrintErr($"Authentication failed!"); };
@@ -162,7 +166,7 @@ public partial class Networking : Node
     {
         if (!IsServer) return Error.Failed;
         var peer = new ENetMultiplayerPeer();
-        var error = peer.CreateServer(ServerPort, ServerMaxConnections);
+        var error = peer.CreateServer(_gameServerPort, ServerMaxConnections);
 
         if (error != Error.Ok)
         {
@@ -178,7 +182,7 @@ public partial class Networking : Node
     {
         if (IsServer) return Error.Failed;
         var peer = new ENetMultiplayerPeer();
-        var error = peer.CreateClient(ServerIp, ServerPort);
+        var error = peer.CreateClient(_gameServerIp, _gameServerPort);
         if (error != Error.Ok)
         {
             GD.PrintErr("Failed to create client!");
@@ -193,7 +197,7 @@ public partial class Networking : Node
         {
             if (!arg.StartsWith("player_auth=")) continue;
             var jwt = arg["player_auth=".Length..];
-            Multiplayer.SendAuth(ServerPeerId, Encoding.UTF8.GetBytes(jwt));
+            Multiplayer.SendAuth(GameServerPeerId, Encoding.UTF8.GetBytes(jwt));
             break;
         }
 

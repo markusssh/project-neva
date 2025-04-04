@@ -1,4 +1,6 @@
-﻿namespace ProjectNeva.Main.NetworkingArchitecture.GamePhases;
+﻿using ProjectNeva.Main.NetworkingArchitecture.GamePhases.AbstractPhase;
+
+namespace ProjectNeva.Main.NetworkingArchitecture.GamePhases;
 
 public class WaitingPlayersPhase : OpenGamePhase
 {

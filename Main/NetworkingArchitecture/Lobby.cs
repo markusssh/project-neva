@@ -18,7 +18,7 @@ public class Lobby
     public event Action<long, long, int> NewScoreReceived;
     public string LobbyId { get; set; }
     public Dictionary<long, Player> Players { get; set; } = new();
-    public Godot.Collections.Dictionary Images { get; set; } = new();
+    public Godot.Collections.Dictionary<long, byte[]> Images { get; set; } = new();
     public int LobbySize { get; set; } = 3;
     public string Topic { get; set; } = RoundTopic.Topics[new Random().Next(RoundTopic.Topics.Length - 1)];
     public float DrawingTimeSec { get; set; } = 7.0f;

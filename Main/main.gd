@@ -3,9 +3,7 @@ class_name Main extends Node
 # Список используемых плагинов и утилит:
 # 1. Script-IDE https://github.com/Maran23/script-ide
 # 2. rcedit https://github.com/electron/rcedit?tab=readme-ov-file
-# 3. Godot SQLite https://github.com/2shady4u/godot-sqlite
-# 4. Basic GUI bundle
-# 5. 
+# 3. 
 
 var PlayerLabelTemplate = preload("res://Main/MainUI/player_label_template.tscn")
 var player_labels: Dictionary

@@ -1,5 +1,6 @@
 ﻿using System;
 using ProjectNeva.Main.NetworkingArchitecture.GamePhases;
+using ProjectNeva.Main.NetworkingArchitecture.GamePhases.AbstractPhase;
 
 namespace ProjectNeva.Main.NetworkingArchitecture;
 
@@ -24,9 +25,8 @@ public class LobbyManager
             LobbyState.Drawing => new DrawingPhase(this),
             LobbyState.LoadingRating => new LoadingRatingPhase(this),
             LobbyState.Rating => new RatingPhase(this),
-            /*LobbyState.FinishedRating => expr,
-            LobbyState.ShowingResults => expr,
-            LobbyState.Finished => expr,*/
+            LobbyState.LoadingResults => new LoadingResultsPhase(this),
+            LobbyState.ShowingResults => new ShowingResultsPhase(this),
             _ => throw new ArgumentOutOfRangeException(nameof(newState))
         };
 
