@@ -20,11 +20,15 @@ public partial class MultiplayerController : Node
     private readonly Dictionary<long, string> _playerIdToLobbyManagerId = new();
 
     public static bool LobbyExists(string lobbyId) => Instance._lobbyManagers.ContainsKey(lobbyId);
-    public static void CreateLobby(JwtValidationResult validationResult)
+    public static void CreateLobby(
+            string lobbyId,
+            long creatorId,
+            int playTime,
+            int maxPlayers
+        )
     {
-        if (!validationResult.Valid) return;
-        var lobbyId = validationResult.LobbyId.ToString();
-        Instance._lobbyManagers.Add(lobbyId, new LobbyManager(new Lobby(lobbyId)));
+        var lobby = new Lobby(lobbyId, creatorId, playTime, maxPlayers);
+        Instance._lobbyManagers.Add(lobbyId, new LobbyManager(lobby));
     }
 
     #region Broadcasting
@@ -79,7 +83,7 @@ public partial class MultiplayerController : Node
         RpcId(playerId, MethodName.Client_ReceiveLobbySettings,
             lobby.LobbySize, 
             lobby.Topic, 
-            lobby.DrawingTimeSec);
+            lobby.PlayTime);
     }
 
     public void Server_OnPeerDisconnected(long peerId)

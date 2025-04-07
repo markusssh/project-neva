@@ -31,7 +31,7 @@ public class DrawingPhase : ClosedGamePhase
 
         MultiplayerController.Instance.AddChild(_timer);
         _timer.OneShot = true;
-        _timer.Start(Lobby.DrawingTimeSec);
+        _timer.Start(Lobby.PlayTime);
         _timer.Timeout += OnTimerTimeout;
     }
 

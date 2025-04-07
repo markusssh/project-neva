@@ -31,6 +31,7 @@ config/icon="res://Main/Assets/Project Design/Лого.png"
 
 [autoload]
 
+GlobalVars="*res://Main/Global/global_vars.gd"
 Networking="*res://Main/NetworkingArchitecture/Networking.cs"
 MultiplayerController="*res://Main/NetworkingArchitecture/MultiplayerController.cs"
 AlgoUtil="*res://Main/DrawingGame/Drawing/AlgoUtil.cs"

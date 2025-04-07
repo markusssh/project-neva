@@ -5,9 +5,16 @@ namespace ProjectNeva.Main.NetworkingArchitecture;
 
 public class Lobby
 {
-    public Lobby(string lobbyId)
+    public Lobby(
+        string lobbyId,
+        long creatorId,
+        int playTime,
+        int maxPlayers)
     {
         LobbyId = lobbyId;
+        CreatorId = creatorId;
+        PlayTime = playTime;
+        LobbySize = maxPlayers;
     }
 
     public event Action<long, JwtValidationResult> PlayerConnected;
@@ -17,11 +24,12 @@ public class Lobby
     public event Action<long, bool> PlayerDrawingStateChanged;
     public event Action<long, long, int> NewScoreReceived;
     public string LobbyId { get; set; }
+    public long CreatorId { get; set; }
     public Dictionary<long, Player> Players { get; set; } = new();
     public Godot.Collections.Dictionary<long, byte[]> Images { get; set; } = new();
     public int LobbySize { get; set; } = 3;
     public string Topic { get; set; } = RoundTopic.Topics[new Random().Next(RoundTopic.Topics.Length - 1)];
-    public float DrawingTimeSec { get; set; } = 7.0f;
+    public float PlayTime { get; set; }
 
     public void OnPlayerConnected(long playerId, JwtValidationResult authData)
     {
