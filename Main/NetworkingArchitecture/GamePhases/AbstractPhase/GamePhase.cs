@@ -22,7 +22,7 @@ public abstract class GamePhase
         Lobby.PlayerDisconnected -= HandlePlayerDisconnect;
     }
 
-    protected abstract void HandlePlayerConnect(long playerId, AuthResponseDto authData);
+    protected abstract void HandlePlayerConnect(long playerId, JwtValidationResult authData);
 
     protected virtual void HandlePlayerDisconnect(long playerId)
     {

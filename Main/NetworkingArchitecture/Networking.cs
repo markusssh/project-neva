@@ -1,14 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Godot;
+using Environment = System.Environment;
+using HttpClient = System.Net.Http.HttpClient;
 using Logger = ProjectNeva.Main.Utils.Logger.Logger;
 
 namespace ProjectNeva.Main.NetworkingArchitecture;
 
 public partial class Networking : Node
 {
+    private static string _serverManagerUrl = Environment.GetEnvironmentVariable("SERVER_MANAGER_URL") ?? "http://localhost:8080";
+    private static string _serverToken = Environment.GetEnvironmentVariable("SERVER_TOKEN") 
+                                        ?? "4791da355540b0cd33420b55c066802dd09998d8a2c5a44667ee4ccc5a625e25"; // dev
+
+    private static HttpClient _httpClient = new HttpClient();
+    
     public static Networking Instance { get; private set; } = null!;
 
     public const int GameServerPeerId = 1;
@@ -20,10 +31,10 @@ public partial class Networking : Node
     public bool IsServer { get; set; }
     public bool IsClient => !IsServer;
 
-    public readonly Dictionary<long, AuthResponseDto> PeerAuthData = new();
+    public readonly Dictionary<long, JwtValidationResult> PeerAuthData = new();
     private string _debugAuthData;
 
-    public new SceneMultiplayer Multiplayer { get; set; }
+    public new SceneMultiplayer Multiplayer { get; private set; }
 
     public override void _EnterTree()
     {
@@ -39,31 +50,6 @@ public partial class Networking : Node
             GD.PrintErr("MultiplayerAPIs implementation is not supported!");
             GetTree().Paused = true;
         }
-
-        if (OS.HasFeature("player1"))
-        {
-            _debugAuthData = "1";
-        }
-        else if (OS.HasFeature("player2"))
-        {
-            _debugAuthData = "2";
-        }
-        else if (OS.HasFeature("player3"))
-        {
-            _debugAuthData = "3";
-        }
-        else if (OS.HasFeature("player4"))
-        {
-            _debugAuthData = "4";
-        }
-        else if (OS.HasFeature("player5"))
-        {
-            _debugAuthData = "5";
-        }
-        else if (OS.HasFeature("player6"))
-        {
-            _debugAuthData = "6";
-        }
     }
     
     private void ConnectMultiplayerHandlers()
@@ -78,7 +64,7 @@ public partial class Networking : Node
                 }
             };
             Multiplayer.PeerDisconnected += (id) => { Logger.LogNetwork($"Peer {id} disconnected from server."); };
-            Multiplayer.ConnectionFailed += () => { Logger.LogNetwork($"Connection failed!"); };
+            Multiplayer.ConnectionFailed += () => { Logger.LogNetwork("Connection failed!"); };
             Multiplayer.ConnectedToServer += () => { Logger.LogNetwork("Connection successful."); };
             Multiplayer.ServerDisconnected += () => { Logger.LogNetwork("Disconnected."); };
             Multiplayer.PeerAuthenticating += (peerId) =>
@@ -105,6 +91,35 @@ public partial class Networking : Node
             Multiplayer.PeerAuthenticating += (id) => { Logger.LogNetwork($"Peer {id} authenticating..."); };
             Multiplayer.PeerAuthenticationFailed += (id) => { GD.PrintErr($"Peer {id} authentication failed!"); };
             Multiplayer.SetAuthCallback(new Callable(this, MethodName.Server_AuthRequestHandle));
+            //Multiplayer.ServerRelay = false;
+        }
+    }
+
+    private async Task<JwtValidationResult> ValidateJwtWithManger(string jwt)
+    {
+        try
+        {
+            var requestData = new JwtValidationRequest(jwt);
+            var content = new StringContent(
+                JsonSerializer.Serialize(requestData),
+                Encoding.UTF8,
+                "application/json");
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_serverToken}");
+
+            var response = await _httpClient.PostAsync(
+                $"{_serverManagerUrl}/game-server/auth", content);
+
+            if (!response.IsSuccessStatusCode)
+                return JwtValidationResult.CreateInvalid($"Server validation failed: {response.StatusCode}");
+            var responseBody = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JwtValidationResult>(responseBody);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogNetwork($"JWT validation error: {ex.Message}");
+            return JwtValidationResult.CreateInvalid($"Validation error: {ex.Message}");
         }
     }
 
@@ -113,31 +128,28 @@ public partial class Networking : Node
         Multiplayer.CompleteAuth(id);
     }
 
-    private void Server_AuthRequestHandle(int id, byte[] data)
+    private async void Server_AuthRequestHandle(int id, byte[] data)
     {
-        var s = Encoding.UTF8.GetString(data);
-        Logger.LogNetwork($"Peer {id} authentication data: {s}.");
+        var jwt = Encoding.UTF8.GetString(data);
+        Logger.LogNetwork($"Peer {id} authentication data: {jwt}.");
 
-        if (AuthIsValid(s, id))
+        var validationResult = await ValidateJwtWithManger(jwt);
+        
+        if (validationResult.Valid)
         {
+            PeerAuthData[id] = validationResult;
+            if (!MultiplayerController.LobbyExists(validationResult.LobbyId.ToString())) 
+                MultiplayerController.CreateLobby(validationResult);
+            
             Multiplayer.SendAuth(id, data);
             Multiplayer.CompleteAuth(id);
             Logger.LogNetwork($"Peer {id} authentication complete.");
         }
         else
         {
+            Logger.LogNetwork($"Peer {id} authentication failed: {validationResult.ErrorMessage}");
             Multiplayer.DisconnectPeer(id);
         }
-    }
-
-    //TODO: add logic
-    //server remembers peer id if auth data is valid
-    private bool AuthIsValid(string data, int id)
-    {
-        var authData = RestServerPlaceholder.Authenticate(data);
-        if (!authData.AuthSuccess) return false;
-        PeerAuthData[id] = authData;
-        return true;
     }
 
     public override void _Ready()
@@ -207,27 +219,26 @@ public partial class Networking : Node
     }
 }
 
-//TODO: make a dedicated server
-#region REST Server Simulation
+internal record JwtValidationRequest(string Jwt);
 
-public static class RestServerPlaceholder
+public record JwtValidationResult(
+    bool Valid,
+    string ErrorMessage,
+    long? PlayerId,
+    long? LobbyId,
+    string PlayerName)
 {
-    public static AuthResponseDto Authenticate(string jwt)
+    public static JwtValidationResult CreateInvalid(string message)
     {
-        return jwt switch
-        {
-            "1" => new AuthResponseDto(true, "0", "Ваня"),
-            "2" => new AuthResponseDto(true, "0", "Галя"),
-            "3" => new AuthResponseDto(true, "0", "Рита"),
-            "4" => new AuthResponseDto(true, "1", "Таня"),
-            "5" => new AuthResponseDto(true, "1", "Саня"),
-            "6" => new AuthResponseDto(true, "1", "Галя"),
-            _ => throw new ArgumentOutOfRangeException(nameof(jwt), jwt, null)
-        };
+        return new JwtValidationResult(false, message, null, null, null);
     }
-    
 }
 
-public record AuthResponseDto(bool AuthSuccess, string LobbyId, string PlayerName);
+internal record ConfirmLobbyRequest(
+    long LobbyId,
+    long PlayerId);
 
-#endregion
+internal record ConfirmLobbyResult(
+    long LobbyId,
+    int PlayerId,
+    int MaxPlayers);

@@ -6,7 +6,7 @@ public abstract class ClosedGamePhase : GamePhase
     {
     }
 
-    protected override void HandlePlayerConnect(long playerId, AuthResponseDto authData)
+    protected override void HandlePlayerConnect(long playerId, JwtValidationResult authData)
     {
         //TODO: add user notification
         //TODO: add ability to reconnect

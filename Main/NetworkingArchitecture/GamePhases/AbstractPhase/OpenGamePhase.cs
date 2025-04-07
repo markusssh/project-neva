@@ -8,7 +8,7 @@ public class OpenGamePhase : GamePhase
     {
     }
 
-    protected override void HandlePlayerConnect(long playerId, AuthResponseDto authData)
+    protected override void HandlePlayerConnect(long playerId, JwtValidationResult authData)
     {
         if (Lobby.Players.Count >= Lobby.LobbySize)
         {

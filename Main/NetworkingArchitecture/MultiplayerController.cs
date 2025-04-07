@@ -18,7 +18,15 @@ public partial class MultiplayerController : Node
 
     private readonly Dictionary<string, LobbyManager> _lobbyManagers = new();
     private readonly Dictionary<long, string> _playerIdToLobbyManagerId = new();
-    
+
+    public static bool LobbyExists(string lobbyId) => Instance._lobbyManagers.ContainsKey(lobbyId);
+    public static void CreateLobby(JwtValidationResult validationResult)
+    {
+        if (!validationResult.Valid) return;
+        var lobbyId = validationResult.LobbyId.ToString();
+        Instance._lobbyManagers.Add(lobbyId, new LobbyManager(new Lobby(lobbyId)));
+    }
+
     #region Broadcasting
     
     public void Server_BroadcastLobby(Lobby lobby, StringName methodName, params Variant[] args)
@@ -39,7 +47,7 @@ public partial class MultiplayerController : Node
     }
     
     #endregion
-
+    
     public void Server_OnPeerConnected(long newPeerId)
     {
         if (!Networking.Instance.PeerAuthData.Remove(newPeerId, out var peerAuthData))
@@ -48,13 +56,13 @@ public partial class MultiplayerController : Node
             return;
         }
 
-        if (!_lobbyManagers.TryGetValue(peerAuthData.LobbyId, out var lobbyManager))
+        if (!_lobbyManagers.TryGetValue(peerAuthData.LobbyId.ToString(), out var lobbyManager))
         {
-            lobbyManager = new LobbyManager(new Lobby(peerAuthData.LobbyId));
-            _lobbyManagers.Add(lobbyManager.Lobby.LobbyId, lobbyManager);
-            lobbyManager.TransitionTo(LobbyState.WaitingPlayers);
+            Networking.Instance.Multiplayer.DisconnectPeer((int) newPeerId);
         }
 
+        if (lobbyManager == null) return;
+        
         var lobby = lobbyManager.Lobby;
         lobby.OnPlayerConnected(newPeerId, peerAuthData);
         _playerIdToLobbyManagerId.Add(newPeerId, lobby.LobbyId);

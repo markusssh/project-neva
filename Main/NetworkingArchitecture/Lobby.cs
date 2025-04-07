@@ -10,7 +10,7 @@ public class Lobby
         LobbyId = lobbyId;
     }
 
-    public event Action<long, AuthResponseDto> PlayerConnected;
+    public event Action<long, JwtValidationResult> PlayerConnected;
     public event Action<long> PlayerDisconnected;
     public event Action<long> PlayerLoadedNewScene;
     public event Action<long, byte[]> PlayerSentFinalImage;
@@ -23,7 +23,7 @@ public class Lobby
     public string Topic { get; set; } = RoundTopic.Topics[new Random().Next(RoundTopic.Topics.Length - 1)];
     public float DrawingTimeSec { get; set; } = 7.0f;
 
-    public void OnPlayerConnected(long playerId, AuthResponseDto authData)
+    public void OnPlayerConnected(long playerId, JwtValidationResult authData)
     {
         PlayerConnected?.Invoke(playerId, authData);
     }
