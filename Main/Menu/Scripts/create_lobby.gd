@@ -1,18 +1,23 @@
 extends Control
 
+signal ready_to_connect
+
 const DEFAULT_MAX_PLAYERS_TEXT = "Макс. игроков: "
 
-signal ready_to_connect
+var http_request: HTTPRequest
+
+func _ready() -> void:
+	ready_to_connect.connect(_on_ready_to_connect)
+	Networking.Client_ConnectedToServer.connect(_on_connected_to_server)
 
 func _on_player_num_slider_value_changed(value: float) -> void:
 	%Current.text = DEFAULT_MAX_PLAYERS_TEXT + str(value)
 
 func _on_create_pressed() -> void:
 	var player_name: String = get_tree().get_meta("player_name", "Player")
-	var create_request := HTTPRequest.new()
-	add_child(create_request)
-	create_request.request_completed.connect(_on_lobby_create_request_completed)
-	ready_to_connect.connect(_on_ready_to_connect)
+	http_request = HTTPRequest.new()
+	add_child(http_request)
+	http_request.request_completed.connect(_on_lobby_create_request_completed)
 	
 	var body = JSON.stringify(
 		{
@@ -21,8 +26,8 @@ func _on_create_pressed() -> void:
 			"playTime": %TimeSec.text.to_int()
 		})
 	var headers = ["Content-Type: application/json"]
-	var url = HttpHelper.GetMainServerAddress() + HttpHelper.CreateUri()
-	var err = create_request.request(
+	var url = GlobalVars.server_manager_url + "/lobby/new-lobby"
+	var err = http_request.request(
 		url, 
 		headers, 
 		HTTPClient.METHOD_POST,
@@ -32,7 +37,7 @@ func _on_create_pressed() -> void:
 
 func _on_ready_to_connect():
 	Networking.SetGameServerUrl(GlobalVars.server_ip, GlobalVars.server_port)
-	Networking.Client_ConnectedToServer.connect(_on_connected_to_server)
+	Networking.JoinGame(GlobalVars.auth)
 
 func _on_connected_to_server():
 	shoot_room_scene()
@@ -56,7 +61,9 @@ func _on_lobby_create_request_completed(_result, response_code, _headers, body):
 		json.parse(body.get_string_from_utf8())
 		var result = json.get_data()
 		GlobalVars.auth = result.get("jwt")
-		var connection_data = result.get("ServerConnectionData")
+		var connection_data = result.get("serverConnectionData")
 		GlobalVars.server_ip = connection_data.get("ip")
 		GlobalVars.server_port = connection_data.get("port")
 		ready_to_connect.emit()
+	if (http_request != null):
+		http_request.queue_free()

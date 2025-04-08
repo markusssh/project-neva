@@ -99,7 +99,7 @@ public partial class Networking : Node
         }
     }
 
-    private async Task<JwtValidationResult> ValidateJwtWithManger(string jwt)
+    private static async Task<JwtValidationResult> ValidateJwtWithManger(string jwt)
     {
         try
         {
