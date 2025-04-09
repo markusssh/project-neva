@@ -31,7 +31,7 @@ layout_mode = 2
 size_flags_horizontal = 8
 theme_override_constants/margin_right = 30
 
-[node name="Host" type="TextureButton" parent="MarginContainer2"]
+[node name="Creator" type="TextureButton" parent="MarginContainer2"]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(61, 61)

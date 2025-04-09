@@ -12,6 +12,7 @@ public class LobbyManager
     public LobbyManager(Lobby lobby)
     {
         Lobby = lobby;
+        TransitionTo(LobbyState.WaitingPlayers);
     }
 
     public void TransitionTo(LobbyState newState)

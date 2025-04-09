@@ -1,10 +1,13 @@
-﻿using System;
-using Godot;
+﻿using Godot;
 
 namespace ProjectNeva.Main.NetworkingArchitecture;
 
 public partial class Player : RefCounted
 {
+    public long PlayerId;
+    public string PlayerName;
+    public Image FinalImage;
+    
     public Player()
     {
     }
@@ -14,8 +17,4 @@ public partial class Player : RefCounted
         PlayerId = playerId;
         PlayerName = playerName;
     }
-    
-    public long PlayerId { get; set; }
-    public string PlayerName { get; set; }
-    public Image FinalImage { get; set; }
 }

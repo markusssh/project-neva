@@ -10,6 +10,7 @@ public class OpenGamePhase : GamePhase
 
     protected override void HandlePlayerConnect(long playerId, JwtValidationResult authData)
     {
+        
         if (Lobby.Players.Count >= Lobby.LobbySize)
         {
             //TODO: add user notification
