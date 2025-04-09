@@ -1,13 +1,10 @@
 extends Control
 
-signal ready_to_connect
-
 const DEFAULT_MAX_PLAYERS_TEXT = "Макс. игроков: "
 
 var http_request: HTTPRequest
 
 func _ready() -> void:
-	ready_to_connect.connect(_on_ready_to_connect)
 	MultiplayerController.ClientSynchronized.connect(_on_connected_to_server)
 
 func _on_player_num_slider_value_changed(value: float) -> void:
@@ -16,10 +13,10 @@ func _on_player_num_slider_value_changed(value: float) -> void:
 func _on_create_pressed() -> void:
 	%Create.disabled = true
 	var player_name: String = GlobalVars.player_name
+	
 	http_request = HTTPRequest.new()
 	add_child(http_request)
 	http_request.request_completed.connect(_on_lobby_create_request_completed)
-	
 	var body = JSON.stringify(
 		{
 			"creatorName": player_name,
@@ -35,10 +32,6 @@ func _on_create_pressed() -> void:
 		body)
 	if err != OK:
 		printerr("Error during lobby creation request!")
-
-func _on_ready_to_connect():
-	Networking.SetGameServerUrl(GlobalVars.server_ip, GlobalVars.server_port)
-	Networking.JoinGame(GlobalVars.auth)
 
 func _on_connected_to_server():
 	shoot_room_scene()
@@ -65,6 +58,9 @@ func _on_lobby_create_request_completed(_result, response_code, _headers, body):
 		var connection_data = result.get("serverConnectionData")
 		GlobalVars.server_ip = connection_data.get("ip")
 		GlobalVars.server_port = connection_data.get("port")
-		ready_to_connect.emit()
+		Networking.SetGameServerUrl(
+			GlobalVars.server_ip, 
+			GlobalVars.server_port)
+		Networking.JoinGame(GlobalVars.auth)
 	if (http_request != null):
 		http_request.queue_free()

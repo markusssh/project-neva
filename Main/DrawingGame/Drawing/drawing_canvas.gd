@@ -42,7 +42,7 @@ const BRUSH_SIZE_DICT := {
 @export var brush_size_button_group: ButtonGroup
 @export var picked_color: ColorRect
 
-var drawing: bool = true
+var drawingOn: bool = true
 var e: float = 1
 var mouse_pos: Vector2
 var mode: PaintingMode = PaintingMode.BRUSH 
@@ -104,7 +104,7 @@ func set_palette_buttons() -> void:
 		i += 1
 
 func _process(_delta: float) -> void:
-	if not drawing:
+	if not drawingOn:
 		return
 	
 	match mode:
@@ -122,7 +122,7 @@ func _process(_delta: float) -> void:
 				handle_erase()
 
 func _input(event: InputEvent) -> void:
-	if not drawing:
+	if not drawingOn:
 		return
 	
 	match mode:

@@ -25,7 +25,5 @@ public class OpenGamePhase : GamePhase
         MultiplayerController.Instance.Server_BroadcastLobbyNewPlayer(playerId, Lobby);
 
         Logger.LogNetwork($"Player {playerId} joined lobby {Lobby.LobbyId}");
-        
-        //if (Lobby.Players.Count == Lobby.LobbySize) LobbyManager.TransitionTo(LobbyState.LoadingDrawing);
     }
 }
