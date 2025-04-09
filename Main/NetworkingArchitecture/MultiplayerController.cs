@@ -68,8 +68,8 @@ public partial class MultiplayerController : Node
         if (lobbyManager == null) return;
         
         var lobby = lobbyManager.Lobby;
-        lobby.OnPlayerConnected(newPeerId, peerAuthData);
         _playerIdToLobbyManagerId.Add(newPeerId, lobby.LobbyId);
+        lobby.OnPlayerConnected(newPeerId, peerAuthData);
     }
 
     private Lobby Server_GetLobbyByPlayerId(long playerId)
@@ -81,6 +81,9 @@ public partial class MultiplayerController : Node
     public void Server_SendLobbySettings(long playerId, Lobby lobby)
     {
         RpcId(playerId, MethodName.Client_ReceiveLobbySettings,
+            playerId,
+            lobby.LobbyId,
+            lobby.CreatorId,
             lobby.LobbySize, 
             lobby.Topic, 
             lobby.PlayTime);
@@ -129,20 +132,38 @@ public partial class MultiplayerController : Node
         var playerId = Multiplayer.GetRemoteSenderId();
         Server_GetLobbyByPlayerId(playerId)?.OnNewScoreReceived(playerId, toPlayerId, score);
     }
+    
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void Server_KickPlayer(long targetPlayerId)
+    {
+        var requestedBy = Multiplayer.GetRemoteSenderId();
+        var lobby = Server_GetLobbyByPlayerId(requestedBy);
+        if (lobby?.CreatorId == requestedBy && lobby.CreatorId != targetPlayerId)
+        {
+            Networking.Instance.Multiplayer.DisconnectPeer((int) targetPlayerId);
+        }
+    }
 
     #endregion
 
     #region Client Logic
-
+    
     public readonly Godot.Collections.Dictionary<long, Player> Client_Players = new();
     public readonly Godot.Collections.Dictionary<long, Image> Client_FinalImages = new();
     public Godot.Collections.Dictionary<long, int> Client_Scores;
-
+    
+    public long Client_Id;
+    public string Client_LobbyCode;
+    public long Client_CreatorId;
     public int Client_MaxPlayers;
     public int Client_MaxRounds;
     public float Client_DrawingTimeSec;
     public string Client_Topic;
+    
+    public bool Client_IsCreator => Client_Id == Client_CreatorId;
 
+    [Signal] public delegate void ClientSynchronizedEventHandler();
+    
     [Signal] public delegate void PlayerJoinedLobbyEventHandler(long playerId);
     
     [Signal] public delegate void PlayerLeftLobbyEventHandler(long playerId);
@@ -155,13 +176,21 @@ public partial class MultiplayerController : Node
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void Client_ReceiveLobbySettings(
+        long playerId,
+        string lobbyId,
+        long creatorId,
         int lobbySize, 
         string topic,
         float drawingTimeSec)
     {
+        Client_Id = playerId;
+        Client_LobbyCode = lobbyId;
+        Client_CreatorId = creatorId;
         Client_MaxPlayers = lobbySize;
         Client_Topic = topic;
         Client_DrawingTimeSec = drawingTimeSec;
+        EmitSignal(SignalName.ClientSynchronized);
+        Logger.LogNetwork("Lobby data was received");
     }
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
@@ -232,6 +261,11 @@ public partial class MultiplayerController : Node
     private void Client_SendScore(long playerId, int score)
     {
         RpcId(Networking.GameServerPeerId, MethodName.Server_HandleNewScore, playerId, score);
+    }
+
+    private void Client_RequestKick(long playerId)
+    {
+        RpcId(Networking.GameServerPeerId, MethodName.Server_KickPlayer, playerId);
     }
 
     #region Loading Scenes

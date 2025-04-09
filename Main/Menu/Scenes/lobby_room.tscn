@@ -86,7 +86,8 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_ji2rr")
 layout_mode = 2
 horizontal_scroll_mode = 0
 
-[node name="List" type="VBoxContainer" parent="VBoxContainer/PanelContainer/ScrollContainer"]
+[node name="PlayerList" type="VBoxContainer" parent="VBoxContainer/PanelContainer/ScrollContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 4

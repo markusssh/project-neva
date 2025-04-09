@@ -8,13 +8,14 @@ var http_request: HTTPRequest
 
 func _ready() -> void:
 	ready_to_connect.connect(_on_ready_to_connect)
-	Networking.Client_ConnectedToServer.connect(_on_connected_to_server)
+	MultiplayerController.ClientSynchronized.connect(_on_connected_to_server)
 
 func _on_player_num_slider_value_changed(value: float) -> void:
 	%Current.text = DEFAULT_MAX_PLAYERS_TEXT + str(value)
 
 func _on_create_pressed() -> void:
-	var player_name: String = get_tree().get_meta("player_name", "Player")
+	%Create.disabled = true
+	var player_name: String = GlobalVars.player_name
 	http_request = HTTPRequest.new()
 	add_child(http_request)
 	http_request.request_completed.connect(_on_lobby_create_request_completed)

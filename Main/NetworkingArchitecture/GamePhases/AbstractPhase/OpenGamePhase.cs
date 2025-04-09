@@ -25,6 +25,6 @@ public class OpenGamePhase : GamePhase
 
         Logger.LogNetwork($"Player {playerId} joined lobby {Lobby.LobbyId}");
         
-        if (Lobby.Players.Count == Lobby.LobbySize) LobbyManager.TransitionTo(LobbyState.LoadingDrawing);
+        //if (Lobby.Players.Count == Lobby.LobbySize) LobbyManager.TransitionTo(LobbyState.LoadingDrawing);
     }
 }

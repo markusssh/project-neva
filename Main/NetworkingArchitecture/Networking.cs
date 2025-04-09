@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -15,12 +14,13 @@ namespace ProjectNeva.Main.NetworkingArchitecture;
 
 public partial class Networking : Node
 {
-    [Signal]
-    public delegate void Client_ConnectedToServerEventHandler();
     
     private static readonly string ServerManagerUrl = Environment.GetEnvironmentVariable("SERVER_MANAGER_URL") ?? "http://localhost:8080";
     private static readonly string ServerToken = Environment.GetEnvironmentVariable("SERVER_TOKEN") 
                                                   ?? "4791da355540b0cd33420b55c066802dd09998d8a2c5a44667ee4ccc5a625e25"; // dev
+
+    private static string _authToken;
+    public static long ClientId { get; private set; }
 
     private static readonly HttpClient HttpClient = new();
     public static Networking Instance { get; private set; } = null!;
@@ -43,6 +43,8 @@ public partial class Networking : Node
     public readonly Dictionary<long, JwtValidationResult> PeerAuthData = new();
 
     public new SceneMultiplayer Multiplayer { get; private set; }
+    
+    
 
     public override void _EnterTree()
     {
@@ -61,7 +63,8 @@ public partial class Networking : Node
     }
     
     private void ConnectMultiplayerHandlers()
-    {
+    {   
+        // Подключение обработчиков для клиентской сборки
         if (IsClient)
         {
             Multiplayer.PeerConnected += (id) =>
@@ -71,19 +74,31 @@ public partial class Networking : Node
                     Logger.LogNetwork($"Peer {id} connected to server.");
                 }
             };
-            Multiplayer.PeerDisconnected += (id) => { Logger.LogNetwork($"Peer {id} disconnected from server."); };
+            Multiplayer.PeerDisconnected += id => { Logger.LogNetwork($"Peer {id} disconnected from server."); };
             Multiplayer.ConnectionFailed += () => { Logger.LogNetwork("Connection failed!"); };
-            Multiplayer.ConnectedToServer += () => { Logger.LogNetwork("Connection successful."); };
-            Multiplayer.ServerDisconnected += () => { Logger.LogNetwork("Disconnected."); };
-            Multiplayer.PeerAuthenticating += (peerId) =>
+            Multiplayer.ConnectedToServer += () =>
+            {
+                Logger.LogNetwork("Connection successful.");
+            };
+            Multiplayer.ServerDisconnected += () =>
+            {
+                Logger.LogNetwork("Disconnected from game server.");
+                ClientId = 0;
+            };
+            Multiplayer.PeerAuthenticating += peerId =>
             {
                 if (peerId != GameServerPeerId) return;
-                //Multiplayer.SendAuth(GameServerPeerId, Encoding.UTF8.GetBytes(_debugAuthData));
+                Multiplayer.SendAuth(GameServerPeerId, Encoding.UTF8.GetBytes(_authToken));
                 Logger.LogNetwork("Authenticating...");
+                ClientId = peerId;
             };
-            Multiplayer.PeerAuthenticationFailed += (_) => { GD.PrintErr("Authentication failed!"); };
+            Multiplayer.PeerAuthenticationFailed += (id) =>
+            {
+                Logger.LogNetwork("Authentication failed!");
+            };
             Multiplayer.SetAuthCallback(new Callable(this, MethodName.Client_AuthRequestHandle));
         }
+        // Подключение обработчиков для серверной сборки
         else
         {
             Multiplayer.PeerConnected += (id) =>
@@ -93,7 +108,7 @@ public partial class Networking : Node
             };
             Multiplayer.PeerDisconnected += Server_OnPeerDisconnected;
             Multiplayer.PeerAuthenticating += (id) => { Logger.LogNetwork($"Peer {id} authenticating..."); };
-            Multiplayer.PeerAuthenticationFailed += (id) => { GD.PrintErr($"Peer {id} authentication failed!"); };
+            Multiplayer.PeerAuthenticationFailed += (_) => {}; // неудачная ав-ция лоигруется ниже
             Multiplayer.SetAuthCallback(new Callable(this, MethodName.Server_AuthRequestHandle));
             //Multiplayer.ServerRelay = false;
         }
@@ -103,12 +118,17 @@ public partial class Networking : Node
     {
         try
         {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            };
+            
             var requestData = new JwtValidationRequest(jwt);
             var content = new StringContent(
-                JsonSerializer.Serialize(requestData),
+                JsonSerializer.Serialize(requestData, options),
                 Encoding.UTF8,
                 "application/json");
-
+            
             HttpClient.DefaultRequestHeaders.Clear();
             HttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {ServerToken}");
 
@@ -119,7 +139,7 @@ public partial class Networking : Node
                 return JwtValidationResult.CreateInvalid($"Server validation failed: {response.StatusCode}");
             
             var responseBody = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<JwtValidationResult>(responseBody);
+            return JsonSerializer.Deserialize<JwtValidationResult>(responseBody, options);
         }
         catch (Exception ex)
         {
@@ -138,10 +158,10 @@ public partial class Networking : Node
         try
         {
             var jwt = Encoding.UTF8.GetString(data);
-            Logger.LogNetwork($"Peer {id} authentication data: {jwt}.");
+            Logger.LogNetwork($"Peer {id} authentication data: {jwt.Left(3)}***");
 
             var validationResult = await ValidateJwtWithManger(jwt);
-            if (!validationResult.Valid) throw new Exception();
+            if (!validationResult.Valid) throw new Exception("Jwt not valid!");
             
             if (!MultiplayerController.LobbyExists(validationResult.LobbyId.ToString()))
             {
@@ -151,8 +171,12 @@ public partial class Networking : Node
                 var requestData = new ConfirmLobbyRequest(
                     validationResult.LobbyId.Value, 
                     validationResult.PlayerId.Value);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                };
                 var content = new StringContent(
-                    JsonSerializer.Serialize(requestData),
+                    JsonSerializer.Serialize(requestData, options),
                     Encoding.UTF8,
                     "application/json");
                 
@@ -163,7 +187,7 @@ public partial class Networking : Node
                     $"{ServerManagerUrl}/game-server/confirm-lobby", content);
                 
                 var responseBody = await response.Content.ReadAsStringAsync();
-                var confirmResult = JsonSerializer.Deserialize<ConfirmLobbyResult>(responseBody);
+                var confirmResult = JsonSerializer.Deserialize<ConfirmLobbyResult>(responseBody, options);
 
                 MultiplayerController.CreateLobby(
                     confirmResult.LobbyId.ToString(), 
@@ -227,8 +251,10 @@ public partial class Networking : Node
 
     public Error JoinGame(string authToken)
     {
+        _authToken = authToken;
         if (IsServer) return Error.Failed;
         var peer = new ENetMultiplayerPeer();
+
         var error = peer.CreateClient(_gameServerIp, _gameServerPort);
         if (error != Error.Ok)
         {
@@ -238,15 +264,9 @@ public partial class Networking : Node
         
         Multiplayer.MultiplayerPeer = peer;
         Logger.LogNetwork($"Client started on peer {Multiplayer.GetUniqueId()}.");
-        Multiplayer.SendAuth(GameServerPeerId, Encoding.UTF8.GetBytes(authToken));
+        //Multiplayer.SendAuth(GameServerPeerId, Encoding.UTF8.GetBytes(authToken));
 
         return Error.Ok;
-    }
-
-    public bool IsMyPeer(int peerId)
-    {
-        var thisPeer = Multiplayer.MultiplayerPeer.GetUniqueId();
-        return thisPeer == peerId;
     }
 }
 

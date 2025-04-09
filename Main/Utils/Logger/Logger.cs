@@ -1,10 +1,12 @@
-﻿using Godot;
+﻿using System.Linq;
+using Godot;
 
 namespace ProjectNeva.Main.Utils.Logger;
 
-[GlobalClass]
-public partial class Logger : GodotObject
+public partial class Logger : Node
 {
+    public static readonly bool ToEditor = !OS.GetCmdlineArgs().Contains("--ide");
+
     public static void LogNetwork(string message)
     {
         Log.Create()
@@ -13,7 +15,6 @@ public partial class Logger : GodotObject
             .Body(message)
             .Out();
     }
-    
     
     public static void LogMessage(string message)
     {

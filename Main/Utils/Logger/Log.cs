@@ -6,13 +6,58 @@ namespace ProjectNeva.Main.Utils.Logger;
 
 public class Log
 {
-
     public enum PrefixType
     {
         Time,
-        UId,
+        UId
     }
-    
+
+    private class LogPartBuilder
+    {
+        private string Styling { get; set; }
+        private string Text { get; set; }
+        private string StylingClose { get; set; }
+
+        public LogPartBuilder Message(string message)
+        {
+            Text = message;
+            return this;
+        }
+
+        public LogPartBuilder Brackets()
+        {
+            Styling = "[" + Styling;
+            StylingClose += "]";
+            return this;
+        }
+
+        public LogPartBuilder Color(Color color)
+        {
+            Styling = $"[color={color.ToHtml()}]" + Styling;
+            StylingClose += "[/color]";
+            return this;
+        }
+
+        public LogPartBuilder BackgroundColor(Color color)
+        {
+            Styling = $"[bgcolor={color.ToHtml()}]" + Styling;
+            StylingClose += "[/bgcolor]";
+            return this;
+        }
+
+        public LogPartBuilder Outline()
+        {
+            Styling = "[outline_size=1][outline_color=black]" + Styling;
+            StylingClose += "[/outline_color][/outline_size]";
+            return this;
+        }
+
+        public string Build()
+        {
+            return Styling + Text + StylingClose;
+        }
+    }
+
     private string _log;
 
     public static Log Create()
@@ -22,26 +67,41 @@ public class Log
 
     public Log Prefix(PrefixType prefixType)
     {
-        string log = null;
+        var prefixBuilder = new LogPartBuilder();
         switch (prefixType)
         {
-            case PrefixType.Time: 
-                log = Bracketize($"{DateTime.Now:HH:mm:ss.fff}");
+            case PrefixType.Time:
+                prefixBuilder
+                    .Message($"{DateTime.Now:HH:mm:ss.fff}")
+                    .Brackets();
                 break;
             case PrefixType.UId:
                 var id = Networking.Instance.Multiplayer.MultiplayerPeer.GetUniqueId();
-                log = id.Equals(Networking.GameServerPeerId) ? "SERVER" : id.ToString();
-                var color = new Color((uint)id)
+                // Если игрок уже отключился, взять последний ClientId
+                if (Networking.Instance.IsClient && id == Networking.GameServerPeerId) id = (int)Networking.ClientId;
+
+                prefixBuilder
+                    .Message(id == Networking.GameServerPeerId ? "SERVER" : id.ToString())
+                    .Brackets();
+
+                if (Logger.ToEditor)
                 {
-                    A = 1
-                };
-                var bgColor = new Color(1 - color.R, 1 - color.G, 1 - color.B);
-                log = Outlinize(ColorizeBg(Colorize(Bracketize(log), color), bgColor));
+                    var color = new Color((uint)id)
+                    {
+                        A = 1
+                    };
+                    var bgColor = new Color(1 - color.R, 1 - color.G, 1 - color.B);
+                    prefixBuilder
+                        .Color(color)
+                        .BackgroundColor(bgColor)
+                        .Outline();
+                }
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(prefixType), prefixType, null);
         }
-        _log += log;
+
+        _log += prefixBuilder.Build();
         return this;
     }
 
@@ -51,27 +111,8 @@ public class Log
         return this;
     }
 
-    private static string Bracketize(string _) {return $"[{_}]";}
-
-    private static string Colorize(string _, Color color)
-    {
-        return $"[color={color.ToHtml()}]{_}[/color]";
-    }
-    
-    private static string ColorizeBg(string _, Color color)
-    {
-        return $"[bgcolor={color.ToHtml()}]{_}[/bgcolor]";
-    }
-
-    private static string Outlinize(string _)
-    {
-        return $"[outline_size=1][outline_color=black]{_}[/outline_color][/outline_size]";
-    }
-
     public void Out()
     {
         GD.PrintRich(_log);
     }
-
-
 }

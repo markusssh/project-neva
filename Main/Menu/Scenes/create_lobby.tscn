@@ -126,6 +126,7 @@ alignment = 1
 max_length = 3
 
 [node name="Create" type="Button" parent="PanelContainer/VBoxContainer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(470, 0)
 layout_mode = 2
 size_flags_horizontal = 4
