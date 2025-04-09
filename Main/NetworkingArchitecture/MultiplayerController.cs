@@ -45,8 +45,8 @@ public partial class MultiplayerController : Node
     {
         foreach (var playerId in lobby.Players.Keys)
         {
-            RpcId(joinerId, MethodName.Client_ReceiveNewPlayer, playerId, lobby.Players[joinerId]);
-            RpcId(playerId, MethodName.Client_ReceiveNewPlayer, joinerId, lobby.Players[playerId]);
+            RpcId(joinerId, MethodName.Client_ReceiveNewPlayer, playerId, lobby.Players[joinerId].PlayerName);
+            RpcId(playerId, MethodName.Client_ReceiveNewPlayer, joinerId, lobby.Players[playerId].PlayerName);
         }
     }
     
@@ -194,9 +194,9 @@ public partial class MultiplayerController : Node
     }
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void Client_ReceiveNewPlayer(long playerId, string name)
+    private void Client_ReceiveNewPlayer(long playerId, string playerName)
     {
-        Client_Players[playerId] = new Player(playerId, name);
+        Client_Players[playerId] = new Player(playerId, playerName);
         EmitSignal(SignalName.PlayerJoinedLobby, playerId);
     }
 
