@@ -18,7 +18,7 @@ func _ready() -> void:
 	
 	for player in MultiplayerController.Client_Players.values():
 		var player_id = player.PlayerId
-		var item_player_name = player.GetPlayerName()
+		var item_player_name = player.PlayerName
 		var item_is_creator = creator_id == player_id
 		var item_can_kick = false
 		
