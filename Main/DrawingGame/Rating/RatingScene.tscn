@@ -1,10 +1,10 @@
 [gd_scene load_steps=7 format=3 uid="uid://be4ulftfi71a0"]
 
-[ext_resource type="Script" path="res://Main/DrawingGame/Rating/rating_scene.gd" id="1_34g4c"]
-[ext_resource type="Script" path="res://Main/DrawingGame/Rating/stars_container.gd" id="2_4q1jp"]
-[ext_resource type="ButtonGroup" uid="uid://kywmmbrreqoi" path="res://Main/DrawingGame/Rating/stars_button_group.tres" id="2_dtgmy"]
-[ext_resource type="Texture2D" uid="uid://dy6mq5ugofksx" path="res://Main/Assets/Project Design/Componenets/RatingStarEmpty.png" id="3_pjx6v"]
-[ext_resource type="Texture2D" uid="uid://c4cer0nyjywny" path="res://Main/Assets/Project Design/Componenets/RatingStarFull.png" id="4_wje6d"]
+[ext_resource type="Script" path="res://Main/DrawingGame/Rating/Scripts/rating_scene.gd" id="1_34g4c"]
+[ext_resource type="Script" path="res://Main/DrawingGame/Rating/Scripts/stars_container.gd" id="2_4q1jp"]
+[ext_resource type="ButtonGroup" uid="uid://kywmmbrreqoi" path="res://Main/DrawingGame/Rating/Assets/ButtonGroup/stars_button_group.tres" id="2_dtgmy"]
+[ext_resource type="Texture2D" uid="uid://dy6mq5ugofksx" path="res://Main/Menu/Assets/Textures/RatingStarEmpty.png" id="3_pjx6v"]
+[ext_resource type="Texture2D" uid="uid://c4cer0nyjywny" path="res://Main/Menu/Assets/Textures/RatingStarFull.png" id="4_wje6d"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5e4pp"]
 bg_color = Color(0.956863, 0.945098, 0.870588, 1)

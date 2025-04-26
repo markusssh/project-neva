@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://66o8fboqd2va"]
+[gd_scene load_steps=6 format=3 uid="uid://66o8fboqd2va"]
 
 [ext_resource type="Theme" uid="uid://tgxaae13tjns" path="res://Main/Assets/Themes/primitive_theme.tres" id="1_oexjy"]
 [ext_resource type="Script" path="res://Main/Menu/Scripts/create_lobby.gd" id="2_4yyq1"]
@@ -9,12 +9,20 @@ content_margin_left = 30.0
 content_margin_top = 30.0
 content_margin_right = 30.0
 content_margin_bottom = 30.0
-bg_color = Color(0.878431, 0.478431, 0.372549, 1)
+bg_color = Color(0.913725, 0.768627, 0.415686, 1)
 border_width_left = 10
 border_width_top = 10
 border_width_right = 10
 border_width_bottom = 10
-border_color = Color(0.956863, 0.945098, 0.870588, 1)
+border_color = Color(0.956863, 0.635294, 0.380392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cfch3"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.14902, 0.27451, 0.32549, 1)
 
 [node name="CreateLobby" type="Control"]
 layout_mode = 3
@@ -118,8 +126,10 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.14902, 0.27451, 0.32549, 1)
 theme_override_constants/minimum_character_width = 3
 theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_cfch3")
 text = "60"
 placeholder_text = "сек"
 alignment = 1

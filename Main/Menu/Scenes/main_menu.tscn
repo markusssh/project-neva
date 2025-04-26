@@ -3,18 +3,18 @@
 [ext_resource type="Script" path="res://Main/Menu/Scripts/main_menu.gd" id="1_2csck"]
 [ext_resource type="PackedScene" uid="uid://ddu4dpvang7a3" path="res://Main/Menu/Scenes/shader_background.tscn" id="2_jgpxg"]
 [ext_resource type="Material" uid="uid://c05tjl3ok7n6n" path="res://Main/Menu/Assets/Materials/material_dissapear.tres" id="5_kh3xy"]
-[ext_resource type="Texture2D" uid="uid://c4q42tuuxy5v5" path="res://Main/Assets/Project Design/Componenets/Logo.png" id="6_q4gw2"]
-[ext_resource type="FontFile" uid="uid://bc2ymi24jrbyf" path="res://Main/Assets/Project Design/Fonts/JustAnotherHand-Regular.ttf" id="7_h3osn"]
-[ext_resource type="Texture2D" uid="uid://btu2kp7sp4od7" path="res://Main/Assets/Project Design/Componenets/PlayButtonNormal.png" id="8_q6cmg"]
-[ext_resource type="Texture2D" uid="uid://8qfgamabw06k" path="res://Main/Assets/Project Design/Componenets/PlayButtonPressed.png" id="9_x7lxp"]
-[ext_resource type="Texture2D" uid="uid://cob186cd2im2j" path="res://Main/Assets/Project Design/Componenets/SettingsButtonNormal.png" id="10_sjofm"]
-[ext_resource type="Texture2D" uid="uid://b7n6fqhhw1fp5" path="res://Main/Assets/Project Design/Componenets/SettingsButtonPressed.png" id="11_2ym7y"]
-[ext_resource type="Texture2D" uid="uid://cthesxp8ryspo" path="res://Main/Assets/Project Design/Componenets/GalleryButtonNormal.png" id="12_oalp5"]
-[ext_resource type="Texture2D" uid="uid://cix5quldw2rvb" path="res://Main/Assets/Project Design/Componenets/GalleryButtonPressed.png" id="13_ce16r"]
-[ext_resource type="Texture2D" uid="uid://sa6y0fld5gn3" path="res://Main/Assets/Project Design/Componenets/CreditsButtonNormal.png" id="14_603mm"]
-[ext_resource type="Texture2D" uid="uid://c72t6owb1kasf" path="res://Main/Assets/Project Design/Componenets/CreditsButtonPressed.png" id="15_i4bsa"]
-[ext_resource type="Texture2D" uid="uid://ckj11tmj006uo" path="res://Main/Assets/Project Design/Componenets/ExitButtonNormal.png" id="16_74vsq"]
-[ext_resource type="Texture2D" uid="uid://bfj8q5n7c2xwd" path="res://Main/Assets/Project Design/Componenets/ExitButtonPressed.png" id="17_075a2"]
+[ext_resource type="Texture2D" uid="uid://c4q42tuuxy5v5" path="res://Main/Menu/Assets/Textures/Logo.png" id="6_q4gw2"]
+[ext_resource type="FontFile" uid="uid://bc2ymi24jrbyf" path="res://Main/Assets/Fonts/JustAnotherHand-Regular.ttf" id="7_h3osn"]
+[ext_resource type="Texture2D" uid="uid://btu2kp7sp4od7" path="res://Main/Menu/Assets/Textures/PlayButtonNormal.png" id="8_q6cmg"]
+[ext_resource type="Texture2D" uid="uid://8qfgamabw06k" path="res://Main/Menu/Assets/Textures/PlayButtonPressed.png" id="9_x7lxp"]
+[ext_resource type="Texture2D" uid="uid://cob186cd2im2j" path="res://Main/Menu/Assets/Textures/SettingsButtonNormal.png" id="10_sjofm"]
+[ext_resource type="Texture2D" uid="uid://b7n6fqhhw1fp5" path="res://Main/Menu/Assets/Textures/SettingsButtonPressed.png" id="11_2ym7y"]
+[ext_resource type="Texture2D" uid="uid://cthesxp8ryspo" path="res://Main/Menu/Assets/Textures/GalleryButtonNormal.png" id="12_oalp5"]
+[ext_resource type="Texture2D" uid="uid://cix5quldw2rvb" path="res://Main/Menu/Assets/Textures/GalleryButtonPressed.png" id="13_ce16r"]
+[ext_resource type="Texture2D" uid="uid://sa6y0fld5gn3" path="res://Main/Menu/Assets/Textures/CreditsButtonNormal.png" id="14_603mm"]
+[ext_resource type="Texture2D" uid="uid://c72t6owb1kasf" path="res://Main/Menu/Assets/Textures/CreditsButtonPressed.png" id="15_i4bsa"]
+[ext_resource type="Texture2D" uid="uid://ckj11tmj006uo" path="res://Main/Menu/Assets/Textures/ExitButtonNormal.png" id="16_74vsq"]
+[ext_resource type="Texture2D" uid="uid://bfj8q5n7c2xwd" path="res://Main/Menu/Assets/Textures/ExitButtonPressed.png" id="17_075a2"]
 
 [sub_resource type="Curve" id="Curve_4l1et"]
 min_value = -0.07
@@ -82,7 +82,7 @@ offset_right = 226.5
 grow_horizontal = 2
 grow_vertical = 0
 size_flags_horizontal = 4
-theme_override_colors/font_color = Color(0.956863, 0.945098, 0.870588, 1)
+theme_override_colors/font_color = Color(0.905882, 0.435294, 0.317647, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.25)
 theme_override_constants/shadow_offset_y = 4
 theme_override_fonts/font = ExtResource("7_h3osn")

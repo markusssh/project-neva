@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://v13p8ej283fj"]
+[gd_scene load_steps=9 format=3 uid="uid://v13p8ej283fj"]
 
 [ext_resource type="PackedScene" uid="uid://ddu4dpvang7a3" path="res://Main/Menu/Scenes/shader_background.tscn" id="1_d4vyk"]
 [ext_resource type="Theme" uid="uid://tgxaae13tjns" path="res://Main/Assets/Themes/primitive_theme.tres" id="1_tmvut"]
@@ -10,44 +10,36 @@ content_margin_left = 30.0
 content_margin_top = 30.0
 content_margin_right = 30.0
 content_margin_bottom = 30.0
-bg_color = Color(0.878431, 0.478431, 0.372549, 1)
+bg_color = Color(0.913725, 0.768627, 0.415686, 1)
 border_width_left = 10
 border_width_top = 10
 border_width_right = 10
 border_width_bottom = 10
-border_color = Color(0.956863, 0.945098, 0.870588, 1)
+border_color = Color(0.14902, 0.27451, 0.32549, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_m7w4k"]
 font_size = 96
-font_color = Color(0.956863, 0.945098, 0.870588, 1)
+font_color = Color(0.14902, 0.27451, 0.32549, 1)
 shadow_size = 15
 shadow_color = Color(0, 0, 0, 0.172549)
 shadow_offset = Vector2(1, 5.815)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3ug2s"]
 content_margin_right = 30.0
-bg_color = Color(0.956863, 0.945098, 0.870588, 1)
+bg_color = Color(0.905882, 0.435294, 0.317647, 1)
 border_width_left = 10
 border_width_top = 10
 border_width_right = 10
 border_width_bottom = 10
-border_color = Color(0.505882, 0.698039, 0.603922, 1)
+border_color = Color(0.14902, 0.27451, 0.32549, 1)
 expand_margin_left = 10.0
 expand_margin_top = 10.0
 expand_margin_right = 10.0
 expand_margin_bottom = 10.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dr3s6"]
-content_margin_right = 30.0
-bg_color = Color(0.956863, 0.945098, 0.870588, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i4mos"]
-content_margin_right = 30.0
-bg_color = Color(0.956863, 0.945098, 0.870588, 1)
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ew0lc"]
 content_margin_right = 30.0
-bg_color = Color(0.956863, 0.945098, 0.870588, 1)
+bg_color = Color(0.905882, 0.435294, 0.317647, 1)
 
 [node name="LobbyRoom" type="Control"]
 layout_mode = 3
@@ -93,34 +85,38 @@ size_flags_horizontal = 6
 size_flags_vertical = 4
 alignment = 1
 
-[node name="PlayerCount" type="Label" parent="VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="PlayerCount" type="Label" parent="VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Игроков: 0/3"
 label_settings = SubResource("LabelSettings_m7w4k")
 
-[node name="CopyCode" type="Button" parent="VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="CopyCode" type="Button" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(520, 0)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_colors/font_hover_color = Color(0.324, 0.45, 0.3891, 1)
-theme_override_colors/font_pressed_color = Color(0.32549, 0.45098, 0.388235, 1)
-theme_override_colors/font_focus_color = Color(0.505882, 0.698039, 0.603922, 1)
-theme_override_colors/font_color = Color(0.505882, 0.698039, 0.603922, 1)
 theme_override_styles/focus = SubResource("StyleBoxFlat_3ug2s")
-theme_override_styles/hover = SubResource("StyleBoxFlat_dr3s6")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_i4mos")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ew0lc")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ew0lc")
 theme_override_styles/normal = SubResource("StyleBoxFlat_ew0lc")
 text = "#F7H"
 icon = ExtResource("3_3p755")
 icon_alignment = 2
 
-[node name="Button" type="Button" parent="VBoxContainer"]
+[node name="Button" type="Button" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(520, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Начать"
 
-[connection signal="pressed" from="VBoxContainer/CopyCode" to="." method="_on_copy_code_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/VBoxContainer/CopyCode" to="." method="_on_copy_code_pressed"]

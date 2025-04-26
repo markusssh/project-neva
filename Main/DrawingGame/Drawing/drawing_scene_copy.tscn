@@ -1,0 +1,502 @@
+[gd_scene load_steps=39 format=3 uid="uid://dlok62bfuet1n"]
+
+[ext_resource type="Theme" uid="uid://tgxaae13tjns" path="res://Main/Assets/Themes/primitive_theme.tres" id="1_i28m1"]
+[ext_resource type="Script" path="res://Main/DrawingGame/Drawing/Scripts/drawing_scene.gd" id="2_yt738"]
+[ext_resource type="Script" path="res://Main/DrawingGame/Drawing/Scripts/drawing_manager.gd" id="3_2m5rv"]
+[ext_resource type="ButtonGroup" uid="uid://c65o3aj1a6ld4" path="res://Main/DrawingGame/Drawing/Assets/ButtonGroup/pallete_button_group.tres" id="4_fbcsp"]
+[ext_resource type="ButtonGroup" uid="uid://d4i1tamup7b5u" path="res://Main/DrawingGame/Drawing/Assets/ButtonGroup/brush_size_button_group.tres" id="5_1wbhx"]
+[ext_resource type="LabelSettings" uid="uid://bv26f3wi54brd" path="res://Main/DrawingGame/Drawing/Assets/label_settings.tres" id="6_tsmkq"]
+[ext_resource type="ButtonGroup" uid="uid://c5loj0s0h4wiw" path="res://Main/DrawingGame/Drawing/Assets/ButtonGroup/instrument_button_group.tres" id="7_wb31e"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nantp"]
+bg_color = Color(0.956863, 0.945098, 0.870588, 1)
+
+[sub_resource type="InputEventKey" id="InputEventKey_mcv28"]
+physical_keycode = 65
+
+[sub_resource type="Shortcut" id="Shortcut_vs7sb"]
+events = [SubResource("InputEventKey_mcv28")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_6xkrx"]
+device = -1
+physical_keycode = 83
+unicode = 115
+
+[sub_resource type="Shortcut" id="Shortcut_i6ls5"]
+events = [SubResource("InputEventKey_6xkrx")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_lrb74"]
+device = -1
+physical_keycode = 68
+unicode = 100
+
+[sub_resource type="Shortcut" id="Shortcut_hddf7"]
+events = [SubResource("InputEventKey_lrb74")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_gq2ax"]
+device = -1
+physical_keycode = 70
+unicode = 102
+
+[sub_resource type="Shortcut" id="Shortcut_wiot2"]
+events = [SubResource("InputEventKey_gq2ax")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_xftu5"]
+device = -1
+physical_keycode = 71
+unicode = 103
+
+[sub_resource type="Shortcut" id="Shortcut_36s1x"]
+events = [SubResource("InputEventKey_xftu5")]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_np3t3"]
+content_margin_left = 15.0
+bg_color = Color(0.913725, 0.768627, 0.415686, 1)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0.956863, 0.635294, 0.380392, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_0r50m"]
+font_size = 64
+font_color = Color(0.14902, 0.27451, 0.32549, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_x1i5x"]
+font_size = 25
+outline_size = 3
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="InputEventKey" id="InputEventKey_tx468"]
+device = -1
+physical_keycode = 81
+unicode = 113
+
+[sub_resource type="Shortcut" id="Shortcut_jm4rq"]
+events = [SubResource("InputEventKey_tx468")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_x1k72"]
+device = -1
+physical_keycode = 87
+unicode = 119
+
+[sub_resource type="Shortcut" id="Shortcut_y5iuu"]
+events = [SubResource("InputEventKey_x1k72")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_0leoi"]
+device = -1
+physical_keycode = 69
+unicode = 101
+
+[sub_resource type="Shortcut" id="Shortcut_4uwcl"]
+events = [SubResource("InputEventKey_0leoi")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_ju3wa"]
+device = -1
+physical_keycode = 82
+unicode = 114
+
+[sub_resource type="Shortcut" id="Shortcut_0cg8c"]
+events = [SubResource("InputEventKey_ju3wa")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_oyx2v"]
+device = -1
+physical_keycode = 90
+unicode = 122
+
+[sub_resource type="InputEventKey" id="InputEventKey_w766t"]
+device = -1
+ctrl_pressed = true
+physical_keycode = 90
+
+[sub_resource type="Shortcut" id="Shortcut_sxm65"]
+events = [SubResource("InputEventKey_oyx2v"), SubResource("InputEventKey_w766t")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_2wbny"]
+device = -1
+shift_pressed = true
+ctrl_pressed = true
+physical_keycode = 90
+
+[sub_resource type="InputEventKey" id="InputEventKey_kuh58"]
+device = -1
+physical_keycode = 88
+unicode = 120
+
+[sub_resource type="InputEventKey" id="InputEventKey_ca6jx"]
+device = -1
+ctrl_pressed = true
+physical_keycode = 89
+
+[sub_resource type="Shortcut" id="Shortcut_inph4"]
+events = [SubResource("InputEventKey_2wbny"), SubResource("InputEventKey_kuh58"), SubResource("InputEventKey_ca6jx")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_x4w5n"]
+device = -1
+ctrl_pressed = true
+physical_keycode = 83
+
+[sub_resource type="Shortcut" id="Shortcut_2qjjb"]
+events = [SubResource("InputEventKey_x4w5n")]
+
+[node name="DrawingScene" type="Control" node_paths=PackedStringArray("round_end_timer", "round_end_progress")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_i28m1")
+script = ExtResource("2_yt738")
+round_end_timer = NodePath("RoundEndTimer")
+round_end_progress = NodePath("RoundEndProgress")
+
+[node name="DrawingManager" type="Node" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.905882, 0.435294, 0.317647, 1)
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+collapsed = true
+dragger_visibility = 2
+
+[node name="CanvasAndRightPanelHSplitContainer" type="HSplitContainer" parent="HSplitContainer"]
+layout_mode = 2
+collapsed = true
+dragger_visibility = 2
+
+[node name="DrawingCanvasPanelContainer" type="PanelContainer" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer" node_paths=PackedStringArray("drawing_line", "erase_mask_line", "erase_mask_viewport", "background", "color_picker", "picked_color")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_nantp")
+script = ExtResource("3_2m5rv")
+drawing_line = NodePath("PaintViewportContainer/PaintViewport/DrawingLine")
+erase_mask_line = NodePath("EraseMaskViewportContainer/EraseMaskViewport/EraseMaskLine")
+erase_mask_viewport = NodePath("EraseMaskViewportContainer/EraseMaskViewport")
+background = NodePath("PaintViewportContainer/PaintViewport/Background")
+color_picker = NodePath("../RightPanelContainer/VBoxContainer/ColorPicker")
+pallete_button_group = ExtResource("4_fbcsp")
+picked_color = NodePath("../RightPanelContainer/VBoxContainer/PickedColor")
+
+[node name="EraseMaskViewportContainer" type="SubViewportContainer" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="EraseMaskViewport" type="SubViewport" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/EraseMaskViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+msaa_2d = 3
+size = Vector2i(826, 648)
+render_target_update_mode = 4
+
+[node name="EraseMaskLine" type="Line2D" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/EraseMaskViewportContainer/EraseMaskViewport"]
+width = 20.0
+default_color = Color(0, 0, 0, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="PaintViewportContainer" type="SubViewportContainer" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="PaintViewport" type="SubViewport" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/PaintViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(826, 648)
+render_target_update_mode = 4
+
+[node name="Background" type="ColorRect" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/PaintViewportContainer/PaintViewport"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(413, 324)
+
+[node name="PaintedImage" type="TextureRect" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/PaintViewportContainer/PaintViewport"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="DrawingLine" type="Line2D" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/PaintViewportContainer/PaintViewport"]
+unique_name_in_owner = true
+width = 20.0
+default_color = Color(0.171, 0.5301, 0.57, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="BrushSizePanelContainer" type="PanelContainer" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_type_variation = &"Background2"
+
+[node name="ExtraDrawingSettingsHBoxContainer" type="HBoxContainer" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/BrushSizePanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/BrushSizePanelContainer/ExtraDrawingSettingsHBoxContainer"]
+layout_mode = 2
+text = "Brush Size:"
+label_settings = ExtResource("6_tsmkq")
+
+[node name="XSButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/BrushSizePanelContainer/ExtraDrawingSettingsHBoxContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+toggle_mode = true
+button_group = ExtResource("5_1wbhx")
+shortcut = SubResource("Shortcut_vs7sb")
+text = "XS"
+
+[node name="SButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/BrushSizePanelContainer/ExtraDrawingSettingsHBoxContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+toggle_mode = true
+button_group = ExtResource("5_1wbhx")
+shortcut = SubResource("Shortcut_i6ls5")
+text = "S"
+
+[node name="MButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/BrushSizePanelContainer/ExtraDrawingSettingsHBoxContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+toggle_mode = true
+button_pressed = true
+button_group = ExtResource("5_1wbhx")
+shortcut = SubResource("Shortcut_hddf7")
+text = "M"
+
+[node name="LButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/BrushSizePanelContainer/ExtraDrawingSettingsHBoxContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+toggle_mode = true
+button_group = ExtResource("5_1wbhx")
+shortcut = SubResource("Shortcut_wiot2")
+text = "L"
+
+[node name="XLButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/BrushSizePanelContainer/ExtraDrawingSettingsHBoxContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+toggle_mode = true
+button_group = ExtResource("5_1wbhx")
+shortcut = SubResource("Shortcut_36s1x")
+text = "XL"
+
+[node name="RoundTopicLabel" type="Label" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(826, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 46
+theme_override_styles/normal = SubResource("StyleBoxFlat_np3t3")
+text = "Тема:"
+label_settings = SubResource("LabelSettings_0r50m")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RightPanelContainer" type="PanelContainer" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="PaitingLabel" type="Label" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+label_settings = SubResource("LabelSettings_x1i5x")
+autowrap_mode = 2
+
+[node name="PalleteHFlowContainer" type="HFlowContainer" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+alignment = 1
+
+[node name="PickedColor" type="ColorRect" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="ColorPicker" type="ColorPicker" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+edit_alpha = false
+sampler_visible = false
+color_modes_visible = false
+sliders_visible = false
+hex_visible = false
+presets_visible = false
+
+[node name="HFlowContainer" type="HFlowContainer" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+
+[node name="PickerButtton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+toggle_mode = true
+button_group = ExtResource("7_wb31e")
+shortcut = SubResource("Shortcut_jm4rq")
+text = "Picker"
+
+[node name="BrushButtton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+toggle_mode = true
+button_pressed = true
+button_group = ExtResource("7_wb31e")
+shortcut = SubResource("Shortcut_y5iuu")
+text = "Brush"
+
+[node name="EraserButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+toggle_mode = true
+button_group = ExtResource("7_wb31e")
+shortcut = SubResource("Shortcut_4uwcl")
+text = "Eraser"
+
+[node name="BucketButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+toggle_mode = true
+button_group = ExtResource("7_wb31e")
+shortcut = SubResource("Shortcut_0cg8c")
+text = "Bucket
+"
+
+[node name="LineButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer"]
+visible = false
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("7_wb31e")
+text = "Line
+"
+
+[node name="EmptyRectangleButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer"]
+visible = false
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("7_wb31e")
+text = "Empty Rectangle"
+
+[node name="FullRectangleButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer"]
+visible = false
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("7_wb31e")
+text = "Full Rectangle"
+
+[node name="EmptyCircleButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer"]
+visible = false
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("7_wb31e")
+text = "Empty Circle"
+
+[node name="FullCircleButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer"]
+visible = false
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("7_wb31e")
+text = "Full Circle
+"
+
+[node name="ActionsHBoxContainer" type="HBoxContainer" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+theme_override_constants/separation = 40
+alignment = 2
+
+[node name="ActionBackButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/ActionsHBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+shortcut = SubResource("Shortcut_sxm65")
+text = "⬅"
+
+[node name="ActionForwardButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/ActionsHBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+shortcut = SubResource("Shortcut_inph4")
+text = "⮕"
+
+[node name="SaveButton" type="Button" parent="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 32
+shortcut = SubResource("Shortcut_2qjjb")
+text = "💾"
+
+[node name="RoundEndProgress" type="ProgressBar" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -13.0
+offset_right = 320.0
+offset_bottom = 14.0
+grow_vertical = 2
+
+[node name="RoundEndTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="FinishedDrawingCheckButton" type="CheckButton" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -24.0
+offset_right = 32.0
+grow_vertical = 0
+
+[connection signal="pressed" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/BrushSizePanelContainer/ExtraDrawingSettingsHBoxContainer/XSButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_xs_button_pressed"]
+[connection signal="pressed" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/BrushSizePanelContainer/ExtraDrawingSettingsHBoxContainer/SButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_s_button_pressed"]
+[connection signal="pressed" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/BrushSizePanelContainer/ExtraDrawingSettingsHBoxContainer/MButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_m_button_pressed"]
+[connection signal="pressed" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/BrushSizePanelContainer/ExtraDrawingSettingsHBoxContainer/LButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_l_button_pressed"]
+[connection signal="pressed" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer/BrushSizePanelContainer/ExtraDrawingSettingsHBoxContainer/XLButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_xl_button_pressed"]
+[connection signal="color_changed" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/ColorPicker" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_color_picker_color_changed"]
+[connection signal="mouse_exited" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/ColorPicker" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/ColorPicker" method="_on_mouse_exited"]
+[connection signal="toggled" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer/PickerButtton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_picker_buttton_toggled"]
+[connection signal="toggled" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer/BrushButtton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_brush_buttton_toggled"]
+[connection signal="toggled" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer/EraserButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_eraser_button_toggled"]
+[connection signal="toggled" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer/BucketButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_bucket_button_toggled"]
+[connection signal="toggled" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer/LineButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_line_button_toggled"]
+[connection signal="toggled" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer/EmptyRectangleButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_empty_rectangle_button_toggled"]
+[connection signal="toggled" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer/FullRectangleButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_full_rectangle_button_toggled"]
+[connection signal="toggled" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer/EmptyCircleButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_empty_circle_button_toggled"]
+[connection signal="toggled" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/VBoxContainer/HFlowContainer/FullCircleButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_full_circle_button_toggled"]
+[connection signal="pressed" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/ActionsHBoxContainer/ActionBackButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_action_back_button_pressed"]
+[connection signal="pressed" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/ActionsHBoxContainer/ActionForwardButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_action_forward_button_pressed"]
+[connection signal="pressed" from="HSplitContainer/CanvasAndRightPanelHSplitContainer/RightPanelContainer/SaveButton" to="HSplitContainer/CanvasAndRightPanelHSplitContainer/DrawingCanvasPanelContainer" method="_on_save_button_pressed"]
+[connection signal="toggled" from="FinishedDrawingCheckButton" to="." method="_on_finished_drawing_check_button_toggled"]

@@ -1,12 +1,12 @@
 shader_type canvas_item;
 
+uniform vec4 highlight_color: source_color;
+
 uniform sampler3D noise_img_3d;
 uniform sampler2D noise_img;
 uniform float blur_size = 5.0;
 uniform float edge_start = 0.1; // Начало перехода прозрачности
 uniform float edge_end = 0.6;   // Конец перехода прозрачности
-
-const vec4 highlight_color = vec4(242.0/255.0, 204.0/255.0, 143.0/255.0, 1.0);
 
 float value(vec3 color) {
     return (color.r + color.g + color.b) / 3.0;

@@ -7,7 +7,7 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_in22f"]
 content_margin_left = 30.0
-bg_color = Color(0.956863, 0.945098, 0.870588, 1)
+bg_color = Color(0.905882, 0.435294, 0.317647, 1)
 
 [node name="LobbyListPlayerItem" type="PanelContainer"]
 custom_minimum_size = Vector2(1000, 80)
@@ -23,7 +23,7 @@ size_flags_horizontal = 0
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
-theme_override_colors/font_color = Color(0.505882, 0.698039, 0.603922, 1)
+theme_override_colors/font_color = Color(0.913725, 0.768627, 0.415686, 1)
 text = "Name"
 
 [node name="MarginContainer2" type="MarginContainer" parent="."]

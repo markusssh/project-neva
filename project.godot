@@ -26,8 +26,7 @@ config/name="Drawle"
 run/main_scene="res://Main/Menu/Scenes/main_menu.tscn"
 config/features=PackedStringArray("4.3", "C#", "Forward Plus")
 boot_splash/bg_color=Color(0.878431, 0.478431, 0.372549, 1)
-boot_splash/image="res://Main/Assets/Project Design/Главная Сцена.png"
-config/icon="res://Main/Assets/Project Design/Лого.png"
+config/icon="res://Main/Assets/Лого.png"
 
 [autoload]
 
@@ -35,7 +34,7 @@ Logger="*res://Main/Utils/Logger/Logger.cs"
 GlobalVars="*res://Main/Global/global_vars.gd"
 Networking="*res://Main/NetworkingArchitecture/Networking.cs"
 MultiplayerController="*res://Main/NetworkingArchitecture/MultiplayerController.cs"
-AlgoUtil="*res://Main/DrawingGame/Drawing/AlgoUtil.cs"
+AlgoUtil="*res://Main/DrawingGame/Drawing/Scripts/AlgoUtil.cs"
 
 [display]
 
@@ -61,14 +60,17 @@ enabled=PackedStringArray("res://addons/script-ide/plugin.cfg")
 folder_colors={
 "res://Legacy/": "gray",
 "res://Legacy/Database/": "orange",
+"res://Legacy/Debug/": "gray",
 "res://Legacy/MainUI/": "teal",
 "res://Main/": "red",
 "res://Main/Assets/": "purple",
-"res://Main/Debug/": "gray",
 "res://Main/DrawingGame/": "green",
+"res://Main/Global/": "yellow",
 "res://Main/LoggerUtils/": "gray",
+"res://Main/Menu/": "blue",
 "res://Main/Networking/": "blue",
 "res://Main/NetworkingArchitecture/": "pink",
+"res://Main/Utils/": "gray",
 "res://addons/": "yellow"
 }
 

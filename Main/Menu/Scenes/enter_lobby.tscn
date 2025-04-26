@@ -38,6 +38,11 @@ theme = ExtResource("1_gxkxm")
 placeholder_text = "Имя"
 max_length = 15
 
+[node name="CodeEdit" type="LineEdit" parent="Menu"]
+layout_mode = 2
+placeholder_text = "#Код"
+clear_button_enabled = true
+
 [node name="CreateButton" type="Button" parent="Menu"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(517, 0)
@@ -51,12 +56,7 @@ layout_mode = 2
 disabled = true
 text = "Войти"
 
-[node name="CodeEdit" type="LineEdit" parent="Menu"]
-layout_mode = 2
-placeholder_text = "#Код"
-clear_button_enabled = true
-
 [connection signal="text_changed" from="Menu/NameEdit" to="." method="_on_name_edit_text_changed"]
+[connection signal="text_changed" from="Menu/CodeEdit" to="." method="_on_code_edit_text_changed"]
 [connection signal="pressed" from="Menu/CreateButton" to="." method="_on_create_button_pressed"]
 [connection signal="pressed" from="Menu/JoinButton" to="." method="_on_join_button_pressed"]
-[connection signal="text_changed" from="Menu/CodeEdit" to="." method="_on_code_edit_text_changed"]

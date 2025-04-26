@@ -11,6 +11,7 @@ noise = SubResource("FastNoiseLite_8cwjk")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8kwui"]
 shader = ExtResource("1_3d2h2")
+shader_parameter/highlight_color = Color(0.956863, 0.635294, 0.380392, 1)
 shader_parameter/blur_size = 5.0
 shader_parameter/edge_start = 0.1
 shader_parameter/edge_end = 0.6
@@ -23,7 +24,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.878431, 0.478431, 0.372549, 1)
+color = Color(0.913725, 0.768627, 0.415686, 1)
 
 [node name="Particles" type="ColorRect" parent="."]
 material = SubResource("ShaderMaterial_8kwui")
