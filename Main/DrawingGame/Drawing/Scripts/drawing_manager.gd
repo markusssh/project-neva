@@ -41,6 +41,9 @@ const BRUSH_SIZE_DICT := {
 @export var picked_color: ColorRect
 @export var pallete_container: GridContainer
 
+@export_category("Instruments")
+@export var brush: TextureButton
+
 var drawing_on: bool = true
 var e: float = 1
 var mouse_pos: Vector2
@@ -63,7 +66,7 @@ var pallete: Array[Color] = [
 	Color.WHITE
 ]
 
-var brush_size: BrushSize:
+var brush_size: BrushSize = BrushSize.M:
 	set(value):
 		brush_size = value
 		var pixel_size = BRUSH_SIZE_DICT[value]
@@ -144,7 +147,7 @@ func _input(event: InputEvent) -> void:
 		PaintingMode.PICKER:
 			if event is InputEventMouseButton and event.is_released():
 				if event.button_index == MOUSE_BUTTON_LEFT:
-					%BrushButtton.button_pressed = true
+					brush.button_pressed = true
 
 func set_drawing_canvas_mouse_pos() -> void:
 	mouse_pos = canvas_viewport.get_mouse_position()
@@ -194,6 +197,7 @@ func bake_drawing() -> void:
 		PaintingMode.ERASER:
 			await RenderingServer.frame_post_draw
 			var erase_mask: Image = erase_mask_viewport.get_texture().get_image()
+			var d = erase_mask.get_data()
 			for row in canv_size.y:
 				for column in canv_size.x:
 					if erase_mask.get_pixel(column, row) == Color.BLACK:

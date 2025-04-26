@@ -15,7 +15,6 @@ var canv_size: Vector2i = Vector2i(
 )
 
 func _ready() -> void:
-	print_tree_pretty()
 	topic = MultiplayerController.Client_Topic
 	MultiplayerController.DrawingGameStarted.connect(_on_game_ready)
 	MultiplayerController.FinalImageRequested.connect(_on_drawing_image_requested)
