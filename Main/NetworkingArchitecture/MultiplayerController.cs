@@ -45,8 +45,10 @@ public partial class MultiplayerController : Node
     {
         foreach (var playerId in lobby.Players.Keys)
         {
-            RpcId(joinerId, MethodName.Client_ReceiveNewPlayer, playerId, lobby.Players[joinerId].PlayerName);
-            RpcId(playerId, MethodName.Client_ReceiveNewPlayer, joinerId, lobby.Players[playerId].PlayerName);
+            RpcId(joinerId, MethodName.Client_ReceiveNewPlayer, playerId, lobby.Players[playerId].PlayerName);
+            if (playerId != joinerId) {
+                RpcId(playerId, MethodName.Client_ReceiveNewPlayer, joinerId, lobby.Players[joinerId].PlayerName);
+            }
         }
     }
     

@@ -25,7 +25,7 @@ func _on_game_ready() -> void:
 
 func _on_drawing_image_requested() -> void:
 	MultiplayerController.Client_SendFinalImage(
-		drawing_manager.painted_image.texture.get_image().get_data()
+		drawing_manager.drawing_image.texture.get_image().get_data()
 	)
 
 func _process(_delta: float) -> void:

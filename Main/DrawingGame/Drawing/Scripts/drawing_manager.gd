@@ -28,9 +28,7 @@ const BRUSH_SIZE_DICT := {
 
 @export_category("Drawing Canvas")
 @export var drawing_line: Line2D
-@export var erase_mask_line: Line2D
 @export var canvas_viewport: SubViewport
-@export var erase_mask_viewport: SubViewport
 @export var drawing_image: TextureRect
 @export var background: ColorRect
 @export var brush_circle: BrushCircle
@@ -47,7 +45,16 @@ const BRUSH_SIZE_DICT := {
 var drawing_on: bool = true
 var e: float = 1
 var mouse_pos: Vector2
-var mode: PaintingMode = PaintingMode.BRUSH 
+var mode: PaintingMode = PaintingMode.BRUSH:
+	set(value):
+		mode = value
+		match value:
+			PaintingMode.BRUSH:
+				brush_circle.show()
+			PaintingMode.ERASER:
+				brush_circle.show()
+			_:
+				brush_circle.hide()
 var canv_size: Vector2i
 var history_scroll_idx: int = 1
 var drawing_history: Array[ImageTexture]
@@ -72,7 +79,6 @@ var brush_size: BrushSize = BrushSize.M:
 		var pixel_size = BRUSH_SIZE_DICT[value]
 		brush_circle.set_circle_size(pixel_size)
 		drawing_line.width = pixel_size
-		erase_mask_line.width =  pixel_size
 var drawing_color: Color = pallete[0]: 
 	set(value):
 		drawing_color = value
@@ -84,10 +90,14 @@ func _ready() -> void:
 	color_picker.color = drawing_color
 	picked_color.color = drawing_color
 	drawing_line.width = BRUSH_SIZE_DICT[brush_size]
-	drawing_line.width = BRUSH_SIZE_DICT[brush_size]
-	drawing_image.texture = ImageTexture\
-		.create_from_image(ImageHelper.CreateEmptyImage())
+	
+	var initial_image = ImageHelper.CreateEmptyImage()
+	for y in range(initial_image.get_height()):
+		for x in range(initial_image.get_width()):
+			initial_image.set_pixel(x, y, background.color)
+	drawing_image.texture = ImageTexture.create_from_image(initial_image)
 	drawing_history.append(drawing_image.texture)
+	
 	set_palette_buttons()
 
 func allign_canvas() -> void:
@@ -182,8 +192,6 @@ func handle_brush_drawing() -> void:
 
 func handle_erase() -> void:
 	handle_brush_drawing()
-	erase_mask_line.width = drawing_line.width
-	erase_mask_line.points = drawing_line.points
 
 # Viewport texture can't be written and read at the same time by engine
 # So we should convert to image and back to texture
@@ -194,16 +202,6 @@ func bake_drawing() -> void:
 	if image == null:
 				image = viewport_image
 	match mode:
-		PaintingMode.ERASER:
-			await RenderingServer.frame_post_draw
-			var erase_mask: Image = erase_mask_viewport.get_texture().get_image()
-			var d = erase_mask.get_data()
-			for row in canv_size.y:
-				for column in canv_size.x:
-					if erase_mask.get_pixel(column, row) == Color.BLACK:
-						image.set_pixel(column, row, Color.TRANSPARENT)
-			drawing_image.texture = ImageTexture.create_from_image(image)
-			drawing_line.clear_points()
 		PaintingMode.BUCKET:
 			var replace_color = image.get_pixelv(mouse_pos)
 			drawing_image.texture = ImageTexture.create_from_image(
