@@ -1,0 +1,126 @@
+[gd_scene load_steps=8 format=3 uid="uid://be4ulftfi71a0"]
+
+[ext_resource type="Script" path="res://Main/DrawingGame/Rating/Scripts/rating_scene.gd" id="1_0ip4p"]
+[ext_resource type="Theme" uid="uid://tgxaae13tjns" path="res://Main/Assets/Themes/primitive_theme.tres" id="1_gvnyb"]
+[ext_resource type="Script" path="res://Main/DrawingGame/Rating/Scripts/stars_container.gd" id="2_po6pp"]
+[ext_resource type="ButtonGroup" uid="uid://kywmmbrreqoi" path="res://Main/DrawingGame/Rating/Assets/ButtonGroup/stars_button_group.tres" id="3_crcws"]
+[ext_resource type="Texture2D" uid="uid://c4cer0nyjywny" path="res://Main/DrawingGame/Rating/Assets/Textures/RatingStarFull.png" id="4_hqsln"]
+[ext_resource type="Texture2D" uid="uid://dy6mq5ugofksx" path="res://Main/DrawingGame/Rating/Assets/Textures/RatingStarEmpty.png" id="5_lyh33"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1ijxg"]
+bg_color = Color(0.956863, 0.635294, 0.380392, 1)
+
+[node name="RatingScene" type="Control" node_paths=PackedStringArray("curr_drawing", "stars_container", "scene_end_progress", "scene_end_timer")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_gvnyb")
+script = ExtResource("1_0ip4p")
+curr_drawing = NodePath("CenterContainer/PlayerDrawing")
+stars_container = NodePath("StarsContainer")
+scene_end_progress = NodePath("ProgressContainer/SceneEndProgress")
+scene_end_timer = NodePath("ProgressContainer/SceneEndTimer")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.905882, 0.435294, 0.317647, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 2
+offset_right = 1920.0
+offset_bottom = 1080.0
+
+[node name="Outline" type="ColorRect" parent="CenterContainer"]
+custom_minimum_size = Vector2(886, 708)
+layout_mode = 2
+color = Color(0.956863, 0.635294, 0.380392, 1)
+
+[node name="PlayerDrawing" type="TextureRect" parent="CenterContainer"]
+layout_mode = 2
+
+[node name="StarsContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -445.5
+offset_top = -175.0
+offset_right = 445.5
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 1
+script = ExtResource("2_po6pp")
+stars_button_group = ExtResource("3_crcws")
+full_star_texture = ExtResource("4_hqsln")
+empty_star_texture = ExtResource("5_lyh33")
+
+[node name="Star1" type="TextureButton" parent="StarsContainer"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("3_crcws")
+texture_normal = ExtResource("5_lyh33")
+texture_pressed = ExtResource("5_lyh33")
+texture_hover = ExtResource("5_lyh33")
+
+[node name="Star2" type="TextureButton" parent="StarsContainer"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("3_crcws")
+texture_normal = ExtResource("5_lyh33")
+texture_pressed = ExtResource("5_lyh33")
+texture_hover = ExtResource("5_lyh33")
+
+[node name="Star3" type="TextureButton" parent="StarsContainer"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("3_crcws")
+texture_normal = ExtResource("5_lyh33")
+texture_pressed = ExtResource("5_lyh33")
+texture_hover = ExtResource("5_lyh33")
+
+[node name="Star4" type="TextureButton" parent="StarsContainer"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("3_crcws")
+texture_normal = ExtResource("5_lyh33")
+texture_pressed = ExtResource("5_lyh33")
+texture_hover = ExtResource("5_lyh33")
+
+[node name="Star5" type="TextureButton" parent="StarsContainer"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("3_crcws")
+texture_normal = ExtResource("5_lyh33")
+texture_pressed = ExtResource("5_lyh33")
+texture_hover = ExtResource("5_lyh33")
+
+[node name="ProgressContainer" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(886, 120)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -443.0
+offset_right = 443.0
+offset_bottom = 120.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_1ijxg")
+
+[node name="SceneEndTimer" type="Timer" parent="ProgressContainer"]
+
+[node name="SceneEndProgress" type="ProgressBar" parent="ProgressContainer"]
+custom_minimum_size = Vector2(846, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+show_percentage = false

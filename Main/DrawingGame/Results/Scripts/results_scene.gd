@@ -1,10 +1,11 @@
 extends Control
 
+@export var showcase: GridContainer
+
 func _ready() -> void:
 	var players: Dictionary = MultiplayerController.Client_Players
 	var images: Dictionary = MultiplayerController.Client_FinalImages
 	var scores: Dictionary = MultiplayerController.Client_Scores
-	%Showcase.columns = ceili(sqrt(images.size()))
 	var player_cards: Array[PlayerCard]
 	
 	for player_id in images.keys():
@@ -25,7 +26,7 @@ func _ready() -> void:
 			i,
 			pc.player_name,
 			pc.score)
-		%Showcase.add_child(item)
+		showcase.add_child(item)
 	
 	MultiplayerController.Client_NotifyNewSceneReady()
 

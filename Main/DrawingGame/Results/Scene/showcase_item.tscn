@@ -1,10 +1,66 @@
-[gd_scene load_steps=2 format=3 uid="uid://cm61osyqnqb1j"]
+[gd_scene load_steps=6 format=3 uid="uid://cm61osyqnqb1j"]
 
 [ext_resource type="Script" path="res://Main/DrawingGame/Results/Scripts/showcase_item.gd" id="1_ajv20"]
+[ext_resource type="Theme" uid="uid://tgxaae13tjns" path="res://Main/Assets/Themes/primitive_theme.tres" id="1_i2c7v"]
+[ext_resource type="Texture2D" uid="uid://duyrk36oaafc0" path="res://Main/DrawingGame/Results/Assets/Textures/RatingStarSmall.png" id="4_oufu8"]
 
-[node name="ShowcaseItem" type="VBoxContainer"]
-alignment = 1
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8egkm"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0.956863, 0.635294, 0.380392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b2syc"]
+bg_color = Color(0.956863, 0.635294, 0.380392, 1)
+
+[node name="ShowcaseItem" type="PanelContainer" node_paths=PackedStringArray("top_label", "drawing_container", "bottom_label")]
+offset_right = 532.0
+offset_bottom = 420.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme = ExtResource("1_i2c7v")
+theme_override_styles/panel = SubResource("StyleBoxFlat_8egkm")
 script = ExtResource("1_ajv20")
+top_label = NodePath("MarginContainer/VBoxContainer/TopLabel")
+drawing_container = NodePath("MarginContainer/VBoxContainer/DrawingContainer")
+bottom_label = NodePath("MarginContainer/VBoxContainer/HBoxContainer/BottomLabel")
 
-[node name="Label" type="Label" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="TopLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+
+[node name="DrawingContainer" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(532, 420)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_b2syc")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Star1" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("4_oufu8")
+
+[node name="BottomLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 64
+
+[node name="Star2" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("4_oufu8")

@@ -1,31 +1,56 @@
-[gd_scene load_steps=3 format=3 uid="uid://bgfimug37ep5g"]
+[gd_scene load_steps=4 format=3 uid="uid://bgfimug37ep5g"]
 
 [ext_resource type="Script" path="res://Main/DrawingGame/Results/Scripts/results_scene.gd" id="1_leu82"]
+[ext_resource type="Theme" uid="uid://tgxaae13tjns" path="res://Main/Assets/Themes/primitive_theme.tres" id="1_waatr"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fdv3i"]
-bg_color = Color(0.956863, 0.945098, 0.870588, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b15i0"]
+bg_color = Color(0.956863, 0.635294, 0.380392, 1)
 
-[node name="ResultsScene" type="Control"]
+[node name="ResultsScene" type="Control" node_paths=PackedStringArray("showcase")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_waatr")
 script = ExtResource("1_leu82")
+showcase = NodePath("ScrollContainer/Showcase")
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
+[node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_fdv3i")
+color = Color(0.905882, 0.435294, 0.317647, 1)
 
-[node name="CenterContainer" type="CenterContainer" parent="PanelContainer"]
-layout_mode = 2
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 185.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Showcase" type="GridContainer" parent="PanelContainer/CenterContainer"]
+[node name="Showcase" type="GridContainer" parent="ScrollContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+columns = 3
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(500, 140)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_b15i0")
+
+[node name="Button" type="Button" parent="PanelContainer"]
+custom_minimum_size = Vector2(480, 120)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 64
+text = "В меню"

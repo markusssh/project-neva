@@ -88,7 +88,8 @@ public partial class MultiplayerController : Node
             lobby.CreatorId,
             lobby.LobbySize, 
             lobby.Topic, 
-            lobby.PlayTime);
+            lobby.PlayTime,
+            lobby.RateTime);
     }
 
     public void Server_OnPeerDisconnected(long peerId)
@@ -159,7 +160,8 @@ public partial class MultiplayerController : Node
     public long Client_CreatorId;
     public int Client_MaxPlayers;
     public int Client_MaxRounds;
-    public float Client_DrawingTimeSec;
+    public float Client_DrawTime;
+    public float Client_RateTime;
     public string Client_Topic;
     
     public bool Client_IsCreator => Client_Id == Client_CreatorId;
@@ -183,14 +185,16 @@ public partial class MultiplayerController : Node
         long creatorId,
         int lobbySize, 
         string topic,
-        float drawingTimeSec)
+        float drawTime,
+        float rateTime)
     {
         Client_Id = playerId;
         Client_LobbyCode = lobbyId;
         Client_CreatorId = creatorId;
         Client_MaxPlayers = lobbySize;
         Client_Topic = topic;
-        Client_DrawingTimeSec = drawingTimeSec;
+        Client_DrawTime = drawTime;
+        Client_RateTime = rateTime;
         EmitSignal(SignalName.ClientSynchronized);
         Logger.LogNetwork("Lobby data was received");
     }
@@ -281,7 +285,7 @@ public partial class MultiplayerController : Node
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void Client_LoadRatingScene()
     {
-        GetTree().ChangeSceneToFile("res://Main/DrawingGame/Rating/RatingScene.tscn");
+        GetTree().ChangeSceneToFile("res://Main/DrawingGame/Rating/rating_scene.tscn");
     }
     
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]

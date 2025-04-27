@@ -27,9 +27,10 @@ public class Lobby
     public long CreatorId { get; set; }
     public Dictionary<long, Player> Players { get; set; } = new();
     public Godot.Collections.Dictionary<long, byte[]> Images { get; set; } = new();
-    public int LobbySize { get; set; } = 3;
+    public int LobbySize { get; set; }
     public string Topic { get; set; } = RoundTopic.Topics[new Random().Next(RoundTopic.Topics.Length - 1)];
     public float PlayTime { get; set; }
+    public float RateTime { get; } = 5;
 
     public void OnPlayerConnected(long playerId, JwtValidationResult authData)
     {

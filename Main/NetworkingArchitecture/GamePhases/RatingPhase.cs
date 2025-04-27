@@ -9,7 +9,6 @@ namespace ProjectNeva.Main.NetworkingArchitecture.GamePhases;
 
 public class RatingPhase : ClosedGamePhase
 {
-    private const float RatingSec = 4.0f;
     private const int MinScore = 2;
     private const int MaxScore = 10;
 
@@ -46,7 +45,7 @@ public class RatingPhase : ClosedGamePhase
 
         ChangePlayerToRate();
         MultiplayerController.Instance.AddChild(_timer);
-        _timer.Start(RatingSec);
+        _timer.Start(Lobby.RateTime);
         _timer.Timeout += OnTimerTimeout;
         
         Logger.LogNetwork($"Lobby: {Lobby.LobbyId}. Rating scene started.");

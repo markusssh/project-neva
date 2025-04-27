@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c4cer0nyjywny"
-path="res://.godot/imported/RatingStarFull.png-369e4057e2e9b34aee88526e4ce3b74e.ctex"
+uid="uid://duyrk36oaafc0"
+path="res://.godot/imported/RatingStarSmall.png-ce0b96e0c46bd9649ddd46107be43028.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Main/Menu/Assets/Textures/RatingStarFull.png"
-dest_files=["res://.godot/imported/RatingStarFull.png-369e4057e2e9b34aee88526e4ce3b74e.ctex"]
+source_file="res://Main/DrawingGame/Results/Assets/Textures/RatingStarSmall.png"
+dest_files=["res://.godot/imported/RatingStarSmall.png-ce0b96e0c46bd9649ddd46107be43028.ctex"]
 
 [params]
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3 uid="uid://d3nhi2w5tqpck"]
+[gd_scene load_steps=41 format=3 uid="uid://d3nhi2w5tqpck"]
 
 [ext_resource type="Script" path="res://Main/DrawingGame/Drawing/Scripts/drawing_scene.gd" id="1_5b20i"]
 [ext_resource type="Theme" uid="uid://tgxaae13tjns" path="res://Main/Assets/Themes/primitive_theme.tres" id="1_mmog0"]
@@ -72,9 +72,6 @@ events = [SubResource("InputEventKey_ju3wa")]
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ybmbi"]
 bg_color = Color(0.956863, 0.635294, 0.380392, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gcj5u"]
-bg_color = Color(0.956863, 0.635294, 0.380392, 1)
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lct7l"]
 content_margin_left = 20.0
 content_margin_top = 20.0
@@ -114,7 +111,7 @@ physical_keycode = 89
 [sub_resource type="Shortcut" id="Shortcut_inph4"]
 events = [SubResource("InputEventKey_2wbny"), SubResource("InputEventKey_kuh58"), SubResource("InputEventKey_ca6jx")]
 
-[node name="DrawingScene" type="Control" node_paths=PackedStringArray("drawing_manager", "round_end_timer", "round_end_progress")]
+[node name="DrawingScene" type="Control" node_paths=PackedStringArray("drawing_manager", "scene_end_timer", "scene_end_progress")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -124,8 +121,8 @@ grow_vertical = 2
 theme = ExtResource("1_mmog0")
 script = ExtResource("1_5b20i")
 drawing_manager = NodePath("DrawingManager")
-round_end_timer = NodePath("RoundEndTimer")
-round_end_progress = NodePath("RoundEndContainer/RoundEndProgress")
+scene_end_timer = NodePath("ProgressContainer/SceneEndTimer")
+scene_end_progress = NodePath("ProgressContainer/SceneEndProgress")
 
 [node name="DrawingManager" type="Node" parent="." node_paths=PackedStringArray("drawing_line", "canvas_viewport", "drawing_image", "background", "brush_circle", "color_picker", "picked_color", "pallete_container", "brush")]
 script = ExtResource("3_om684")
@@ -151,7 +148,7 @@ color = Color(0.905882, 0.435294, 0.317647, 1)
 
 [node name="RoundTopicLabel" type="Label" parent="."]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(866, 80)
+custom_minimum_size = Vector2(886, 80)
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -182,7 +179,7 @@ size_flags_horizontal = 8
 theme_override_styles/panel = SubResource("StyleBoxFlat_lto4i")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="LeftPanelContainer"]
-custom_minimum_size = Vector2(0, 688)
+custom_minimum_size = Vector2(0, 708)
 layout_mode = 2
 alignment = 1
 
@@ -211,7 +208,7 @@ hex_visible = false
 presets_visible = false
 
 [node name="RightPanelContainer" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(0, 688)
+custom_minimum_size = Vector2(0, 708)
 layout_mode = 1
 anchors_preset = 6
 anchor_left = 1.0
@@ -332,8 +329,8 @@ size_flags_horizontal = 8
 size_flags_vertical = 4
 texture = ExtResource("6_dxt4i")
 
-[node name="RoundEndContainer" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(866, 120)
+[node name="ProgressContainer" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(886, 120)
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -347,15 +344,15 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_ybmbi")
 
-[node name="RoundEndProgress" type="ProgressBar" parent="RoundEndContainer"]
-custom_minimum_size = Vector2(826, 80)
+[node name="SceneEndTimer" type="Timer" parent="ProgressContainer"]
+one_shot = true
+
+[node name="SceneEndProgress" type="ProgressBar" parent="ProgressContainer"]
+custom_minimum_size = Vector2(846, 80)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 show_percentage = false
-
-[node name="RoundEndTimer" type="Timer" parent="."]
-one_shot = true
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -371,10 +368,10 @@ offset_bottom = 344.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PanelContainer" type="PanelContainer" parent="CenterContainer"]
-custom_minimum_size = Vector2(866, 688)
+[node name="PanelContainer" type="ColorRect" parent="CenterContainer"]
+custom_minimum_size = Vector2(886, 708)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_gcj5u")
+color = Color(0.956863, 0.635294, 0.380392, 1)
 
 [node name="CanvasViewportContainer" type="SubViewportContainer" parent="CenterContainer"]
 layout_mode = 2

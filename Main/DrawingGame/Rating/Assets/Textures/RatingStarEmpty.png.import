@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dy6mq5ugofksx"
-path="res://.godot/imported/RatingStarEmpty.png-345964b44845ed5324312e7b716b79aa.ctex"
+path="res://.godot/imported/RatingStarEmpty.png-dafaa586c9b3fd12e756202478781a89.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Main/Menu/Assets/Textures/RatingStarEmpty.png"
-dest_files=["res://.godot/imported/RatingStarEmpty.png-345964b44845ed5324312e7b716b79aa.ctex"]
+source_file="res://Main/DrawingGame/Rating/Assets/Textures/RatingStarEmpty.png"
+dest_files=["res://.godot/imported/RatingStarEmpty.png-dafaa586c9b3fd12e756202478781a89.ctex"]
 
 [params]
 
