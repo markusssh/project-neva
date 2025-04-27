@@ -34,10 +34,13 @@ anchor_bottom = 1.0
 offset_top = 185.0
 grow_horizontal = 2
 grow_vertical = 2
+horizontal_scroll_mode = 0
 
 [node name="Showcase" type="GridContainer" parent="ScrollContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 columns = 3
 
 [node name="PanelContainer" type="PanelContainer" parent="."]

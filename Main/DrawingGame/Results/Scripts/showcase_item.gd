@@ -1,4 +1,4 @@
-class_name ShowcaseItem extends VBoxContainer
+class_name ShowcaseItem extends PanelContainer
 
 @export var top_label: Label
 @export var drawing_container: PanelContainer
@@ -12,7 +12,8 @@ var score: int
 var drawing_scale = 4.0 / 7.0
 
 static func create(p_image: Image, p_num: int, p_player: String, p_score: int) -> ShowcaseItem:
-	var i := ShowcaseItem.new()
+	var scene = preload("res://Main/DrawingGame/Results/Scene/showcase_item.tscn")
+	var i: ShowcaseItem = scene.instantiate()
 	i.image = p_image
 	i.num = p_num
 	i.player = p_player
@@ -24,7 +25,7 @@ func _ready() -> void:
 	bottom_label.text = str(score)
 	
 	var drawing := TextureRect.new()
+	image.resize(474, 372, Image.INTERPOLATE_LANCZOS)
 	drawing.texture = ImageTexture.create_from_image(image)
-	drawing.size = drawing.size * drawing_scale
 	drawing.set_anchors_preset(Control.PRESET_CENTER)
 	drawing_container.add_child(drawing)
