@@ -30,6 +30,7 @@ config/icon="res://Main/Assets/Лого.png"
 
 [autoload]
 
+WindowManager="*res://Main/Global/window_manager.gd"
 Logger="*res://Main/Utils/Logger/Logger.cs"
 GlobalVars="*res://Main/Global/global_vars.gd"
 Networking="*res://Main/NetworkingArchitecture/Networking.cs"
@@ -58,10 +59,6 @@ enabled=PackedStringArray("res://addons/script-ide/plugin.cfg")
 [file_customization]
 
 folder_colors={
-"res://Legacy/": "gray",
-"res://Legacy/Database/": "orange",
-"res://Legacy/Debug/": "gray",
-"res://Legacy/MainUI/": "teal",
 "res://Main/": "red",
 "res://Main/Assets/": "purple",
 "res://Main/DrawingGame/": "green",
