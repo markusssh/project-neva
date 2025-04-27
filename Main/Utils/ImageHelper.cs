@@ -7,7 +7,7 @@ namespace ProjectNeva.Main.Utils;
 [GlobalClass]
 public partial class ImageHelper : GodotObject
 {
-    public const int CanvasWidth = 846;
+    public const int CanvasWidth = 826;
     public const int CanvasHeight = 648;
     
     public static int GetCanvasWidth() { return CanvasWidth; }
