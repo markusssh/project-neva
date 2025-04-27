@@ -35,6 +35,7 @@ alignment = 1
 [node name="NameEdit" type="LineEdit" parent="Menu"]
 layout_mode = 2
 theme = ExtResource("1_gxkxm")
+text = "Player"
 placeholder_text = "Имя"
 max_length = 15
 

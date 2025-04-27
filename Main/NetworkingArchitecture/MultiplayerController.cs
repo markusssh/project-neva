@@ -287,7 +287,7 @@ public partial class MultiplayerController : Node
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void Client_LoadResultsScene()
     {
-        GetTree().ChangeSceneToFile("res://Main/DrawingGame/Results/ResultsScene.tscn");
+        GetTree().ChangeSceneToFile("res://Main/DrawingGame/Results/results_scene.tscn");
     }
 
 

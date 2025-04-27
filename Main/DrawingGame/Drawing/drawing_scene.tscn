@@ -396,8 +396,11 @@ grow_vertical = 2
 pivot_offset = Vector2(413, 324)
 
 [node name="DrawingImage" type="TextureRect" parent="CenterContainer/CanvasViewportContainer/CanvasViewport"]
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="DrawingLine" type="Line2D" parent="CenterContainer/CanvasViewportContainer/CanvasViewport"]
 unique_name_in_owner = true
@@ -446,6 +449,7 @@ offset_left = -40.0
 offset_top = -40.0
 grow_horizontal = 0
 grow_vertical = 0
+toggle_mode = true
 texture_normal = ExtResource("16_mtxpd")
 texture_pressed = ExtResource("17_wb4qg")
 texture_hover = ExtResource("16_mtxpd")
@@ -467,3 +471,4 @@ script = ExtResource("16_j6rnm")
 [connection signal="value_changed" from="RightPanelContainer/VBoxContainer/BrushSizeSlider" to="DrawingManager" method="_on_brush_size_slider_value_changed"]
 [connection signal="pressed" from="ActionHistoryContainer/HBoxContainer/ActionBackButton" to="DrawingManager" method="_on_action_back_button_pressed"]
 [connection signal="pressed" from="ActionHistoryContainer/HBoxContainer/ActionForwardButton" to="DrawingManager" method="_on_action_forward_button_pressed"]
+[connection signal="toggled" from="PlayerReadyButton" to="." method="_on_player_ready_button_toggled"]

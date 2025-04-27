@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using ProjectNeva.Main.NetworkingArchitecture.GamePhases.AbstractPhase;
+using ProjectNeva.Main.Utils.Logger;
 
 namespace ProjectNeva.Main.NetworkingArchitecture.GamePhases;
 
@@ -33,15 +34,22 @@ public class DrawingPhase : ClosedGamePhase
         _timer.OneShot = true;
         _timer.Start(Lobby.PlayTime);
         _timer.Timeout += OnTimerTimeout;
+        
+        Logger.LogNetwork($"Lobby: {Lobby.LobbyId}. Drawing scene started.");
     }
 
     private void OnPlayerDrawingStateChanged(long playerId, bool drawingOn)
     {
-        _finishedEarly[playerId] = drawingOn;
-        if (drawingOn && EveryoneFinishedEarly)
-        {
-            OnTimerTimeout();
-        }
+        _finishedEarly[playerId] = !drawingOn;
+        const string pref = "un-";
+        var message = $"Lobby: {Lobby.LobbyId}. Player {playerId} has ";
+        message = drawingOn ? message + pref : message;
+        message += "finished drawing.";
+        Logger.LogNetwork(message);
+
+        if (!EveryoneFinishedEarly) return;
+        Logger.LogNetwork($"Lobby {Lobby.LobbyId} has finished drawing. Collecting data.");
+        OnTimerTimeout();
     }
 
     private void OnTimerTimeout()

@@ -12,4 +12,5 @@ func _process(_delta: float) -> void:
 	queue_redraw()
 
 func _draw() -> void:
+	@warning_ignore("integer_division")
 	draw_circle(Vector2.ZERO, _circle_size / 2, _circle_color, false, 1, true)

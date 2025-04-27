@@ -31,7 +31,7 @@ func _on_drawing_image_requested() -> void:
 func _process(_delta: float) -> void:
 	round_end_progress.value = round_end_timer.time_left / round_time * 100
 
-func _on_finished_drawing_check_button_toggled(toggled_on: bool) -> void:
-	var drawingOn: bool = not toggled_on
-	drawing_manager.drawing = drawingOn
-	MultiplayerController.Client_NotifyDrawingStateChanged(drawingOn)
+func _on_player_ready_button_toggled(toggled_on: bool) -> void:
+	var drawing_on: bool = not toggled_on
+	drawing_manager.drawing_on = drawing_on
+	MultiplayerController.Client_NotifyDrawingStateChanged(drawing_on)

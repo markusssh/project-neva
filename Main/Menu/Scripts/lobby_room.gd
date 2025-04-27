@@ -55,9 +55,6 @@ func _on_player_joined(player_id: int):
 	%PlayerList.add_child(p_item)
 	p_item.kick_requested.connect(_on_kick_requested.bind(player_id))
 	update_player_count()
-	
-	for player in MultiplayerController.Client_Players:
-		Logger.LogNetwork(MultiplayerController.Client_Players[player].PlayerName)
 
 func _on_player_left(player_id: int):
 	var item = player_list_items.get(player_id)

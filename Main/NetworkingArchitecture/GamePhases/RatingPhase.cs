@@ -48,6 +48,8 @@ public class RatingPhase : ClosedGamePhase
         MultiplayerController.Instance.AddChild(_timer);
         _timer.Start(RatingSec);
         _timer.Timeout += OnTimerTimeout;
+        
+        Logger.LogNetwork($"Lobby: {Lobby.LobbyId}. Rating scene started.");
     }
 
     private void OnTimerTimeout()
@@ -63,7 +65,7 @@ public class RatingPhase : ClosedGamePhase
         var imgPlayers = Lobby.Images.Keys;
         if (!imgPlayers.Any()) return false;
         var newId = imgPlayers.First();
-        Logger.LogNetwork($"Changing rating to {newId}");
+        Logger.LogNetwork($"Lobby: {Lobby.LobbyId}. Changing rating to {newId}");
         MultiplayerController.Instance.Server_BroadcastLobby(
             Lobby,
             MultiplayerController.MethodName.Client_ShootRatingNextPlayer,
