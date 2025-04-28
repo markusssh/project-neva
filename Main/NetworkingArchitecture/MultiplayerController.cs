@@ -89,7 +89,8 @@ public partial class MultiplayerController : Node
             lobby.LobbySize, 
             lobby.Topic, 
             lobby.PlayTime,
-            lobby.RateTime);
+            lobby.RateTime,
+            lobby.ReplayAwaitTime);
     }
 
     public void Server_OnPeerDisconnected(long peerId)
@@ -147,6 +148,12 @@ public partial class MultiplayerController : Node
         }
     }
 
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void Server_HandlePlayerReplayStatusChange(bool ready)
+    {
+        var playerId = Multiplayer.GetRemoteSenderId();
+        Server_GetLobbyByPlayerId(playerId)?.OnPlayerReplayStatusChanged(playerId, ready);
+    }
     #endregion
 
     #region Client Logic
@@ -159,9 +166,9 @@ public partial class MultiplayerController : Node
     public string Client_LobbyCode;
     public long Client_CreatorId;
     public int Client_MaxPlayers;
-    public int Client_MaxRounds;
     public float Client_DrawTime;
     public float Client_RateTime;
+    public float Client_ReplayAwaitTime;
     public string Client_Topic;
     
     public bool Client_IsCreator => Client_Id == Client_CreatorId;
@@ -177,6 +184,8 @@ public partial class MultiplayerController : Node
     [Signal] public delegate void FinalImageRequestedEventHandler();
     
     [Signal] public delegate void ImageToRateReceivedEventHandler(long playerId, Image image);
+    
+    [Signal] public delegate void ReplayAwaitStatusChangedEventHandler(bool started, int playersReady, int outOf);
 
     [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void Client_ReceiveLobbySettings(
@@ -186,7 +195,8 @@ public partial class MultiplayerController : Node
         int lobbySize, 
         string topic,
         float drawTime,
-        float rateTime)
+        float rateTime,
+        float replayAwaitTime)
     {
         Client_Id = playerId;
         Client_LobbyCode = lobbyId;
@@ -195,6 +205,7 @@ public partial class MultiplayerController : Node
         Client_Topic = topic;
         Client_DrawTime = drawTime;
         Client_RateTime = rateTime;
+        Client_ReplayAwaitTime = replayAwaitTime;
         EmitSignal(SignalName.ClientSynchronized);
         Logger.LogNetwork("Lobby data was received");
     }
@@ -213,7 +224,7 @@ public partial class MultiplayerController : Node
         EmitSignal(SignalName.PlayerLeftLobby, playerId);
     }
 
-    public void Client_NotifyNewSceneReady()
+    private void Client_NotifyNewSceneReady()
     {
         RpcId(Networking.GameServerPeerId, MethodName.Server_HandlePlayerLoadNewScene);
     }
@@ -272,6 +283,33 @@ public partial class MultiplayerController : Node
     private void Client_RequestKick(long playerId)
     {
         RpcId(Networking.GameServerPeerId, MethodName.Server_KickPlayer, playerId);
+    }
+
+    private void Client_NotifyReplayStatusChange(bool ready)
+    {
+        RpcId(Networking.GameServerPeerId, MethodName.Server_HandlePlayerReplayStatusChange, ready);
+    }
+    
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void Client_HandleReplayAwaitStatusChange(bool started, int playersReady, int outOf)
+    {
+        EmitSignal(SignalName.ReplayAwaitStatusChanged, started, playersReady, outOf);
+    }
+
+    public void Client_Clear()
+    {
+        Client_Players.Clear();
+        Client_FinalImages.Clear();
+        Client_Scores.Clear();
+
+        Client_Id = 0;
+        Client_LobbyCode = "";
+        Client_CreatorId = 0;
+        Client_MaxPlayers = 0;
+        Client_DrawTime = 0;
+        Client_RateTime = 0;
+        Client_ReplayAwaitTime = 0;
+        Client_Topic = "";
     }
 
     #region Loading Scenes

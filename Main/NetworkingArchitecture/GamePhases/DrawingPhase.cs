@@ -13,6 +13,8 @@ public class DrawingPhase : ClosedGamePhase
     {
         _images = Lobby.Players.Keys.ToDictionary(key => key, _ => Array.Empty<byte>());
         _finishedEarly = Lobby.Players.Keys.ToDictionary(key => key, _ => false);
+        _timer.OneShot = true;
+        _timer.Timeout += OnTimerTimeout;
     }
 
     private readonly Dictionary<long, bool> _finishedEarly;
@@ -31,9 +33,7 @@ public class DrawingPhase : ClosedGamePhase
             MultiplayerController.MethodName.Client_ShootDrawingScene);
 
         MultiplayerController.Instance.AddChild(_timer);
-        _timer.OneShot = true;
         _timer.Start(Lobby.PlayTime);
-        _timer.Timeout += OnTimerTimeout;
         
         Logger.LogNetwork($"Lobby: {Lobby.LobbyId}. Drawing scene started.");
     }
@@ -41,11 +41,11 @@ public class DrawingPhase : ClosedGamePhase
     private void OnPlayerDrawingStateChanged(long playerId, bool drawingOn)
     {
         _finishedEarly[playerId] = !drawingOn;
-        const string pref = "un-";
+        /*const string pref = "un-";
         var message = $"Lobby: {Lobby.LobbyId}. Player {playerId} has ";
         message = drawingOn ? message + pref : message;
         message += "finished drawing.";
-        Logger.LogNetwork(message);
+        Logger.LogNetwork(message);*/
 
         if (!EveryoneFinishedEarly) return;
         Logger.LogNetwork($"Lobby {Lobby.LobbyId} has finished drawing. Collecting data.");
@@ -55,7 +55,6 @@ public class DrawingPhase : ClosedGamePhase
     private void OnTimerTimeout()
     {
         _timer.Timeout -= OnTimerTimeout;
-        _timer.QueueFree();
         Lobby.PlayerSentFinalImage += OnPlayerSentFinalImage;
         MultiplayerController.Instance.Server_BroadcastLobby(
             Lobby,
@@ -72,6 +71,7 @@ public class DrawingPhase : ClosedGamePhase
     {
         base.HandlePlayerDisconnect(playerId);
         _images.Remove(playerId);
+        _finishedEarly.Remove(playerId);
         Update();
     }
 
@@ -96,5 +96,7 @@ public class DrawingPhase : ClosedGamePhase
         base.Exit();
         Lobby.PlayerSentFinalImage -= OnPlayerSentFinalImage;
         Lobby.PlayerDrawingStateChanged -= OnPlayerDrawingStateChanged;
+        
+        _timer.QueueFree();
     }
 }

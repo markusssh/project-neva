@@ -12,9 +12,9 @@ func _ready() -> void:
 	MultiplayerController.ImageToRateReceived.connect(_on_image_to_rate_received)
 	stars_container.rated.connect(_on_rated)
 	MultiplayerController.Client_NotifyNewSceneReady()
-	scene_end_timer.start(scene_time)
 
 func _on_image_to_rate_received(player: int, image: Image):
+	scene_end_timer.start(scene_time)
 	stars_container.clear_score()
 	curr_player = player
 	curr_drawing.texture = ImageTexture.create_from_image(image)

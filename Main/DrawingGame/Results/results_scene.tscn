@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://bgfimug37ep5g"]
+[gd_scene load_steps=5 format=3 uid="uid://bgfimug37ep5g"]
 
 [ext_resource type="Script" path="res://Main/DrawingGame/Results/Scripts/results_scene.gd" id="1_leu82"]
 [ext_resource type="Theme" uid="uid://tgxaae13tjns" path="res://Main/Assets/Themes/primitive_theme.tres" id="1_waatr"]
@@ -6,7 +6,10 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b15i0"]
 bg_color = Color(0.956863, 0.635294, 0.380392, 1)
 
-[node name="ResultsScene" type="Control" node_paths=PackedStringArray("showcase")]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_caqhb"]
+bg_color = Color(0.956863, 0.635294, 0.380392, 1)
+
+[node name="ResultsScene" type="Control" node_paths=PackedStringArray("showcase", "progress_container", "replay_await_timer", "replay_await_progress")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -15,7 +18,10 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_waatr")
 script = ExtResource("1_leu82")
-showcase = NodePath("ScrollContainer/Showcase")
+showcase = NodePath("ScrollContainer/CenterContainer/Showcase")
+progress_container = NodePath("ProgressContainer")
+replay_await_timer = NodePath("ProgressContainer/SceneEndTimer")
+replay_await_progress = NodePath("ProgressContainer/SceneEndProgress")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1
@@ -36,7 +42,11 @@ grow_horizontal = 2
 grow_vertical = 2
 horizontal_scroll_mode = 0
 
-[node name="Showcase" type="GridContainer" parent="ScrollContainer"]
+[node name="CenterContainer" type="CenterContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Showcase" type="GridContainer" parent="ScrollContainer/CenterContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -50,10 +60,57 @@ offset_right = 40.0
 offset_bottom = 40.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_b15i0")
 
-[node name="Button" type="Button" parent="PanelContainer"]
+[node name="BackToMenuButton" type="Button" parent="PanelContainer"]
 custom_minimum_size = Vector2(480, 120)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 theme_override_font_sizes/font_size = 64
 text = "В меню"
+
+[node name="PanelContainer2" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(500, 140)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -500.0
+offset_bottom = 140.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_b15i0")
+
+[node name="PlayAgainButton" type="Button" parent="PanelContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(480, 120)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 64
+toggle_mode = true
+text = "Заново"
+
+[node name="ProgressContainer" type="PanelContainer" parent="."]
+visible = false
+custom_minimum_size = Vector2(886, 120)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -443.0
+offset_right = 443.0
+offset_bottom = 120.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_caqhb")
+
+[node name="SceneEndTimer" type="Timer" parent="ProgressContainer"]
+one_shot = true
+
+[node name="SceneEndProgress" type="ProgressBar" parent="ProgressContainer"]
+custom_minimum_size = Vector2(846, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+show_percentage = false
+
+[connection signal="pressed" from="PanelContainer/BackToMenuButton" to="." method="_on_back_to_menu_button_pressed"]
+[connection signal="toggled" from="PanelContainer2/PlayAgainButton" to="." method="_on_play_again_button_toggled"]

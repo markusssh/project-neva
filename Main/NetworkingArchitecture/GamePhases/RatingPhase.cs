@@ -16,7 +16,7 @@ public class RatingPhase : ClosedGamePhase
     private static int ClampedScore(int score) => Math.Clamp(score, MinScore, MaxScore);
 
     private readonly Dictionary<long, Dictionary<long, int>> _ratingMatrix;
-    private readonly Timer _timer = new Timer();
+    private readonly Timer _timer = new();
     
     public RatingPhase(LobbyManager lobbyManager) : base(lobbyManager)
     {
@@ -94,5 +94,7 @@ public class RatingPhase : ClosedGamePhase
 
         base.Exit();
         Lobby.NewScoreReceived -= OnNewScore;
+        
+        _timer.QueueFree();
     }
 }

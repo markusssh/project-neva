@@ -268,6 +268,13 @@ public partial class Networking : Node
 
         return Error.Ok;
     }
+
+    public void LeaveGame()
+    {
+        Logger.LogNetwork("Leaving lobby...");
+        MultiplayerController.Instance.Client_Clear();
+        Multiplayer.MultiplayerPeer.Close();
+    }
 }
 
 internal record JwtValidationRequest(string Jwt);

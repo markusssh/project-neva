@@ -23,15 +23,17 @@ public class Lobby
     public event Action<long, byte[]> PlayerSentFinalImage;
     public event Action<long, bool> PlayerDrawingStateChanged;
     public event Action<long, long, int> NewScoreReceived;
+    public event Action<long, bool> PlayerReplayStatusChanged;
     public string LobbyId { get; set; }
     public long CreatorId { get; set; }
     public Dictionary<long, Player> Players { get; set; } = new();
     public Godot.Collections.Dictionary<long, byte[]> Images { get; set; } = new();
     public int LobbySize { get; set; }
-    public string Topic { get; set; } = RoundTopic.Topics[new Random().Next(RoundTopic.Topics.Length - 1)];
+    public string Topic { get; set; } = RoundTopic.GetNewTopic;
     public float PlayTime { get; set; }
     public float RateTime { get; } = 5;
-
+    public float ReplayAwaitTime { get; } = 5;
+    
     public void OnPlayerConnected(long playerId, JwtValidationResult authData)
     {
         PlayerConnected?.Invoke(playerId, authData);
@@ -60,5 +62,10 @@ public class Lobby
     public void OnNewScoreReceived(long fromPlayerId, long toPlayerId, int score)
     {
         NewScoreReceived?.Invoke(fromPlayerId, toPlayerId, score);
+    }
+
+    public void OnPlayerReplayStatusChanged(long playerId, bool ready)
+    {
+        PlayerReplayStatusChanged?.Invoke(playerId, ready);
     }
 }

@@ -117,6 +117,7 @@ grow_horizontal = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_1ijxg")
 
 [node name="SceneEndTimer" type="Timer" parent="ProgressContainer"]
+one_shot = true
 
 [node name="SceneEndProgress" type="ProgressBar" parent="ProgressContainer"]
 custom_minimum_size = Vector2(846, 80)
