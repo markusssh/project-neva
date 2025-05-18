@@ -24,6 +24,10 @@ public class Lobby
     public event Action<long, bool> PlayerDrawingStateChanged;
     public event Action<long, long, int> NewScoreReceived;
     public event Action<long, bool> PlayerReplayStatusChanged;
+    
+    // TODO: ALERT
+    public event Action GameStarted;
+    
     public string LobbyId { get; set; }
     public long CreatorId { get; set; }
     public Dictionary<long, Player> Players { get; set; } = new();
@@ -67,5 +71,10 @@ public class Lobby
     public void OnPlayerReplayStatusChanged(long playerId, bool ready)
     {
         PlayerReplayStatusChanged?.Invoke(playerId, ready);
+    }
+
+    public void OnGameStartRequested()
+    {
+        GameStarted?.Invoke();
     }
 }

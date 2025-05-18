@@ -15,9 +15,10 @@ namespace ProjectNeva.Main.NetworkingArchitecture;
 public partial class Networking : Node
 {
     
-    private static readonly string ServerManagerUrl = Environment.GetEnvironmentVariable("SERVER_MANAGER_URL") ?? "http://localhost:8080";
-    private static readonly string ServerToken = Environment.GetEnvironmentVariable("SERVER_TOKEN") 
-                                                  ?? "4791da355540b0cd33420b55c066802dd09998d8a2c5a44667ee4ccc5a625e25"; // dev
+    private static readonly string ServerManagerUrl = 
+        Environment.GetEnvironmentVariable("SERVER_MANAGER_URL") ?? "http://localhost:8080";
+    private static readonly string ServerToken = 
+        Environment.GetEnvironmentVariable("SERVER_TOKEN") ?? "err";
 
     private static string _authToken;
     public static long ClientId { get; private set; }
@@ -264,7 +265,6 @@ public partial class Networking : Node
         
         Multiplayer.MultiplayerPeer = peer;
         Logger.LogNetwork($"Client started on peer {Multiplayer.GetUniqueId()}.");
-        //Multiplayer.SendAuth(GameServerPeerId, Encoding.UTF8.GetBytes(authToken));
 
         return Error.Ok;
     }

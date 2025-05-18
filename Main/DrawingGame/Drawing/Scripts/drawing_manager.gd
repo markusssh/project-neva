@@ -17,7 +17,6 @@ enum BrushSize {
 }
 
 const DEFAULT_SIZE: BrushSize = BrushSize.M
-const HISTORY_MAX_SIZE: int = 40
 const BRUSH_SIZE_DICT := {
 	BrushSize.XS: 15,
 	BrushSize.S: 30,
@@ -25,6 +24,7 @@ const BRUSH_SIZE_DICT := {
 	BrushSize.L: 80,
 	BrushSize.XL: 120
 }
+const HISTORY_MAX_SIZE: int = 40
 
 @export_category("Drawing Canvas")
 @export var drawing_line: Line2D
@@ -61,13 +61,14 @@ var drawing_history: Array[ImageTexture]
 
 # TODO: сделать пресеты
 var pallete: Array[Color] = [
-	Color.DARK_SLATE_GRAY,
-	Color.BROWN,
+	Color.DARK_GRAY,
+	Color.SADDLE_BROWN,
 	Color.SEA_GREEN,
 	Color.CADET_BLUE,
 	Color.INDIAN_RED,
-	Color.YELLOW_GREEN,
-	Color.PLUM,
+	#Color.YELLOW_GREEN,
+	Color.YELLOW,
+	Color.RED,
 	Color.NAVY_BLUE,
 	Color.BLACK,
 	Color.WHITE
@@ -193,9 +194,6 @@ func handle_brush_drawing() -> void:
 func handle_erase() -> void:
 	handle_brush_drawing()
 
-# Viewport texture can't be written and read at the same time by engine
-# So we should convert to image and back to texture
-# Doesn't even work with 'call_deferred()' method
 func bake_drawing() -> void:
 	var image: Image = get_baked_image()
 	var viewport_image: Image = get_viewport_image()

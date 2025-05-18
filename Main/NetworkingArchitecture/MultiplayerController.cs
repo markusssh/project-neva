@@ -154,6 +154,13 @@ public partial class MultiplayerController : Node
         var playerId = Multiplayer.GetRemoteSenderId();
         Server_GetLobbyByPlayerId(playerId)?.OnPlayerReplayStatusChanged(playerId, ready);
     }
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void Server_StartGame()
+    {
+        var playerId = Multiplayer.GetRemoteSenderId();
+        Server_GetLobbyByPlayerId(playerId)?.OnGameStartRequested();
+    } //alert!!!!!!!!!!!!!
     #endregion
 
     #region Client Logic
@@ -283,6 +290,12 @@ public partial class MultiplayerController : Node
     private void Client_RequestKick(long playerId)
     {
         RpcId(Networking.GameServerPeerId, MethodName.Server_KickPlayer, playerId);
+    }
+    
+    //TODO: ЭМЕРДЖЕНСИ КОД
+    private void Client_RequestStart()
+    {
+        RpcId(Networking.GameServerPeerId, MethodName.Server_StartGame);
     }
 
     private void Client_NotifyReplayStatusChange(bool ready)

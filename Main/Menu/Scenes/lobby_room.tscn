@@ -113,10 +113,14 @@ text = "#F7H"
 icon = ExtResource("3_3p755")
 icon_alignment = 2
 
-[node name="Button" type="Button" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="StartButton" type="Button" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(520, 0)
 layout_mode = 2
 size_flags_horizontal = 4
+disabled = true
 text = "Начать"
 
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/VBoxContainer/CopyCode" to="." method="_on_copy_code_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]

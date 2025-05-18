@@ -1,13 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://ddu4dpvang7a3"]
+[gd_scene load_steps=5 format=3 uid="uid://ddu4dpvang7a3"]
 
 [ext_resource type="Shader" path="res://Main/Menu/Assets/Shaders/background_shader.gdshader" id="1_3d2h2"]
 [ext_resource type="Texture2D" uid="uid://br7e811lyr2u5" path="res://Main/Menu/Assets/NoiseTexture/particles_noise_texture.tres" id="2_d7eko"]
 [ext_resource type="Script" path="res://Main/Menu/Scripts/particles.gd" id="3_44lfm"]
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_8cwjk"]
-
-[sub_resource type="NoiseTexture3D" id="NoiseTexture3D_4ykj8"]
-noise = SubResource("FastNoiseLite_8cwjk")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8kwui"]
 shader = ExtResource("1_3d2h2")
@@ -15,7 +10,6 @@ shader_parameter/highlight_color = Color(0.956863, 0.635294, 0.380392, 1)
 shader_parameter/blur_size = 5.0
 shader_parameter/edge_start = 0.1
 shader_parameter/edge_end = 0.6
-shader_parameter/noise_img_3d = SubResource("NoiseTexture3D_4ykj8")
 shader_parameter/noise_img = ExtResource("2_d7eko")
 
 [node name="ShaderBackground" type="ColorRect"]

@@ -11,10 +11,14 @@ func _ready() -> void:
 	MultiplayerController.PlayerJoinedLobby.connect(_on_player_joined)
 	MultiplayerController.PlayerLeftLobby.connect(_on_player_left)
 	
+	var client_id = MultiplayerController.Client_Id
 	creator_id = MultiplayerController.Client_CreatorId
-	is_creator = MultiplayerController.Client_IsCreator
+	is_creator = OS.has_feature("host") #MultiplayerController.Client_IsCreator
 	max_players = MultiplayerController.Client_MaxPlayers
 	%CopyCode.text = MultiplayerController.Client_LobbyCode
+	
+	if is_creator:
+		%StartButton.show()
 	
 	for player in MultiplayerController.Client_Players.values():
 		var player_id = player.PlayerId
@@ -73,3 +77,7 @@ func _on_copy_code_pressed() -> void:
 func update_player_count() -> void:
 	var players = player_list_items.size()
 	%PlayerCount.text = "Игроков: " + str(players) + "/" + str(max_players)
+	%StartButton.disabled = players < 3
+
+func _on_start_button_pressed() -> void:
+	MultiplayerController.Client_RequestStart()
