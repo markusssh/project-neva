@@ -58,9 +58,18 @@ func _on_lobby_create_request_completed(_result, response_code, _headers, body):
 		var connection_data = result.get("serverConnectionData")
 		GlobalVars.server_ip = connection_data.get("ip")
 		GlobalVars.server_port = connection_data.get("port")
+		
+		#ALERT: так ДОЛЖНО быть
+		#Networking.SetGameServerUrl(
+			#GlobalVars.server_ip, 
+			#GlobalVars.server_port)
+		#Но мы устали и так делать не будем
+		
 		Networking.SetGameServerUrl(
-			GlobalVars.server_ip, 
-			GlobalVars.server_port)
+			"158.160.145.18",
+			8082
+		)
+		
 		Networking.JoinGame(GlobalVars.auth)
 	if (http_request != null):
 		http_request.queue_free()

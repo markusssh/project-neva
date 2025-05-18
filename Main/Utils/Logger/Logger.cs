@@ -5,7 +5,7 @@ namespace ProjectNeva.Main.Utils.Logger;
 
 public partial class Logger : Node
 {
-    public static readonly bool ToEditor = !OS.GetCmdlineArgs().Contains("--ide");
+    public static readonly bool ToEditor = OS.GetCmdlineArgs().Contains("--editor");
 
     public static void LogNetwork(string message)
     {

@@ -11,8 +11,7 @@ func _ready():
 			var parts = arg.split("=")
 			if parts.size() > 1:
 				layout = parts[1]
-	# Если нет аргумента layout или layout = "fullscreen", делаем полноэкран
-	if layout == null or layout == "fullscreen":
+	if layout == "fullscreen":
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 		return
 	# Получаем размер текущего экрана
@@ -47,5 +46,4 @@ func _ready():
 			DisplayServer.window_set_position(Vector2i(half_w, 0))
 			DisplayServer.window_set_size(Vector2i(half_w, screen_size.y))
 		_:
-			# Для любых других значений — полный экран
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+			pass

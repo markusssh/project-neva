@@ -18,7 +18,7 @@ public partial class Networking : Node
     private static readonly string ServerManagerUrl = 
         Environment.GetEnvironmentVariable("SERVER_MANAGER_URL") ?? "http://localhost:8080";
     private static readonly string ServerToken = 
-        Environment.GetEnvironmentVariable("SERVER_TOKEN") ?? "err";
+        Environment.GetEnvironmentVariable("GAME_SERVER_TOKEN") ?? "err";
 
     private static string _authToken;
     public static long ClientId { get; private set; }
@@ -30,7 +30,7 @@ public partial class Networking : Node
     public const int ServerMaxConnections = 3000;
 
     private static string _gameServerIp;
-    private static int _gameServerPort = 8081;
+    private static int _gameServerPort = 8082;
 
     public static void SetGameServerUrl(string gameServerIp, int gameServerPort)
     {
@@ -162,7 +162,7 @@ public partial class Networking : Node
             Logger.LogNetwork($"Peer {id} authentication data: {jwt.Left(3)}***");
 
             var validationResult = await ValidateJwtWithManger(jwt);
-            if (!validationResult.Valid) throw new Exception("Jwt not valid!");
+            if (!validationResult.Valid) throw new Exception($"Jwt not valid! Reason: {validationResult.ErrorMessage}");
             
             if (!MultiplayerController.LobbyExists(validationResult.LobbyId.ToString()))
             {

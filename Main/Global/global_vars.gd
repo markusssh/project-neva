@@ -1,7 +1,7 @@
 extends Node
 
 # Connection
-var server_manager_url: String = "http://158.160.171.150:8080"
+var server_manager_url: String = "http://158.160.145.18:8080"
 
 var auth: String
 var server_ip: String
